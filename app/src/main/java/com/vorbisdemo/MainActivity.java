@@ -430,6 +430,7 @@ public class MainActivity extends Activity {
                                     String channel_string = coolmic.getChannels();
                                     String quality_string = coolmic.getQuality();
                                     String title = coolmic.getTitle();
+                                    String artist = coolmic.getArtist();
                                     String generalUsername = coolmic.getGeneralUsername();
                                     Log.d("VS", server + " " + server + " " + port_num.toString() + " " + username + " " + password + "\n " + mountpoint + "" +
                                             " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
@@ -473,7 +474,7 @@ public class MainActivity extends Activity {
                                     if (vorbisRecorder == null || vorbisRecorder.isStopped()) {
                                         if (vorbisRecorder == null) {
                                             Log.d("VS", "Before recorder initilize");
-                                            vorbisRecorder = new VorbisRecorder(out, recordingHandler);
+                                            vorbisRecorder = new VorbisRecorder(out, recordingHandler, title, artist);
                                         }
                                         long sampleRate = Long.parseLong(coolmic.getSampleRate());
                                         long channels = Long.parseLong(coolmic.getChannels());
