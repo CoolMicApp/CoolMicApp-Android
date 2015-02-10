@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="available_sample_rates">
+        <item>8000</item>
+        <item>11025</item>
+        <item>16000</item>
+        <item>22050</item>
+        <item>44100</item>
+    </string-array>
+    <string-array name="available_channel_configurations">
+        <item>Mono (1 Channel)</item>
+        <item>Stereo (2 Channels)</item>
+    </string-array>
+    <string-array name="available_qualities">
+        <item>-0.1</item>
+        <item>0</item>
+        <item>0.1</item>
+        <item>0.2</item>
+        <item>0.3</item>
+        <item>0.4</item>
+        <item>0.5</item>
+        <item>0.6</item>
+        <item>0.7</item>
+        <item>0.8</item>
+        <item>0.9</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="available_bitrates">
+        <item>32000</item>
+        <item>96000</item>
+        <item>128000</item>
+        <item>160000</item>
+        <item>192000</item>
+        <item>256000</item>
+        <item>320000</item>
+    </string-array>
+</resources>
