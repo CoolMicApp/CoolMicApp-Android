@@ -2,6 +2,7 @@ package com.vorbisdemo;
 
 public class CoolMic {
     int id;
+    private String artist = "";
     private String title = "";
     private String generalUsername = "";
     private String servername = "";
@@ -27,10 +28,11 @@ public class CoolMic {
            this.generalUsername = generalUsername;
       }*/
     // constructor
-    public CoolMic(int id, String title, String generalUsername, String servername, String mountpoint,
+    public CoolMic(int id, String title, String artist, String generalUsername, String servername, String mountpoint,
                    String username, String password, String sampleRate, String channels, String quality, String termCondition) {
         this.id = id;
         this.title = title;
+        this.artist = artist;
         this.generalUsername = generalUsername;
         this.servername = servername;
         this.mountpoint = mountpoint;
@@ -43,9 +45,10 @@ public class CoolMic {
     }
 
     // constructor
-    public CoolMic(String title, String generalUsername, String servername, String mountpoint,
+    public CoolMic(String title, String artist, String generalUsername, String servername, String mountpoint,
                    String username, String password, String sampleRate, String channels, String quality, String termCondition) {
         this.title = title;
+        this.artist = artist;
         this.generalUsername = generalUsername;
         this.servername = servername;
         this.mountpoint = mountpoint;
@@ -81,6 +84,14 @@ public class CoolMic {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getArtist() {
+        return title;
+    }
+
+    public void setArtist(String title) {
+        this.artist = artist;
     }
 
     public String getGeneralUsername() {
