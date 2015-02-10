@@ -175,12 +175,18 @@ int startEncoding(JNIEnv *env, jclass *cls_ptr, jlong *sampleRate_ptr, jlong *ch
 
     startEncodeFeed(env, &encoderDataFeed, &startMethodId);
 
+    const char *metaTitle = (*env)->GetStringUTFChars(env, title, 0);
+    const char *metaArtist = (*env)->GetStringUTFChars(env, artist, 0);
+
     /* add a comment */
     __android_log_print(ANDROID_LOG_DEBUG, "VorbisEncoder", "Adding comments");
     vorbis_comment_init(&vc);
     vorbis_comment_add_tag(&vc,"ENCODER","JNIVorbisEncoder");
-    vorbis_comment_add_tag(&vc,"TITLE","TEST TITLE");
-    vorbis_comment_add_tag(&vc,"ARTIST","TEST ARTIST");
+    vorbis_comment_add_tag(&vc,"TITLE", metaTitle);
+    vorbis_comment_add_tag(&vc,"ARTIST", metaArtist);
+
+    (*env)->ReleaseStringUTFChars(env, title, metaTitle);
+    (*env)->ReleaseStringUTFChars(env, artist, metaArtist);
 
     /* set up the analysis state and auxiliary encoding storage */
     vorbis_analysis_init(&vd,&vi);
