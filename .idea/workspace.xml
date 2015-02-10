@@ -18,16 +18,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1c11d237-ab3e-42b5-9d93-8a35ca473366" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/coolmic.iml" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/app/src/main/jniLibs/armeabi/libogg.so" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/app/src/main/jniLibs/armeabi/libvorbis-jni.so" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/app/src/main/jniLibs/armeabi/libvorbis.so" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/build.gradle" afterPath="$PROJECT_DIR$/app/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/local.properties" afterPath="$PROJECT_DIR$/local.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="a18a0d53-25c2-4fd9-8f0c-3e46db846739" name="Initial AS Commit" comment="" />
@@ -1042,7 +1036,15 @@
       <created>1423591270021</created>
       <updated>1423591270021</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="General IDE Specific Changes">
+      <created>1423600336599</created>
+      <updated>1423600336599</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Android Studio Specific NDK Changes">
+      <created>1423600359641</created>
+      <updated>1423600359641</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1098,7 +1100,9 @@
     </option>
     <MESSAGE value="Initial Android Studio Import" />
     <MESSAGE value="Fixed ndk building" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed ndk building" />
+    <MESSAGE value="General IDE Specific Changes" />
+    <MESSAGE value="Android Studio Specific NDK Changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Android Studio Specific NDK Changes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
