@@ -62,7 +62,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     void addCoolMicSetting(CoolMic coolmic) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_ARTIST, coolmic.getTitle());                        //
+        values.put(KEY_ARTIST, coolmic.getArtist());                        //
         values.put(KEY_TITLE, coolmic.getTitle());                        //
         values.put(KEY_GENERAL_USERNAME, coolmic.getGeneralUsername());  // 
         values.put(KEY_SERVERNAME, coolmic.getServerName());             // 
@@ -80,8 +80,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Getting single contact
     CoolMic getCoolMicDetails(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_COOLMIC, new String[]{KEY_ID, KEY_ARTIST,
-                        KEY_TITLE, KEY_GENERAL_USERNAME, KEY_SERVERNAME, KEY_MOUNTPOINT, KEY_USERNAME,
+        Cursor cursor = db.query(TABLE_COOLMIC, new String[]{KEY_ID, KEY_TITLE, KEY_ARTIST,
+                        KEY_GENERAL_USERNAME, KEY_SERVERNAME, KEY_MOUNTPOINT, KEY_USERNAME,
                         KEY_PASSWORD, KEY_SAMPLERATE, KEY_CHANNELS, KEY_QUALITY, TERM_CONDITION}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
@@ -98,7 +98,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public int updateCoolMicDetails(CoolMic coolmic) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_ARTIST, coolmic.getTitle());                       //
+        values.put(KEY_ARTIST, coolmic.getArtist());                       //
         values.put(KEY_TITLE, coolmic.getTitle());                       // 
         values.put(KEY_GENERAL_USERNAME, coolmic.getGeneralUsername());  // 
         values.put(KEY_SERVERNAME, coolmic.getServerName());             // 
