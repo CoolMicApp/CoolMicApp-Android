@@ -259,7 +259,7 @@ public class MainActivity extends Activity {
             db.updateCoolMicDetails(coolmic);
             coolmic = db.getCoolMicDetails(1);
         } else {
-            db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "44100", "1", "-0.1", "false"));
+            db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "", "44100", "1", "-0.1", "false"));
             CoolMic cm = db.getCoolMicDetails(1);
             String log = "Id: " + cm.getID() + " ,title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername() + ", servername: " + cm.getServerName() + " , mountpoint: " + cm.getMountpoint() + ", username: " + cm.getUsername() + ", password: " + cm.getPassword() + ", sampleRate: " + cm.getSampleRate() + ", channels: " + cm.getChannels() + ", quality: " + cm.getQuality() + ", termCondition: " + cm.getTermCondition();
             Log.d("VS", log);
