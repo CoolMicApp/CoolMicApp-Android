@@ -118,6 +118,16 @@ public class VorbisRecorder {
     private final AtomicReference<RecorderState> currentState = new AtomicReference<RecorderState>(RecorderState.STOPPED);
 
     /**
+     * Title metadata
+     */
+    private String metaTitle;
+
+    /**
+     * Artist metadata
+     */
+    private String metaArtist;
+
+    /**
      * Helper class that implements {@link EncodeFeed} that will write the processed vorbis data to a file and will
      * read raw PCM data from an {@link AudioRecord}
      */
@@ -384,7 +394,7 @@ public class VorbisRecorder {
      * @param fileToSaveTo  the file to save to
      * @param recordHandler the handler for receiving status updates about the recording process
      */
-    public VorbisRecorder(File fileToSaveTo, Handler recordHandler) {
+    public VorbisRecorder(File fileToSaveTo, Handler recordHandler, String title, String artist) {
         if (fileToSaveTo == null) {
             throw new IllegalArgumentException("File to play must not be null.");
         }
@@ -396,6 +406,8 @@ public class VorbisRecorder {
 
         this.encodeFeed = new FileEncodeFeed(fileToSaveTo);
         this.recordHandler = recordHandler;
+        this.metaTitle = title;
+        this.metaArtist = artist;
     }
 
     /**
@@ -404,13 +416,15 @@ public class VorbisRecorder {
      * @param streamToWriteTo the output stream to write the encoded information to
      * @param recordHandler   the handler for receiving status updates about the recording process
      */
-    public VorbisRecorder(OutputStream streamToWriteTo, Handler recordHandler) {
+    public VorbisRecorder(OutputStream streamToWriteTo, Handler recordHandler, String title, String artist) {
         if (streamToWriteTo == null) {
             throw new IllegalArgumentException("File to play must not be null.");
         }
 
         this.encodeFeed = new OutputStreamEncodeFeed(streamToWriteTo);
         this.recordHandler = recordHandler;
+        this.metaTitle = title;
+        this.metaArtist = artist;
     }
 
     /**
@@ -506,10 +520,10 @@ public class VorbisRecorder {
             int result = 0;
             switch (recordingType) {
                 case WITH_BITRATE:
-                    result = VorbisEncoder.startEncodingWithBitrate(sampleRate, numberOfChannels, bitrate, encodeFeed);
+                    result = VorbisEncoder.startEncodingWithBitrate(sampleRate, numberOfChannels, bitrate, encodeFeed, metaTitle, metaArtist);
                     break;
                 case WITH_QUALITY:
-                    result = VorbisEncoder.startEncodingWithQuality(sampleRate, numberOfChannels, quality, encodeFeed);
+                    result = VorbisEncoder.startEncodingWithQuality(sampleRate, numberOfChannels, quality, encodeFeed, metaTitle, metaArtist);
                     break;
             }
             switch (result) {
