@@ -26,7 +26,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_SAMPLERATE = "samplerate";
     private static final String KEY_CHANNELS = "channel";
     private static final String KEY_QUALITY = "quality";
-    private static final String TERM_CONDITION = "false";
+    private static final String TERM_CONDITION = "termcondition";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
