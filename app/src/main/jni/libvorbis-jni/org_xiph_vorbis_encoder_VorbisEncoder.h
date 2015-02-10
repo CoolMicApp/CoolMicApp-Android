@@ -26,15 +26,15 @@ long readPCMDataFromEncoderDataFeed(JNIEnv *env, jobject* encoderDataFeed, jmeth
 int writeVorbisDataToEncoderDataFeed(JNIEnv *env, jobject* encoderDataFeed, jmethodID* writeVorbisDataMethodId, char* buffer, int bytes, jbyteArray* jByteArrayWriteBuffer);
 
 //Method to start encoding
-int startEncoding(JNIEnv *env, jclass *cls_ptr, jlong *sampleRate_ptr, jlong *channels_ptr, jfloat *quality_ptr, jlong *bitrate_ptr, jobject *encoderDataFeed_ptr, int type);
+int startEncoding(JNIEnv *env, jclass *cls_ptr, jlong *sampleRate_ptr, jlong *channels_ptr, jfloat *quality_ptr, jlong *bitrate_ptr, jobject *encoderDataFeed_ptr, jstring title, jstring artist, int type);
 
 //jni method for encoding with quality
 JNIEXPORT int JNICALL Java_org_xiph_vorbis_encoder_VorbisEncoder_startEncodingWithQuality
-(JNIEnv *env, jclass cls, jlong sampleRate, jlong channels, jfloat quality, jobject encoderDataFeed);
+(JNIEnv *env, jclass cls, jlong sampleRate, jlong channels, jfloat quality, jobject encoderDataFeed, jstring title, jstring artist);
 
 //jni method for encoding with bitrate
 JNIEXPORT int JNICALL Java_org_xiph_vorbis_encoder_VorbisEncoder_startEncodingWithBitrate
-(JNIEnv *env, jclass cls, jlong sampleRate, jlong channels, jlong bitrate, jobject encoderDataFeed);
+(JNIEnv *env, jclass cls, jlong sampleRate, jlong channels, jlong bitrate, jobject encoderDataFeed, jstring title, jstring artist);
 #ifdef __cplusplus
 }
 #endif
