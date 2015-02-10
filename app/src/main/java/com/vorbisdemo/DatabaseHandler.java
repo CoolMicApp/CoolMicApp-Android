@@ -13,7 +13,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "COLDATA";
     // Contacts table name
-    private static final String TABLE_CONTACTS = "COOLMIC";
+    private static final String TABLE_COOLMIC = "COOLMIC";
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
@@ -34,21 +34,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_CONTACTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CONTACTS + "("
+        String CREATE_COOLMIC_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COOLMIC + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TITLE + " TEXT,"
                 + KEY_GENERAL_USERNAME + " TEXT," + KEY_SERVERNAME + " TEXT,"
                 + KEY_MOUNTPOINT + " TEXT," + KEY_USERNAME + " TEXT,"
                 + KEY_PASSWORD + " TEXT," + KEY_SAMPLERATE + " TEXT,"
                 + KEY_CHANNELS + " TEXT," + KEY_QUALITY + " TEXT,"
                 + TERM_CONDITION + " TEXT" + ")";
-        db.execSQL(CREATE_CONTACTS_TABLE);
+        db.execSQL(CREATE_COOLMIC_TABLE);
     }
 
     // Upgrading database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed 
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COOLMIC);
         // Create tables again
         onCreate(db);
     }
@@ -71,14 +71,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_CHANNELS, coolmic.getChannels());                 // 
         values.put(KEY_QUALITY, coolmic.getQuality());                  // 
         values.put(TERM_CONDITION, coolmic.getTermCondition());           // 
-        db.insert(TABLE_CONTACTS, null, values);                        // 
+        db.insert(TABLE_COOLMIC, null, values);                        //
         db.close();                                                     //
     }
 
     // Getting single contact
     CoolMic getCoolMicDetails(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_CONTACTS, new String[]{KEY_ID,
+        Cursor cursor = db.query(TABLE_COOLMIC, new String[]{KEY_ID,
                         KEY_TITLE, KEY_GENERAL_USERNAME, KEY_SERVERNAME, KEY_MOUNTPOINT, KEY_USERNAME,
                         KEY_PASSWORD, KEY_SAMPLERATE, KEY_CHANNELS, KEY_QUALITY, TERM_CONDITION}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
@@ -106,14 +106,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_QUALITY, coolmic.getQuality());                   //  
         values.put(TERM_CONDITION, coolmic.getTermCondition());
         // updating row 
-        return db.update(TABLE_CONTACTS, values, KEY_ID + " = ?",
+        return db.update(TABLE_COOLMIC, values, KEY_ID + " = ?",
                 new String[]{String.valueOf(coolmic.getID())});
     }
 
     // Deleting single contact 
-    public void deleteContact(CoolMic coolmic) {
+    public void deleteCoolMic(CoolMic coolmic) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
+        db.delete(TABLE_COOLMIC, KEY_ID + " = ?",
                 new String[]{String.valueOf(coolmic.getID())});
         db.close();
     }
@@ -121,7 +121,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Getting contacts Count 
     public int getCoolMicSettingCount() {
         int count = 0;
-        String countQuery = "SELECT  * FROM " + TABLE_CONTACTS;
+        String countQuery = "SELECT  * FROM " + TABLE_COOLMIC;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         if (cursor != null && !cursor.isClosed()) {
