@@ -179,6 +179,8 @@ int startEncoding(JNIEnv *env, jclass *cls_ptr, jlong *sampleRate_ptr, jlong *ch
     __android_log_print(ANDROID_LOG_DEBUG, "VorbisEncoder", "Adding comments");
     vorbis_comment_init(&vc);
     vorbis_comment_add_tag(&vc,"ENCODER","JNIVorbisEncoder");
+    vorbis_comment_add_tag(&vc,"TITLE","TEST TITLE");
+    vorbis_comment_add_tag(&vc,"ARTIST","TEST ARTIST");
 
     /* set up the analysis state and auxiliary encoding storage */
     vorbis_analysis_init(&vd,&vi);
