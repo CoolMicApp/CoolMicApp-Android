@@ -184,10 +184,11 @@ public class general extends Activity {
 
         // newSetting=CoolMicSetting.getInstance();
         EditText title_edittext = (EditText) findViewById(R.id.title_edittext);
-        EditText general_username_edittext = (EditText) findViewById(R.id.general_username_edittext);
+
+        EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
 
         title_edittext.setText(coolmic.getTitle());
-        general_username_edittext.setText(coolmic.getGeneralUsername());
+        artist_edittext.setText(coolmic.getArtist());
 
         title_edittext.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
@@ -204,7 +205,7 @@ public class general extends Activity {
             }
         });
 
-        general_username_edittext.addTextChangedListener(new TextWatcher() {
+        artist_edittext.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 flag = true;
             }
@@ -224,11 +225,11 @@ public class general extends Activity {
     public void saveGeneral(@SuppressWarnings("unused") View view) {
         flag = false;
         EditText title_edittext = (EditText) findViewById(R.id.title_edittext);
-        EditText general_username_edittext = (EditText) findViewById(R.id.general_username_edittext);
+        EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
         String title = title_edittext.getText().toString();
-        String general_username = general_username_edittext.getText().toString();
+        String artist = artist_edittext.getText().toString();
 
-        coolmic.setGeneralUsername(general_username);
+        coolmic.setArtist(artist);
         coolmic.setTitle(title);
 
         if (db.updateCoolMicDetails(coolmic) == 1) {
@@ -246,11 +247,11 @@ public class general extends Activity {
 
     public void saveGeneralNavigation() {
         EditText title_edittext = (EditText) findViewById(R.id.title_edittext);
-        EditText general_username_edittext = (EditText) findViewById(R.id.general_username_edittext);
+        EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
         String title = title_edittext.getText().toString();
-        String general_username = general_username_edittext.getText().toString();
+        String artist = artist_edittext.getText().toString();
 
-        coolmic.setGeneralUsername(general_username);
+        coolmic.setArtist(artist);
         coolmic.setTitle(title);
         if (db.updateCoolMicDetails(coolmic) == 1) {
             Toast.makeText(getApplicationContext(), "General settings saved!", Toast.LENGTH_LONG).show();
