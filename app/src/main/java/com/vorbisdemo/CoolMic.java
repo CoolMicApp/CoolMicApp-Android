@@ -87,10 +87,10 @@ public class CoolMic {
     }
 
     public String getArtist() {
-        return title;
+        return artist;
     }
 
-    public void setArtist(String title) {
+    public void setArtist(String artist) {
         this.artist = artist;
     }
 
