@@ -24,7 +24,7 @@ public class VorbisEncoder {
      * @param quality          the quality to encode the output vorbis data
      * @param encodeFeed       the custom encoder feed
      */
-    public static native int startEncodingWithQuality(long sampleRate, long numberOfChannels, float quality, EncodeFeed encodeFeed);
+    public static native int startEncodingWithQuality(long sampleRate, long numberOfChannels, float quality, EncodeFeed encodeFeed, String title, String artist);
 
     /**
      * The native JNI method call to the encoder to start encoding raw pcm data to encoded vorbis data
@@ -34,5 +34,5 @@ public class VorbisEncoder {
      * @param bitrate          the bitrate of the output vorbis data
      * @param encodeFeed       the custom encoder feed
      */
-    public static native int startEncodingWithBitrate(long sampleRate, long numberOfChannels, long bitrate, EncodeFeed encodeFeed);
+    public static native int startEncodingWithBitrate(long sampleRate, long numberOfChannels, long bitrate, EncodeFeed encodeFeed, String title, String artist);
 }
