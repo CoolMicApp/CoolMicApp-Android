@@ -16,6 +16,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_COOLMIC = "COOLMIC";
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
+    private static final String KEY_ARTIST = "artist";
     private static final String KEY_TITLE = "title";
     private static final String KEY_GENERAL_USERNAME = "generalUsername";
     private static final String KEY_SERVERNAME = "servername";
@@ -35,7 +36,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_COOLMIC_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COOLMIC + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TITLE + " TEXT,"
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TITLE + " TEXT," + KEY_ARTIST + " TEXT,"
                 + KEY_GENERAL_USERNAME + " TEXT," + KEY_SERVERNAME + " TEXT,"
                 + KEY_MOUNTPOINT + " TEXT," + KEY_USERNAME + " TEXT,"
                 + KEY_PASSWORD + " TEXT," + KEY_SAMPLERATE + " TEXT,"
@@ -61,6 +62,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     void addCoolMicSetting(CoolMic coolmic) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(KEY_ARTIST, coolmic.getTitle());                        //
         values.put(KEY_TITLE, coolmic.getTitle());                        //
         values.put(KEY_GENERAL_USERNAME, coolmic.getGeneralUsername());  // 
         values.put(KEY_SERVERNAME, coolmic.getServerName());             // 
@@ -78,7 +80,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Getting single contact
     CoolMic getCoolMicDetails(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_COOLMIC, new String[]{KEY_ID,
+        Cursor cursor = db.query(TABLE_COOLMIC, new String[]{KEY_ID, KEY_ARTIST,
                         KEY_TITLE, KEY_GENERAL_USERNAME, KEY_SERVERNAME, KEY_MOUNTPOINT, KEY_USERNAME,
                         KEY_PASSWORD, KEY_SAMPLERATE, KEY_CHANNELS, KEY_QUALITY, TERM_CONDITION}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
@@ -95,6 +97,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public int updateCoolMicDetails(CoolMic coolmic) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(KEY_ARTIST, coolmic.getTitle());                       //
         values.put(KEY_TITLE, coolmic.getTitle());                       // 
         values.put(KEY_GENERAL_USERNAME, coolmic.getGeneralUsername());  // 
         values.put(KEY_SERVERNAME, coolmic.getServerName());             // 
