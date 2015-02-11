@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import org.xiph.vorbis.player.VorbisPlayer;
 import org.xiph.vorbis.recorder.VorbisRecorder;
+import com.gmail.kunicins.olegs.libshout.Libshout;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -64,10 +65,9 @@ public class MainActivity extends Activity {
     boolean isThreadOn = false;
     DataOutputStream dos;
     String hostname = "giss.tv";
-    OutputStream out;
     PrintWriter output = null;
     BufferedReader reader = null;
-    Socket s = null;
+    Libshout icecast = null;
     //Setting newSetting;
     // CoolMicSetting newSetting;
     DatabaseHandler db;
@@ -231,7 +231,6 @@ public class MainActivity extends Activity {
             imageView1.getLayoutParams().height = 180;
         }
 
-
         animation.setDuration(500); // duration - half a second
         animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
         animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
@@ -242,6 +241,7 @@ public class MainActivity extends Activity {
         logArea = (TextView) findViewById(R.id.log_area);
         logArea.setMovementMethod(new ScrollingMovementMethod());
         setLoggingHandlers();
+
         db = new DatabaseHandler(this);
         if (db.getCoolMicSettingCount() >= 1) {
             coolmic = db.getCoolMicDetails(1);
@@ -377,14 +377,9 @@ public class MainActivity extends Activity {
                     start_button.setBackground(buttonColor);
                     start_button.setText("Start Broadcast");
                     if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-                        try {
-                            isThreadOn = false;
-                            vorbisRecorder.stop();
-                            s.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Log.e("VS", "IOException", e);
-                        }
+                        isThreadOn = false;
+                        vorbisRecorder.stop();
+                        icecast.close();
                     }
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
@@ -423,58 +418,29 @@ public class MainActivity extends Activity {
                                     Log.d("VS", port_num.toString());
                                     String username = coolmic.getUsername();
                                     String password = coolmic.getPassword();
-                                    String auth = username + ":" + password;
-                                    auth = username + ":" + password;
                                     String mountpoint = coolmic.getMountpoint();
                                     String sampleRate_string = coolmic.getSampleRate();
                                     String channel_string = coolmic.getChannels();
                                     String quality_string = coolmic.getQuality();
                                     String title = coolmic.getTitle();
                                     String artist = coolmic.getArtist();
-                                    String generalUsername = coolmic.getGeneralUsername();
                                     Log.d("VS", server + " " + server + " " + port_num.toString() + " " + username + " " + password + "\n " + mountpoint + "" +
                                             " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
-                                    byte[] data = null;
-                                    try {
-                                        data = auth.getBytes("UTF-8");
-                                    } catch (UnsupportedEncodingException e1) {
-                                        e1.printStackTrace();
-                                    }
-                                    String authString = Base64.encodeToString(data, Base64.NO_WRAP);
-                                    s = new Socket(server, port_num);
-                                    Log.d("VS", "Socket Created");
-                                    out = new BufferedOutputStream(new DataOutputStream(s.getOutputStream()));
-                                    Log.d("VS", "Output Stream Established");
-                                    output = new PrintWriter(out);
-                                    Log.d("VS", "Send Header");
-                                    output.println("SOURCE /" + mountpoint + " ICE/1.0");
-                                    output.println("Authorization: Basic " + authString);
-                                    output.println("ice-name:" + title);
-                                    output.println("ice-title:" + title);
-                                    output.println("ice-artist:" + generalUsername);
-                                    output.println("ice-url:echonet.cc");
-                                    output.println("ice-username:" + generalUsername);
-                                    output.println("ice-user:" + generalUsername);
-                                    output.println("content-type: application/x-ogg");
-                                    output.println("User-Agent: Cool Mic App");
-                                    output.println("ice-private: 0");
-                                    output.println("ice-public: 1");
-                                    output.println("ice-audio-info: ice-samplerate=" + sampleRate_string + "ice-quality=" + quality_string + ";ice-channels=" + channel_string);
-                                    output.println("ice-audio-info: ice-samplerate=8000;ice-bitrate=128;ice-channels=2");
-                                    output.println("\r\n");
-                                    output.println("\n");
-                                    output.flush();
-                                    Log.d("VS", "Header sent");
-                                    reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                                    for (String line; (line = reader.readLine()) != null; ) {
-                                        if (line.equals("")) break;
-                                        Log.d("VS", "Responce From Server");
-                                        Log.d("VS", line);
-                                    }
+
+                                    icecast = new Libshout();
+                                    icecast.setHost(server);
+                                    icecast.setPort(port_num);
+                                    icecast.setProtocol(Libshout.PROTOCOL_HTTP);
+                                    icecast.setUser(username);
+                                    icecast.setPassword(password);
+                                    icecast.setMount("/"+mountpoint);
+                                    icecast.setFormat(Libshout.FORMAT_OGG);
+                                    icecast.open();
+
                                     if (vorbisRecorder == null || vorbisRecorder.isStopped()) {
                                         if (vorbisRecorder == null) {
                                             Log.d("VS", "Before recorder initilize");
-                                            vorbisRecorder = new VorbisRecorder(out, recordingHandler, title, artist);
+                                            vorbisRecorder = new VorbisRecorder(icecast, recordingHandler, title, artist);
                                         }
                                         long sampleRate = Long.parseLong(coolmic.getSampleRate());
                                         long channels = Long.parseLong(coolmic.getChannels());
@@ -515,14 +481,9 @@ public class MainActivity extends Activity {
         start_button.setBackground(buttonColor);
         start_button.setText("Start Broadcast");
         if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-            try {
-                isThreadOn = false;
-                vorbisRecorder.stop();
-                s.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("VS", "IOException", e);
-            }
+            isThreadOn = false;
+            vorbisRecorder.stop();
+            icecast.close();
         }
         Intent i = new Intent(MainActivity.this, MainActivity.class);
         startActivity(i);
