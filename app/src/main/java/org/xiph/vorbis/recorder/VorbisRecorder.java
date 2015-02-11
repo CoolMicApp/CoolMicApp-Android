@@ -535,6 +535,8 @@ public class VorbisRecorder {
      *
      * @param streamToWriteTo the output stream to write the encoded information to
      * @param recordHandler   the handler for receiving status updates about the recording process
+     * @param title the title which should appear in the stream
+     * @param artist the artist which should appear in the stream
      */
     public VorbisRecorder(OutputStream streamToWriteTo, Handler recordHandler, String title, String artist) {
         if (streamToWriteTo == null) {
@@ -552,14 +554,18 @@ public class VorbisRecorder {
      *
      * @param encodeFeed    the custom {@link EncodeFeed}
      * @param recordHandler the handler for receiving status updates about the recording process
+     * @param title the title which should appear in the stream
+     * @param artist the artist which should appear in the stream
      */
-    public VorbisRecorder(EncodeFeed encodeFeed, Handler recordHandler, String title) {
+    public VorbisRecorder(EncodeFeed encodeFeed, Handler recordHandler, String title, String artist) {
         if (encodeFeed == null) {
             throw new IllegalArgumentException("Encode feed must not be null.");
         }
 
         this.encodeFeed = encodeFeed;
         this.recordHandler = recordHandler;
+        this.metaTitle = title;
+        this.metaArtist = artist;
     }
 
     /**
@@ -567,6 +573,8 @@ public class VorbisRecorder {
      *
      * @param shout    the custom {@link EncodeFeed}
      * @param recordHandler the handler for receiving status updates about the recording process
+     * @param title the title which should appear in the stream
+     * @param artist the artist which should appear in the stream
      */
     public VorbisRecorder(Libshout shout, Handler recordHandler, String title, String artist) {
         if (shout == null) {
