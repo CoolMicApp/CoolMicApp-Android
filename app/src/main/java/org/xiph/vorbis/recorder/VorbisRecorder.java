@@ -6,6 +6,9 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
+
+import com.gmail.kunicins.olegs.libshout.Libshout;
+
 import org.xiph.vorbis.encoder.EncodeFeed;
 import org.xiph.vorbis.encoder.VorbisEncoder;
 
@@ -389,6 +392,123 @@ public class VorbisRecorder {
     }
 
     /**
+     * Helper class that implements {@link EncodeFeed} that will write the processed vorbis data to an libshout instance
+     * and will read raw PCM data from an {@link AudioRecord}
+     */
+    private class LibShoutEncodeFeed implements EncodeFeed {
+        /**
+         * The output stream to write the vorbis data to
+         */
+        private Libshout shout;
+
+        /**
+         * The audio recorder to pull raw pcm data from
+         */
+        private AudioRecord audioRecorder;
+
+        /**
+         * Constructs a file encode feed to write the encoded vorbis output to
+         *
+         * @param shout the {@link Libshout} to write the encoded information to
+         */
+        public LibShoutEncodeFeed(Libshout shout) {
+            if (shout == null) {
+                throw new IllegalArgumentException("The libshout object must not be null");
+            }
+            this.shout = shout;
+        }
+
+        @Override
+        public long readPCMData(byte[] pcmDataBuffer, int amountToRead) {
+            //If we are no longer recording, return 0 to let the native encoder know
+            if (isStopped() || isStopping()) {
+                return 0;
+            }
+
+            //Otherwise read from the audio recorder
+            int read = audioRecorder.read(pcmDataBuffer, 0, amountToRead);
+            switch (read) {
+                case AudioRecord.ERROR_INVALID_OPERATION:
+                    Log.e(TAG, "Invalid operation on AudioRecord object");
+                    return 0;
+                case AudioRecord.ERROR_BAD_VALUE:
+                    Log.e(TAG, "Invalid value returned from audio recorder");
+                    return 0;
+                case -1:
+                    return 0;
+                default:
+                    //Successfully read from audio recorder
+                    return read;
+            }
+        }
+
+        @Override
+        public int writeVorbisData(byte[] vorbisData, int amountToWrite) {
+            //If we have data to write and we are recording, write the data
+            if (vorbisData != null && amountToWrite > 0 && shout != null && !isStopped()) {
+                try {
+                    //Write the data to the output stream
+                    shout.send(vorbisData, amountToWrite);
+                    return amountToWrite;
+                } catch (IOException e) {
+                    //Failed to write to the file
+                    Log.e(TAG, "Failed to write data to file, stopping recording", e);
+                    stop();
+                }
+            }
+            //Otherwise let the native encoder know we are done
+            return 0;
+        }
+
+        @Override
+        public void stop() {
+            recordHandler.sendEmptyMessage(STOP_ENCODING);
+
+            if (isRecording() || isStopping()) {
+                //Set our state to stopped
+                currentState.set(RecorderState.STOPPED);
+
+                //Close the output stream
+                if (shout != null) {
+                    shout.close();
+                    shout = null;
+                }
+
+                //Stop and clean up the audio recorder
+                if (audioRecorder != null) {
+                    audioRecorder.stop();
+                    audioRecorder.release();
+                }
+            }
+        }
+
+        @Override
+        public void stopEncoding() {
+            if (isRecording()) {
+                //Set our state to stopped
+                currentState.set(RecorderState.STOPPING);
+            }
+        }
+
+        @Override
+        public void start() {
+            if (isStopped()) {
+                recordHandler.sendEmptyMessage(START_ENCODING);
+
+                //Creates the audio recorder
+                int channelConfiguration = numberOfChannels == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO;
+                int bufferSize = AudioRecord.getMinBufferSize((int) sampleRate, channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
+                audioRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, (int) sampleRate, channelConfiguration, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+
+                //Start recording
+                currentState.set(RecorderState.RECORDING);
+                audioRecorder.startRecording();
+            }
+        }
+    }
+
+
+    /**
      * Constructs a recorder that will record an ogg file
      *
      * @param fileToSaveTo  the file to save to
@@ -433,13 +553,30 @@ public class VorbisRecorder {
      * @param encodeFeed    the custom {@link EncodeFeed}
      * @param recordHandler the handler for receiving status updates about the recording process
      */
-    public VorbisRecorder(EncodeFeed encodeFeed, Handler recordHandler) {
+    public VorbisRecorder(EncodeFeed encodeFeed, Handler recordHandler, String title) {
         if (encodeFeed == null) {
             throw new IllegalArgumentException("Encode feed must not be null.");
         }
 
         this.encodeFeed = encodeFeed;
         this.recordHandler = recordHandler;
+    }
+
+    /**
+     * Constructs a vorbis recorder with a custom {@link EncodeFeed}
+     *
+     * @param shout    the custom {@link EncodeFeed}
+     * @param recordHandler the handler for receiving status updates about the recording process
+     */
+    public VorbisRecorder(Libshout shout, Handler recordHandler, String title, String artist) {
+        if (shout == null) {
+            throw new IllegalArgumentException("Libshout object must not be null.");
+        }
+
+        this.encodeFeed = new LibShoutEncodeFeed(shout);
+        this.recordHandler = recordHandler;
+        this.metaTitle = title;
+        this.metaArtist = artist;
     }
 
     /**
