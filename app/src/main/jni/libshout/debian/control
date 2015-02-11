@@ -1,0 +1,35 @@
+Source: libshout
+Section: libs
+Priority: optional
+Maintainer: Keegan Quinn <ice@thebasement.org>
+Build-Depends: cdbs, d-shlibs (>= 0.18), debhelper (>= 4.1.0), dh-buildinfo, libogg-dev (>> 1.0.0), libvorbis-dev (>> 1.0.0), pkg-config
+Uploaders: Jonas Smedegaard <dr@jones.dk>
+Standards-Version: 3.6.0
+
+Package: libshout3-dev
+Section: libdevel
+Architecture: any
+Depends: libshout3 (= ${Source-Version}), ${devlibs:Depends}, pkg-config
+Description: MP3/Ogg Vorbis broadcast streaming library (development)
+ A library for communicating with and sending data to Icecast and Icecast 2
+ streaming audio servers.  It handles the socket connection, the timing of
+ the data transmission, and prevents bad data from getting to the server.
+ .
+ With just a few lines of code, a programmer can easily turn any application
+ into a streaming source for an Icecast-based server.  Libshout also allows
+ developers who want a specific feature set (database access, request taking)
+ to concentrate on that feature set, instead of worrying about how server
+ communication works.
+ .
+ This package contains the development headers, static libraries, and source
+ code to an example program.
+
+Package: libshout3
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: MP3/Ogg Vorbis broadcast streaming library
+ A library for communicating with and sending data to Icecast and Icecast 2
+ streaming audio servers.  It handles the socket connection, the timing of
+ the data transmission, and prevents bad data from getting to the server.
+

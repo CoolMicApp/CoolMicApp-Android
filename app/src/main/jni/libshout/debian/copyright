@@ -1,0 +1,16 @@
+This package was debianized by Keegan Quinn <ice@thebasement.org> on
+Sat, 15 Mar 2003 00:13:34 -0800.
+
+It was retrieved from http://icecast.org/files/libshout/.
+
+Upstream Authors: the icecast team <team@icecast.org>
+
+Copyright (c) 1999, 2000, 2001, 2002, 2003 the icecast team
+
+The shout library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public License
+(LGPL) as published by the Free Software Foundation; either version
+2 of the License, or (at your option) any later version.
+
+The license text is contained in /usr/share/common-licenses/LGPL.
+

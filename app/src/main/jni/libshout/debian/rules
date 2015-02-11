@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+binary-post-install/libshout3-dev::
+	# Automatically calculate development package dependancies
+	d-devlibdeps debian/libshout3-dev.substvars debian/tmp/usr/lib/libshout.so.3
+
+	# Store build information
+	dh_buildinfo
+

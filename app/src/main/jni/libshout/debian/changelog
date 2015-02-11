@@ -1,0 +1,139 @@
+libshout (2.0-7) unstable; urgency=low
+
+  * Removed cdbs/autotools-vars.mk, from cdbs CVS, because a new release
+    was made.
+
+ -- Keegan Quinn <ice@thebasement.org>  Sat,  2 Aug 2003 20:17:23 -0700
+
+libshout (2.0-6) unstable; urgency=low
+
+  * Now uses d-shlibs to automatically generate dependancies for 
+    the development package.  Added a Build-Dependancy to d-shlibs.
+    Thanks to Junichi Uekawa for quickly updating d-shlibs to
+    support libvorbis-dev.
+  * Added a 'watch' file to automate tracking of updates.
+  * Updated long descriptions with slightly more accurate text.
+  * Now uses dh-buildinfo to store information about the package build
+    environment.  Added a Build-Dependancy to dh-buildinfo.
+  * Thanks to Jonas Smedegaard for sponsoring this package, and 
+    providing many good suggestions.
+
+ -- Keegan Quinn <ice@thebasement.org>  Thu, 31 Jul 2003 06:09:05 +0000
+
+libshout (2.0-5) unstable; urgency=low
+
+  * Another sponsored upload...
+  * Use autotools-vars.mk from CVS to avoid cross-compiling on same
+    host.
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 20 Jul 2003 13:07:33 +0200
+
+libshout (2.0-4) unstable; urgency=low
+
+  * Configured debian/rules to use cdbs, and added the appropriate 
+    Build-Dependancy.
+
+ -- Keegan Quinn <ice@thebasement.org>  Sat, 19 Jul 2003 00:23:25 -0700
+
+libshout (2.0-3) unstable; urgency=low
+
+  * Rebuild with -sa to forcefully include source. Also, this (still)
+    closes: Bug#185644.
+
+ -- Jonas Smedegaard <dr@jones.dk>  Fri, 18 Jul 2003 15:15:27 +0200
+
+libshout (2.0-2) unstable; urgency=low
+
+  * Sponsored upload on behalf of keegan (splendid packaging - looking
+    forward to see you in Debian soon!).
+  * Keep Maintainer field, but add myself as uploader.
+  * Bump up standards-version to 3.6.0 (no changes needed).
+  * Only provide --host to configure if different from --build, to avoid
+    cross-compiling on same arch (as recommended by autotools-dev
+    README-Debian).
+  * Include shout.m4 and example.c in -dev package.
+
+ -- Jonas Smedegaard <dr@jones.dk>  Fri, 18 Jul 2003 14:37:39 +0200
+
+libshout (2.0-1) unstable; urgency=low
+
+  * Added pkg-config Dependancy and Build-Dependancy, fixing an
+    FTBFS error which made the -dev package unusable.
+  * This version should be fully suitable for entering Debian.  
+    (Closes: #185644)
+
+ -- Keegan Quinn <ice@thebasement.org>  Mon, 14 Jul 2003 16:36:50 -0700
+
+libshout (2.0-0.1) unstable; urgency=low
+
+  * Final upstream release!
+
+ -- Keegan Quinn <ice@thebasement.org>  Mon, 14 Jul 2003 15:00:13 -0700
+
+libshout (1.9+2.0alphacvs030704-0.1) unstable; urgency=low
+
+  * Constructed a build script to completely automate the construction
+    of the 'pristine' tarball from CVS.  This doesn't really effect the
+    contents of the package, just makes it easier for me to rebuild.
+  * New CVS source.
+  * Included /usr/lib/pkgconfig/shout.pc for pkg-config support, newly
+    added upstream.
+
+ -- Keegan Quinn <ice@thebasement.org>  Fri,  4 Jul 2003 02:42:54 -0700
+
+libshout (0.00.cvs030403-0.1) unstable; urgency=low
+
+  * New CVS source.
+
+ -- Keegan Quinn <ice@thebasement.org>  Thu,  3 Apr 2003 16:11:46 -0800
+
+libshout (0.00.cvs030401-0.1) unstable; urgency=low
+
+  * New CVS source.
+  * Updated section to comply with new Debian main sections.
+
+ -- Keegan Quinn <ice@thebasement.org>  Tue,  1 Apr 2003 10:17:27 -0800
+
+libshout (0.00.cvs030327-0.1) unstable; urgency=low
+
+  * New CVS source.
+  * Added shared library symlink to the packaging, per a suggestion from
+    Timothy A Nowaczyk <zimage@upl.cs.wisc.edu>.
+  * Updated copyright file and control description, per suggestions from
+    Jack Moffitt <jack@xiph.org>.
+
+ -- Keegan Quinn <ice@thebasement.org>  Thu, 27 Mar 2003 11:43:32 -0800
+
+libshout (0.00.cvs030320-0.1) unstable; urgency=low
+
+  * New CVS source.
+  * Automated CVS original source creation.
+  * Fixed a bug regarding shared library symlinks being packaged.
+
+ -- Keegan Quinn <ice@thebasement.org>  Thu, 20 Mar 2003 11:46:48 -0800
+
+libshout (0.00.cvs030315-0.4) unstable; urgency=low
+
+  * Renamed development package according to library packinging guide,
+    general restructuring. 
+
+ -- Keegan Quinn <ice@thebasement.org>  Sun, 16 Mar 2003 01:49:53 -0800
+
+libshout (0.00.cvs030315-0.3) unstable; urgency=low
+
+  * Second attempt at correcting shared library dependancies.
+
+ -- Keegan Quinn <ice@thebasement.org>  Sun, 16 Mar 2003 00:50:35 -0800
+
+libshout (0.00.cvs030315-0.2) unstable; urgency=low
+
+  * Corrected shared library dependancies. 
+
+ -- Keegan Quinn <ice@thebasement.org>  Sun, 16 Mar 2003 00:24:22 -0800
+
+libshout (0.00.cvs030315-0.1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Keegan Quinn <ice@thebasement.org>  Sat, 15 Mar 2003 00:13:34 -0800
+
