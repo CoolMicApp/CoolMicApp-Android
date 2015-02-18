@@ -1,4 +1,5 @@
 package com.vorbisdemo;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,16 +27,17 @@ public class general extends Activity {
 	 //	CoolMicSetting newSetting;
 	 DatabaseHandler db;
 	 CoolMic coolmic;
-	 boolean flag=false;
+    boolean flag = false;
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-	  flag=false;
+        flag = false;
       MenuInflater inflater = getMenuInflater();
       inflater.inflate(R.menu.main_activity_menu, menu);
       menu.findItem(R.id.general_setting).setVisible(false);
       return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
       switch (item.getItemId()) {
@@ -73,7 +75,7 @@ public class general extends Activity {
  }
 	private void goHome() {
 		
-			if(flag){
+        if (flag) {
 				AlertDialog.Builder alertDialog = new AlertDialog.Builder(general.this);
 				alertDialog.setTitle("Save settings ?");
 				alertDialog.setMessage("Do you want to save settings ?");
@@ -86,7 +88,7 @@ public class general extends Activity {
 		            	}
 				});
 				alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog,int which) {
+                public void onClick(DialogInterface dialog, int which) {
 		            	saveGeneralNavigation();
 		        		Intent i = new Intent(general.this, MainActivity.class);
 		        		startActivity(i);
@@ -94,16 +96,17 @@ public class general extends Activity {
 		            }
 				});
 				alertDialog.show();			
-			}else{
+        } else {
 				Intent i = new Intent(general.this, MainActivity.class);
 				startActivity(i);	
 				finish();
 			}
  
 	}
+
 	private void generalSetting() {
 		 
-		if(flag){
+        if (flag) {
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(general.this);
 			alertDialog.setTitle("Save settings ?");
 			alertDialog.setMessage("Do you want to save settings ?");
@@ -116,7 +119,7 @@ public class general extends Activity {
 	            	}
 			});
 			alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog,int which) {
+                public void onClick(DialogInterface dialog, int which) {
 	            	saveGeneralNavigation();
 	        		Intent i = new Intent(general.this, general.class);
 	        		startActivity(i);
@@ -124,7 +127,7 @@ public class general extends Activity {
 	            }
 			});
 			alertDialog.show();			
-		}else{
+        } else {
 			Intent i = new Intent(general.this, general.class);
 			startActivity(i);		
 			finish();
@@ -134,7 +137,7 @@ public class general extends Activity {
 	private void audioSetting() {	
 		
 		
-		if(flag){
+        if (flag) {
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(general.this);
 			alertDialog.setTitle("Save settings ?");
 			alertDialog.setMessage("Do you want to save settings ?");
@@ -147,7 +150,7 @@ public class general extends Activity {
 	            	}
 			});
 			alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog,int which) {
+                public void onClick(DialogInterface dialog, int which) {
 	            	saveGeneralNavigation();
 	        		Intent i = new Intent(general.this, audio.class);
 	        		startActivity(i);
@@ -155,16 +158,17 @@ public class general extends Activity {
 	            }
 			});
 			alertDialog.show();			
-		}else{
+        } else {
 			Intent i = new Intent(general.this, audio.class);
 			startActivity(i);	
 			finish();
 		}
 
 	}
+
 	private void serverSetting() {
 		
-		if(flag){
+        if (flag) {
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(general.this);
 			alertDialog.setTitle("Save settings ?");
 			alertDialog.setMessage("Do you want to save settings ?");
@@ -177,7 +181,7 @@ public class general extends Activity {
 	            	}
 			});
 			alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog,int which) {
+                public void onClick(DialogInterface dialog, int which) {
 	            	saveGeneralNavigation();
 	        		Intent i = new Intent(general.this, server.class);
 	        		startActivity(i);
@@ -185,7 +189,7 @@ public class general extends Activity {
 	            }
 			});
 			alertDialog.show();			
-		}else{
+        } else {
 			Intent i = new Intent(general.this, server.class);
 			startActivity(i);	
 			finish();
@@ -203,7 +207,7 @@ public class general extends Activity {
 		 super.onCreate(savedInstanceState);
 		 setContentView(R.layout.setting);
 		 db = new DatabaseHandler(this);
-		 coolmic=db.getCoolMicDetails(1);
+        coolmic = db.getCoolMicDetails(1);
 		 // get the action bar
 		 ActionBar actionBar = getActionBar();
 		
@@ -213,36 +217,39 @@ public class general extends Activity {
 		
 		 // newSetting=CoolMicSetting.getInstance();
 		 EditText title_edittext = (EditText)  findViewById(R.id.title_edittext);
-		 EditText general_username_edittext = (EditText)  findViewById(R.id.general_username_edittext);
-         CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
-         TextView tems=(TextView )findViewById(R.id.terms);
-         tems.setPaintFlags(tems.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+        EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
+
 		 title_edittext.setText(coolmic.getTitle());
-		 general_username_edittext.setText(coolmic.getGeneralUsername());
+        artist_edittext.setText(coolmic.getArtist());
 		 
 		 title_edittext.addTextChangedListener(new TextWatcher() {
 			   public void afterTextChanged(Editable s) {
-				   flag=true;
+                flag = true;
 			   }
+
 			   public void beforeTextChanged(CharSequence s, int start,
 			     int count, int after) {
 			   }
+
 			   public void onTextChanged(CharSequence s, int start,
 			     int before, int count) {
-			      flag=true;
+                flag = true;
 			   }
 		 });
 		 
-		 general_username_edittext.addTextChangedListener(new TextWatcher() {
+        artist_edittext.addTextChangedListener(new TextWatcher() {
 			   public void afterTextChanged(Editable s) {
-				   flag=true;
+                flag = true;
 			   }
+
 			   public void beforeTextChanged(CharSequence s, int start,
 			     int count, int after) {
 			   }
+
 			   public void onTextChanged(CharSequence s, int start,
 			     int before, int count) {
-			      flag=true;
+                flag = true;
 			   }
 		 });
 		 termCondition.setOnCheckedChangeListener(new OnCheckedChangeListener()
@@ -266,11 +273,11 @@ public class general extends Activity {
 	}
 	
 	 public void saveGeneral(@SuppressWarnings("unused") View view) {
-		 flag=false;
+        flag = false;
 		 EditText title_edittext = (EditText)  findViewById(R.id.title_edittext);
-		 EditText general_username_edittext = (EditText)  findViewById(R.id.general_username_edittext);
+  		 EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
 		 String title=title_edittext.getText().toString();
-		 String general_username= general_username_edittext.getText().toString();	 
+		 String artist = artist_edittext.getText().toString();
 		 CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
 		 if (termCondition.isChecked()) {
 			 coolmic.setTermCondition("true");
@@ -279,7 +286,7 @@ public class general extends Activity {
 	         Toast.makeText(getApplicationContext(), "Accept the Terms and Conditions !", Toast.LENGTH_LONG).show();
 	        	//return;
 	     }
-		 coolmic.setGeneralUsername(general_username);
+		 coolmic.setArtist(artist);
 		 coolmic.setTitle(title);
 		 if (termCondition.isChecked()) {
 			 coolmic.setTermCondition("true");
@@ -288,7 +295,7 @@ public class general extends Activity {
          }
 		 if(db.updateCoolMicDetails(coolmic)==1){
 			 Toast.makeText(getApplicationContext(), "General settings saved!", Toast.LENGTH_LONG).show();
-		 }else{
+        } else {
 	         Toast.makeText(getApplicationContext(), "Error to save General Setting", Toast.LENGTH_LONG).show();
 	     }
          /*
@@ -298,29 +305,31 @@ public class general extends Activity {
          	Toast.makeText(getApplicationContext(), "Error to save General Setting", Toast.LENGTH_LONG).show();
          }*/
     }
+
 	public void saveGeneralNavigation() {
 		 EditText title_edittext = (EditText)  findViewById(R.id.title_edittext);
-		 EditText general_username_edittext = (EditText)  findViewById(R.id.general_username_edittext);
-		 String title=title_edittext.getText().toString();
-		 String general_username= general_username_edittext.getText().toString();	 
-		 CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
-		 if (termCondition.isChecked()) {
-			 coolmic.setTermCondition("true");
-	     }else{
-	    	 coolmic.setTermCondition("false");
-	         Toast.makeText(getApplicationContext(), "Accept the Terms and Conditions !", Toast.LENGTH_LONG).show();
-	        	//return;
-	     }
-		 coolmic.setGeneralUsername(general_username);
-		 coolmic.setTitle(title);
-		 if (termCondition.isChecked()) {
-			 coolmic.setTermCondition("true");
+                 EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
+                 String title=title_edittext.getText().toString();
+                 String artist = artist_edittext.getText().toString();
+                 CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
+                 if (termCondition.isChecked()) {
+                         coolmic.setTermCondition("true");
+             }else{^M
+                 coolmic.setTermCondition("false");
+                 Toast.makeText(getApplicationContext(), "Accept the Terms and Conditions !", Toast.LENGTH_LONG).show();
+                        //return;
+             }
+                 coolmic.setArtist(artist);
+                 coolmic.setTitle(title);
+                 if (termCondition.isChecked()) {
+                         coolmic.setTermCondition("true");
          }else{
-        	 coolmic.setTermCondition("false");
+                 coolmic.setTermCondition("false");
          }
-		 if(db.updateCoolMicDetails(coolmic)==1){
+                 if(db.updateCoolMicDetails(coolmic)==1){
+
 			 Toast.makeText(getApplicationContext(), "General settings saved!", Toast.LENGTH_LONG).show();
-		 }else{
+        } else {
 	         Toast.makeText(getApplicationContext(), "Error to save General Setting", Toast.LENGTH_LONG).show();
 	     }
          /*  if(CoolMicSetting.saveSetting(newSetting)){

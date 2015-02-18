@@ -71,7 +71,7 @@ int writeVorbisDataToEncoderDataFeed(JNIEnv *env, jobject* encoderDataFeed, jmet
 }
 
 //Method to start encoding
-int startEncoding(JNIEnv *env, jclass *cls_ptr, jlong *sampleRate_ptr, jlong *channels_ptr, jfloat *quality_ptr, jlong *bitrate_ptr, jobject *encoderDataFeed_ptr, int type) {
+int startEncoding(JNIEnv *env, jclass *cls_ptr, jlong *sampleRate_ptr, jlong *channels_ptr, jfloat *quality_ptr, jlong *bitrate_ptr, jobject *encoderDataFeed_ptr, jstring title, jstring artist, int type) {
     //Dereference our variables
     jclass cls = (*cls_ptr);
     jlong sampleRate = (*sampleRate_ptr);
@@ -175,10 +175,18 @@ int startEncoding(JNIEnv *env, jclass *cls_ptr, jlong *sampleRate_ptr, jlong *ch
 
     startEncodeFeed(env, &encoderDataFeed, &startMethodId);
 
+    const char *metaTitle = (*env)->GetStringUTFChars(env, title, 0);
+    const char *metaArtist = (*env)->GetStringUTFChars(env, artist, 0);
+
     /* add a comment */
     __android_log_print(ANDROID_LOG_DEBUG, "VorbisEncoder", "Adding comments");
     vorbis_comment_init(&vc);
     vorbis_comment_add_tag(&vc,"ENCODER","JNIVorbisEncoder");
+    vorbis_comment_add_tag(&vc,"TITLE", metaTitle);
+    vorbis_comment_add_tag(&vc,"ARTIST", metaArtist);
+
+    (*env)->ReleaseStringUTFChars(env, title, metaTitle);
+    (*env)->ReleaseStringUTFChars(env, artist, metaArtist);
 
     /* set up the analysis state and auxiliary encoding storage */
     vorbis_analysis_init(&vd,&vi);
@@ -313,12 +321,12 @@ int startEncoding(JNIEnv *env, jclass *cls_ptr, jlong *sampleRate_ptr, jlong *ch
 
 //jni method for encoding with quality
 JNIEXPORT int JNICALL Java_org_xiph_vorbis_encoder_VorbisEncoder_startEncodingWithQuality
-(JNIEnv *env, jclass cls, jlong sampleRate, jlong channels, jfloat quality, jobject encoderDataFeed) {
-    startEncoding(env, &cls, &sampleRate, &channels, &quality, &NO_BITRATE, &encoderDataFeed, WITH_QUALITY);
+(JNIEnv *env, jclass cls, jlong sampleRate, jlong channels, jfloat quality, jobject encoderDataFeed, jstring title, jstring artist) {
+    startEncoding(env, &cls, &sampleRate, &channels, &quality, &NO_BITRATE, &encoderDataFeed, title, artist, WITH_QUALITY);
 }
 
 //jni method for encoding with bitrate
 JNIEXPORT int JNICALL Java_org_xiph_vorbis_encoder_VorbisEncoder_startEncodingWithBitrate
-(JNIEnv *env, jclass cls, jlong sampleRate, jlong channels, jlong bitrate, jobject encoderDataFeed) {
-    startEncoding(env, &cls, &sampleRate, &channels, &NO_QUALITY, &bitrate, &encoderDataFeed, WITH_BITRATE);
+(JNIEnv *env, jclass cls, jlong sampleRate, jlong channels, jlong bitrate, jobject encoderDataFeed, jstring title, jstring artist) {
+    startEncoding(env, &cls, &sampleRate, &channels, &NO_QUALITY, &bitrate, &encoderDataFeed, title, artist, WITH_BITRATE);
 }

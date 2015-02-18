@@ -16,7 +16,7 @@
         android:orientation="vertical" >    
 
 	        <TextView
-	            android:id="@+id/textView2"
+	            android:id="@+id/title_label"
 	            android:layout_width="fill_parent"
 	            android:layout_height="wrap_content"
 	            android:text="Title"
@@ -35,14 +35,14 @@
 	            android:orientation="vertical" >
 	
 	            <TextView
-	                android:id="@+id/general_username_id"
+	                android:id="@+id/artist_label"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:text="Artist"
 	                />
 	
 	            <EditText
-	                android:id="@+id/general_username_edittext"
+	                android:id="@+id/artist_edittext"
 	                android:layout_width="fill_parent"
 	                android:layout_height="wrap_content"
 	                android:ems="10"

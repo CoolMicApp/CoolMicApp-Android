@@ -1,18 +1,5 @@
 package com.vorbisdemo;
 
-import java.io.BufferedOutputStream; 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import org.xiph.vorbis.player.VorbisPlayer;
-import org.xiph.vorbis.recorder.VorbisRecorder;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -55,6 +42,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.xiph.vorbis.player.VorbisPlayer;
+import org.xiph.vorbis.recorder.VorbisRecorder;
+import com.gmail.kunicins.olegs.libshout.Libshout;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 /**
  * This activity demonstrates how to use JNI to encode and decode ogg/vorbis audio
  */
@@ -66,6 +72,32 @@ public class MainActivity extends Activity {
 
 	private static final int LED_NOTIFICATION_ID = 0;
 
+    final Context context = this;
+    Thread streamThread;
+    boolean isThreadOn = false;
+    DataOutputStream dos;
+    String hostname = "giss.tv";
+    PrintWriter output = null;
+    BufferedReader reader = null;
+    Libshout icecast = null;
+    //Setting newSetting;
+    // CoolMicSetting newSetting;
+    DatabaseHandler db;
+    CoolMic coolmic;
+    Button start_button;
+    Button stop_button;
+    Animation animation = new AlphaAnimation(1, 0);
+    ColorDrawable gray_color = new ColorDrawable(Color.parseColor("#66999999"));
+    ColorDrawable[] color = {gray_color, new ColorDrawable(Color.RED)};
+    TransitionDrawable trans = new TransitionDrawable(color);
+    Drawable buttonColor;
+    ImageView imageView1;
+    Menu myMenu;
+    boolean backyes = false;
+    /**
+     * The vorbis player
+     */
+    private VorbisPlayer vorbisPlayer;
     /**
      * The vorbis recorder 
      */
@@ -78,12 +110,6 @@ public class MainActivity extends Activity {
      * Text view to show logged messages
      */
     private TextView logArea;
-    Thread streamThread;
-    boolean isThreadOn=false;
-    DataOutputStream dos;
-    String hostname = "giss.tv";
-    OutputStream out;
-    PrintWriter output = null;
     private int port = 8000;
     BufferedReader reader = null;
     Socket s = null;
@@ -111,18 +137,20 @@ public class MainActivity extends Activity {
     
 	private TextView timerValue;
 	private Handler customHandler = new Handler();
+=======
+    private TextView log;
 	
 	public static final String TIMER_PER = "00:00:00" ;
 	SharedPreferences sharedpreferences;
 	//variable declaration for timer ends here
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu){
+    public boolean onPrepareOptionsMenu(Menu menu) {
 	     super.onPrepareOptionsMenu(menu);
-	     if(isThreadOn){
+        if (isThreadOn) {
 	    	  menu.findItem(R.id.server_settings).setVisible(false);
 	    	  menu.findItem(R.id.audio_settings).setVisible(false);
 	    	  menu.findItem(R.id.general_setting).setVisible(false);
-	     }else{
+        } else {
 	    	  menu.findItem(R.id.server_settings).setVisible(true);
 	    	  menu.findItem(R.id.audio_settings).setVisible(true);
 	    	  menu.findItem(R.id.general_setting).setVisible(true);
@@ -138,6 +166,7 @@ public class MainActivity extends Activity {
 	      myMenu = menu;
 	      return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	      Editor editor = sharedpreferences.edit();	
@@ -201,6 +230,7 @@ public class MainActivity extends Activity {
 		startActivity(i);
 		finish();
 	}
+
 	private void generalSetting() {
 		Intent i = new Intent(MainActivity.this, general.class);
 		startActivity(i);
@@ -212,6 +242,7 @@ public class MainActivity extends Activity {
 		startActivity(i);
 		finish();
 	}
+
 	private void serverSetting() {
 		Intent i = new Intent(MainActivity.this, server.class);
 		startActivity(i);
@@ -228,9 +259,9 @@ public class MainActivity extends Activity {
 	 @Override
 	 public void onConfigurationChanged(Configuration newConfig) {
 	  super.onConfigurationChanged(newConfig);
-	  if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 		  	  imageView1.getLayoutParams().height = 180;
-	  }else{
+        } else {
 			  imageView1.getLayoutParams().height = 400;
 	  }
 	 }
@@ -311,38 +342,44 @@ public class MainActivity extends Activity {
 		if (getResources().getConfiguration().orientation ==
 		   Configuration.ORIENTATION_PORTRAIT) {
 			  imageView1.getLayoutParams().height = 400;
-        }else {
+        } else {
     	   imageView1.getLayoutParams().height = 180;
         }
+
 		myClipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 	    animation.setDuration(500); // duration - half a second
 	    animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
 	    animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
 	    animation.setRepeatMode(Animation.REVERSE);
 	    start_button = (Button) findViewById(R.id.start_recording_button);
 	    stop_button = (Button) findViewById(R.id.stop_recording_button);
-	    buttonColor= (Drawable) start_button.getBackground();
+        buttonColor = (Drawable) start_button.getBackground();
         logArea = (TextView) findViewById(R.id.log_area);
         logArea.setMovementMethod(new ScrollingMovementMethod()); 
         setLoggingHandlers();
+
         db = new DatabaseHandler(this);
-        if(db.getCoolMicSettingCount() >= 1){
-   		    coolmic=db.getCoolMicDetails(1);
-   		    String sr=coolmic.getSampleRate();
+        if (db.getCoolMicSettingCount() >= 1) {
+            coolmic = db.getCoolMicDetails(1);
+            String sr = coolmic.getSampleRate();
    		    coolmic.setSampleRate("8000");
    		    db.updateCoolMicDetails(coolmic);
-   		    coolmic=db.getCoolMicDetails(1);
-   		    coolmic.setSampleRate("11025");
+
+            coolmic = db.getCoolMicDetails(1);
+            coolmic.setSampleRate("11025");
+            db.updateCoolMicDetails(coolmic);
+
+            coolmic = db.getCoolMicDetails(1);
+            coolmic.setSampleRate(sr);
+            ;
    		    db.updateCoolMicDetails(coolmic);
-   		    coolmic=db.getCoolMicDetails(1);
-   		    coolmic.setSampleRate(sr);;
-   		    db.updateCoolMicDetails(coolmic);
-        	coolmic=db.getCoolMicDetails(1);
-        }else{
-    	   db.addCoolMicSetting(new CoolMic(1,"", "", "", "","", "", "44100", "1", "-0.1", "false"));
-    	   CoolMic cm=db.getCoolMicDetails(1);
-    	   String log = "Id: "+cm.getID()+" ,title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername()+", servername: "+cm.getServerName()+" , mountpoint: "+cm.getMountpoint()+", username: "+cm.getUsername()+", password: "+cm.getPassword()+", sampleRate: "+cm.getSampleRate()+", channels: "+cm.getChannels()	+", quality: "+cm.getQuality()+", termCondition: "+cm.getTermCondition();
+            coolmic = db.getCoolMicDetails(1);
+        } else {
+            db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "", "44100", "1", "-0.1", "false"));
+            CoolMic cm = db.getCoolMicDetails(1);
+            String log = "Id: " + cm.getID() + " ,title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername() + ", servername: " + cm.getServerName() + " , mountpoint: " + cm.getMountpoint() + ", username: " + cm.getUsername() + ", password: " + cm.getPassword() + ", sampleRate: " + cm.getSampleRate() + ", channels: " + cm.getChannels() + ", quality: " + cm.getQuality() + ", termCondition: " + cm.getTermCondition();
     	   Log.d("VS", log);
        }
         
@@ -353,7 +390,6 @@ public class MainActivity extends Activity {
 			start_button.setText("Broadcasting");
        }
     }
-    
     
     public void onImageClick(View view){
     	
@@ -475,46 +511,41 @@ public class MainActivity extends Activity {
             }
         };
     }
-
     @Override
     public void onBackPressed() {
         // Write your code here
-    	if(isThreadOn){
+        if (isThreadOn) {
 		    	AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
 				alertDialog.setTitle("Stop Broadcasting?");
 				alertDialog.setMessage("Tap [ Ok ] to stop broadcasting.");
 				alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 		            public void onClick(DialogInterface dialog, int which) {
-		            	  backyes=false;
+                    backyes = false;
 		            	  dialog.cancel();
 		            	}
 				}); 
 				alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog,int which) {
-		            	 backyes=true;
+                public void onClick(DialogInterface dialog, int which) {
+                    backyes = true;
 		            	 dialog.cancel();
 		              	 invalidateOptionsMenu();
 		           	 	 start_button.clearAnimation();   
 		           	 	 start_button.setBackground(buttonColor);
 		           	 	 start_button.setText("Start Broadcast");
 		            	 if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-		                       try{
-		                    	   isThreadOn=false;
+                        isThreadOn = false;
 		                           vorbisRecorder.stop();
-		                           s.close();
-		                          }catch (IOException e) {
-		                           e.printStackTrace();
-		                           Log.e("VS", "IOException",e);
-		                       }
+                        icecast.close();
 		                 }
 		            	 android.os.Process.killProcess(android.os.Process.myPid());
 		            }
 				}); 
 				alertDialog.show();
-    	}else{
+        } else {
     		android.os.Process.killProcess(android.os.Process.myPid());
     	}
     }
+
     public void startRecording(View view) {
     	 
         if(isOnline()){ 
@@ -532,102 +563,40 @@ public class MainActivity extends Activity {
 			        streamThread = new Thread(new Runnable() {
 			      	        @Override
 			      	        public void run() {
-			      	        	if(isThreadOn){
+                            if (isThreadOn) {
 			     					try {
 				     						String portnum = "";
-			     							String server=coolmic.getServerName();
-			     							Integer port_num=8000;
-			     							
-			     							if(server != null && !server.isEmpty()){
-					     							int counter = 0;
-					     							for( int i=0; i<server.length(); i++ ) {
-					     							    if( server.charAt(i) == ':' ) {
-					     							        counter++;
-					     							    } 
-					     							 }
-					     							 if(counter==1){
-					     									if(server.indexOf("/") > 0){
-					     										String[] split = server.split(":");
-					     							 			server = split[0].concat(":").concat(split[1]);
-					     							 			portnum = "8000";
-					     							 			port_num=Integer.parseInt(portnum);
-					     									}else{
-					     										String[] split = server.split(":");
-					     							 			server = split[0];
-					     							 			portnum = split[1];
-					     							 			port_num=Integer.parseInt(portnum);
-					     									}
-					     							 }else if(counter==2){
-					     						     		String[] split = server.split(":");
-					     						 			server = split[0].concat(":").concat(split[1]);
-					     						 			portnum = split[2];
-					     						 			port_num=Integer.parseInt(portnum);
-					     							 }
-					     							 Log.d("VS",server);
-					     							 Log.d("VS",port_num.toString());
-					     							 String username=coolmic.getUsername();
-					     							 String password=coolmic.getPassword();
-					     							 String auth=username+":"+password;
-					     							 auth = username+":"+password;
-					     							 String mountpoint=coolmic.getMountpoint();
-					     							 String sampleRate_string=coolmic.getSampleRate();
-					     							 String channel_string=coolmic.getChannels();
-					     							 String quality_string=coolmic.getQuality();
-					     							 String title=coolmic.getTitle();
-					     							 String generalUsername=coolmic.getGeneralUsername();
-					     							 Log.d("VS",server+" "+server+" "+port_num.toString()+" "+username+" "+password+"\n "+mountpoint+"" +
-					     					    			" "+sampleRate_string+" "+channel_string+" "+quality_string+" "+title);
-					     							 byte[] data = null;
-					     							 try {
-					     								 data = auth.getBytes("UTF-8");
-					     							 } catch (UnsupportedEncodingException e1) {
-					     								 e1.printStackTrace();
-					     							 }
-					     					    	 server=server.replaceAll("(http://|http://)","");
-					     					    	 Log.d("VS","Removed http =>"+server);
-						     					     String authString = Base64.encodeToString(data, Base64.NO_WRAP);   					    	
-						 					    	 s = new Socket(server,port_num);
-													 Log.d("VS", "Socket Created");
-													 out =  new BufferedOutputStream(new DataOutputStream(s.getOutputStream()));
-													 Log.d("VS", "Output Stream Established");
-													 output = new PrintWriter(out);
-													 Log.d("VS", "Send Header");
-													 output.println("SOURCE /"+mountpoint+" ICE/2.0");
-													 output.println("Authorization: Basic "+authString);
-													 output.println("ice-name:"+title);
-													 output.println("ice-url:echonet.cc");
-													 output.println("TITLE="+title);
-													 output.println("ARTIST="+generalUsername);
-													 output.println("ice-username:"+generalUsername); 
-													 output.println("ice-user:"+generalUsername);
-													 output.println("content-type: application/x-ogg");
-													 output.println("User-Agent: Cool Mic App");					
-													 output.println("ice-private: 0");
-													 output.println("ice-public: 1");
-													 output.println("ice-audio-info: ice-samplerate="+sampleRate_string+"ice-quality="+quality_string+";ice-channels="+channel_string);
-													 output.println("ice-audio-info: ice-samplerate=8000;ice-bitrate=128;ice-channels=2");
-													 output.println("\r\n");
-													 output.println("\n");
-													 output.flush();
-													 Log.d("VS", "Header sent");
-													 reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-													 for (String line; (line = reader.readLine()) != null;) {
-														    if (line.equals("")) break;
-														    	Log.d("VS", "Responce From Server");
-													    		Log.d("VS",line);
-						 									 }
-												     if (vorbisRecorder == null || vorbisRecorder.isStopped()) {						      
-					     								 if (vorbisRecorder == null) {
-					     									Log.d("VS","Before recorder initilize");
-					     									vorbisRecorder = new VorbisRecorder(out, recordingHandler);
-					     								 }
-					     								 long sampleRate = Long.parseLong(coolmic.getSampleRate());
-					     								 long channels = Long.parseLong(coolmic.getChannels());
-					     								 float quality=Float.parseFloat(coolmic.getQuality());
-					     								 Log.d("VS","Before start method");
-					     								 vorbisRecorder.start(sampleRate, channels,quality);
-					     						    }
-			     							} 
+                                    String server = coolmic.getServerName();
+                                    Integer port_num = 8000;
+                                    if (server.indexOf(":") > 0) {
+                                        String[] split = server.split(":");
+                                        server = split[0];
+                                        portnum = split[1];
+                                        port_num = Integer.parseInt(portnum);
+                                    }
+                                    Log.d("VS", server);
+                                    Log.d("VS", port_num.toString());
+                                    String username = coolmic.getUsername();
+                                    String password = coolmic.getPassword();
+                                    String mountpoint = coolmic.getMountpoint();
+                                    String sampleRate_string = coolmic.getSampleRate();
+                                    String channel_string = coolmic.getChannels();
+                                    String quality_string = coolmic.getQuality();
+                                    String title = coolmic.getTitle();
+                                    String artist = coolmic.getArtist();
+                                    Log.d("VS", server + " " + server + " " + port_num.toString() + " " + username + " " + password + "\n " + mountpoint + "" +
+                                            " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
+
+                                    icecast = new Libshout();
+                                    icecast.setHost(server);
+                                    icecast.setPort(port_num);
+                                    icecast.setProtocol(Libshout.PROTOCOL_HTTP);
+                                    icecast.setUser(username);
+                                    icecast.setPassword(password);
+                                    icecast.setMount("/"+mountpoint);
+                                    icecast.setFormat(Libshout.FORMAT_OGG);
+                                    icecast.open();
+
 			     						 } catch(UnknownHostException e) {
 			     							//Toast.makeText(getApplicationContext(), "Server not exist.",Toast.LENGTH_SHORT).show();
 			     						    //Log.e("VS", "UnknownHostException",e);
@@ -641,10 +610,10 @@ public class MainActivity extends Activity {
 			     							 });
 			     						 } catch (IOException e) {
 			     						    e.printStackTrace();
-			     						    Log.e("VS", "IOException",e);
-			     						 }catch(Exception e){
+                                    Log.e("VS", "IOException", e);
+                                } catch (Exception e) {
 			     							e.printStackTrace();
-				     						Log.e("VS", "IOException",e);
+                                    Log.e("VS", "IOException", e);
 			     						 }
 			      	          }
 			      	        
@@ -652,13 +621,13 @@ public class MainActivity extends Activity {
 			        	 
 			        	 });
 			        	   streamThread.start(); 
-        		}else{
+                } else {
         			Toast.makeText(getApplicationContext(), "Accept the Term and Conditions !", Toast.LENGTH_LONG).show();
         		}
-        	}else{
+            } else {
         		Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();	        	
         	}
-        }else{
+        } else {
         	Toast.makeText(getApplicationContext(), "Check Internet Connection !", Toast.LENGTH_LONG).show();
         }
     }
@@ -678,14 +647,9 @@ public class MainActivity extends Activity {
    	 	start_button.setText("Start Broadcast");
    	 	stopService(new Intent(getBaseContext(), MyService.class));
     	if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-               try{
-            	   isThreadOn=false;
+            isThreadOn = false;
                    vorbisRecorder.stop();
-                   s.close();
-                  }catch (IOException e) {
-                   e.printStackTrace();
-                   Log.e("VS", "IOException",e);
-               } 
+            icecast.close();
         }
 	   	Editor editor = sharedpreferences.edit();
   	 	editor.putString("TIMER_PER", "");

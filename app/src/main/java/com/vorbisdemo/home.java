@@ -1,5 +1,9 @@
 package com.vorbisdemo;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -10,9 +14,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class home  extends Activity {
+public class home extends Activity {
 
-    //	CoolMicSetting newSetting; 
+
+//	CoolMicSetting newSetting; 
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -21,6 +26,7 @@ public class home  extends Activity {
       //   newSetting=CoolMicSetting.getInstance();
       return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
       switch (item.getItemId()) {
@@ -60,6 +66,7 @@ public class home  extends Activity {
 		startActivity(i);
 		finish();
 	}
+
 	private void generalSetting() {
 		Intent i = new Intent(home.this, general.class);
 		startActivity(i);
@@ -71,6 +78,7 @@ public class home  extends Activity {
 		startActivity(i);
 		finish();
 	}
+
 	private void serverSetting() {
 		Intent i = new Intent(home.this, server.class);
 		startActivity(i);

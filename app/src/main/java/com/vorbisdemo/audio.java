@@ -22,16 +22,17 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class audio extends Activity {
+
+    //  CoolMicSetting newSetting;
+    DatabaseHandler db;
+    CoolMic coolmic;
+    boolean flag = false;
+    int i = 0;
+    int j = 0;
+    int k = 0;
 	  private Spinner sampleRateSpinner;
 	  private Spinner chanelConfigSpinner;
 	  private Spinner qualitySpinner;
-	  //  CoolMicSetting newSetting;
-	  DatabaseHandler db ;
-	  CoolMic coolmic;
-	  boolean flag=false;
-	  int i=0;
-	  int j=0;
-	  int k=0;
 	   
 	  @Override
       public boolean onCreateOptionsMenu(Menu menu) {
@@ -40,23 +41,25 @@ public class audio extends Activity {
 		  menu.findItem(R.id.audio_settings).setVisible(false);
 		  return true;
 	  }
+
 	  private void setDefaultValues() {
 		  //Set sample rate to '44100'
-		  String samplerate= coolmic.getSampleRate();
+        String samplerate = coolmic.getSampleRate();
 		  ArrayAdapter myAdap = (ArrayAdapter) sampleRateSpinner.getAdapter(); 
 		  int spinnerPosition = myAdap.getPosition(samplerate);
 		  sampleRateSpinner.setSelection(spinnerPosition);
 		  //String chanelConfig= Long.toString(newSetting.getChannels()-1);
 		  //	ArrayAdapter chanelConfigSpinnerAdap = (ArrayAdapter) chanelConfigSpinner.getAdapter(); 
 		  //	int chanelConfigspinnerPosition = chanelConfigSpinnerAdap.getPosition(chanelConfig);
-		  chanelConfigSpinner.setSelection(Integer.parseInt(coolmic.getChannels())-1);
-		  String quality= coolmic.getQuality();
-		  Log.d("VS","quality"+quality);
+        chanelConfigSpinner.setSelection(Integer.parseInt(coolmic.getChannels()) - 1);
+        String quality = coolmic.getQuality();
+        Log.d("VS", "quality" + quality);
 		  ArrayAdapter qualitySpinnerAdap = (ArrayAdapter) qualitySpinner.getAdapter();
 		  int qualityspinnerPosition = qualitySpinnerAdap.getPosition(quality);
-		  Log.d("VS","quality"+qualityspinnerPosition);
+        Log.d("VS", "quality" + qualityspinnerPosition);
 		  qualitySpinner.setSelection(qualityspinnerPosition);
 	  }
+
 	  @Override
 	  public boolean onOptionsItemSelected(MenuItem item) {
     	  switch (item.getItemId()) {
@@ -94,6 +97,7 @@ public class audio extends Activity {
     }
 	private void goHome() {
 		if(flag){
+
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(audio.this);
 			alertDialog.setTitle("Save settings ?");
 			alertDialog.setMessage("Do you want to save settings ?");
@@ -106,7 +110,7 @@ public class audio extends Activity {
 	            	}
 			});
 			alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog,int which) {
+                public void onClick(DialogInterface dialog, int which) {
 		            	saveAudioNavigation();
 		        		Intent i = new Intent(audio.this, MainActivity.class);
 		        		startActivity(i);
@@ -114,15 +118,16 @@ public class audio extends Activity {
 	            }
 			});
 			alertDialog.show();			
-		}else{
+        } else {
 				Intent i = new Intent(audio.this, MainActivity.class);
 				startActivity(i);		
 				finish();
 		}
 	}
+
 	private void generalSetting() {
 		
-		if(flag){
+        if (flag) {
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(audio.this);
 			alertDialog.setTitle("Save settings ?");
 			alertDialog.setMessage("Do you want to save settings ?");
@@ -135,7 +140,7 @@ public class audio extends Activity {
 	            	}
 			});
 			alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog,int which) {
+                public void onClick(DialogInterface dialog, int which) {
 	            	saveAudioNavigation();
 	        		Intent i = new Intent(audio.this, general.class);
 	        		startActivity(i);
@@ -143,16 +148,17 @@ public class audio extends Activity {
 	            }
 			});
 			alertDialog.show();			
-		}else{
+        } else {
 			Intent i = new Intent(audio.this, general.class);
 			startActivity(i);	
 			finish();
 		}
 		
 	}
+
 	private void serverSetting() {
 		
-		if(flag){
+        if (flag) {
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(audio.this);
 			alertDialog.setTitle("Save settings ?");
 			alertDialog.setMessage("Do you want to save settings ?");
@@ -165,7 +171,7 @@ public class audio extends Activity {
 	            	}
 			});
 			alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog,int which) {
+                public void onClick(DialogInterface dialog, int which) {
 	            	saveAudioNavigation();
 	        		Intent i = new Intent(audio.this, server.class);
 	        		startActivity(i);
@@ -173,7 +179,7 @@ public class audio extends Activity {
 	            }
 			});
 			alertDialog.show();
-		}else{
+        } else {
 			Intent i = new Intent(audio.this, server.class);
 			startActivity(i);
 			finish();
@@ -195,7 +201,7 @@ public class audio extends Activity {
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		db = new DatabaseHandler(this);
-		coolmic=db.getCoolMicDetails(1);
+        coolmic = db.getCoolMicDetails(1);
 		
 		//	newSetting=CoolMicSetting.getInstance();
 	    sampleRateSpinner = (Spinner) findViewById(R.id.sample_rate_spinner);
@@ -206,11 +212,12 @@ public class audio extends Activity {
 	    	    @SuppressWarnings("unused")
 				@Override
 	    	    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {	    	    		 
-	    	    	if(i > 0){
-	    	    		flag=true;	    	    		
+                if (i > 0) {
+                    flag = true;
 	    	    	}	    
 	    	    	i++;
 	    	    }
+
 	    	    @Override
 	    	    public void onNothingSelected(AdapterView<?> parentView) {
 	    	    	Toast.makeText(getApplicationContext(), "Nothing selected", Toast.LENGTH_LONG).show();	  
@@ -222,11 +229,12 @@ public class audio extends Activity {
     	    	@SuppressWarnings("unused")
     	    	@Override
     	    	public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-    	    		if(j > 0){
-    	    			flag=true;
+                if (j > 0) {
+                    flag = true;
     	    		}	    
     	    		j++;
     	    	}
+
     	    	@Override
 	    	    public void onNothingSelected(AdapterView<?> parentView) {
 	    	    	Toast.makeText(getApplicationContext(), "Nothing selected", Toast.LENGTH_LONG).show();	  
@@ -236,11 +244,12 @@ public class audio extends Activity {
 	    	    @SuppressWarnings("unused")
 				@Override
 	    	    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-	    	    	if(k > 0){
-	    	    		flag=true;	    	    		
+                if (k > 0) {
+                    flag = true;
 	    	    	}
 	    	    	k++;
 	    	    }
+
 	    	    @Override
 	    	    public void onNothingSelected(AdapterView<?> parentView) {
 	    	    	Toast.makeText(getApplicationContext(), "Nothing selected", Toast.LENGTH_LONG).show();
@@ -249,16 +258,16 @@ public class audio extends Activity {
 	}
 	
 	 public void saveAudio(@SuppressWarnings("unused") View view) { 
-		 		flag=false;
+        flag = false;
 	            Long sampleRate = Long.parseLong(sampleRateSpinner.getSelectedItem().toString());
-	            Long channels = (long)(chanelConfigSpinner.getSelectedItemPosition() + 1) ;	                   
+        Long channels = (long) (chanelConfigSpinner.getSelectedItemPosition() + 1);
 	            Float quality = Float.parseFloat(qualitySpinner.getSelectedItem().toString());
 	            coolmic.setSampleRate(Long.toString(sampleRate));
 	            coolmic.setChannels(Long.toString(channels));
 	            coolmic.setQuality(Float.toString(quality));
-		  		if(db.updateCoolMicDetails(coolmic)==1){
+        if (db.updateCoolMicDetails(coolmic) == 1) {
 		  			Toast.makeText(getApplicationContext(), "Audio settings saved!", Toast.LENGTH_LONG).show();
-		  		}else{
+        } else {
 		         	Toast.makeText(getApplicationContext(), "Error to save Audio Setting", Toast.LENGTH_LONG).show();
 		  		}
 	            /*
@@ -268,18 +277,19 @@ public class audio extends Activity {
 	            	Toast.makeText(getApplicationContext(), "Error to save Audio Setting", Toast.LENGTH_LONG).show();
 	            }*/
 	 }
+
 	 public void saveAudioNavigation() {   
          Long sampleRate = Long.parseLong(sampleRateSpinner.getSelectedItem().toString());
-         Long channels = (long)(chanelConfigSpinner.getSelectedItemPosition() + 1) ;	                   
+        Long channels = (long) (chanelConfigSpinner.getSelectedItemPosition() + 1);
          Float quality = Float.parseFloat(qualitySpinner.getSelectedItem().toString());
          
          coolmic.setSampleRate(Long.toString(sampleRate));
          coolmic.setChannels(Long.toString(channels));
          coolmic.setQuality(Float.toString(quality));
          
- 		 if(db.updateCoolMicDetails(coolmic)==1){
+        if (db.updateCoolMicDetails(coolmic) == 1) {
 			  	Toast.makeText(getApplicationContext(), "Audio settings saved!", Toast.LENGTH_LONG).show();
-		 }else{
+        } else {
 	         	Toast.makeText(getApplicationContext(), "Error to save Audio Setting", Toast.LENGTH_LONG).show();
 	     }
          /*
