@@ -217,8 +217,9 @@ public class general extends Activity {
 		
 		 // newSetting=CoolMicSetting.getInstance();
 		 EditText title_edittext = (EditText)  findViewById(R.id.title_edittext);
-
         EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
+        CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
+         TextView tems=(TextView )findViewById(R.id.terms);
 
 		 title_edittext.setText(coolmic.getTitle());
         artist_edittext.setText(coolmic.getArtist());
@@ -314,7 +315,7 @@ public class general extends Activity {
                  CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
                  if (termCondition.isChecked()) {
                          coolmic.setTermCondition("true");
-             }else{^M
+             }else{
                  coolmic.setTermCondition("false");
                  Toast.makeText(getApplicationContext(), "Accept the Terms and Conditions !", Toast.LENGTH_LONG).show();
                         //return;

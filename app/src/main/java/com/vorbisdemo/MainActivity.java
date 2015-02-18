@@ -111,22 +111,8 @@ public class MainActivity extends Activity {
      */
     private TextView logArea;
     private int port = 8000;
-    BufferedReader reader = null;
-    Socket s = null;
-    DatabaseHandler db;
-    CoolMic coolmic;
-    private TextView log;
-    final Context context = this;
-    Button start_button;
-    Button stop_button;
-    Animation animation = new AlphaAnimation(1, 0);
-    ColorDrawable gray_color = new ColorDrawable(Color.parseColor("#66999999"));
-    ColorDrawable[] color = {gray_color, new ColorDrawable(Color.RED)};
-    TransitionDrawable trans = new TransitionDrawable(color);
-	Drawable buttonColor;
-	ImageView    imageView1;
-	Menu myMenu;
-	boolean backyes=false;
+
+
 	ClipboardManager myClipboard;
 	private ClipData myClip;
     //variable declaration for timer starts here
@@ -137,8 +123,7 @@ public class MainActivity extends Activity {
     
 	private TextView timerValue;
 	private Handler customHandler = new Handler();
-=======
-    private TextView log;
+
 	
 	public static final String TIMER_PER = "00:00:00" ;
 	SharedPreferences sharedpreferences;
@@ -213,14 +198,10 @@ public class MainActivity extends Activity {
     private void exitApp(){
     	ClearLED();
     	   if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-               try{
             	   isThreadOn=false;
                    vorbisRecorder.stop();
-                   s.close();
-                  }catch (IOException e) {
-                   e.printStackTrace();
-                   Log.e("VS", "IOException",e);
-               }
+                   icecast.close();
+
            }
     	finish();
         System.exit(0);
@@ -373,7 +354,7 @@ public class MainActivity extends Activity {
 
             coolmic = db.getCoolMicDetails(1);
             coolmic.setSampleRate(sr);
-            ;
+
    		    db.updateCoolMicDetails(coolmic);
             coolmic = db.getCoolMicDetails(1);
         } else {

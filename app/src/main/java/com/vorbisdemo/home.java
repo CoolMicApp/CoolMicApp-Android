@@ -1,9 +1,5 @@
 package com.vorbisdemo;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;

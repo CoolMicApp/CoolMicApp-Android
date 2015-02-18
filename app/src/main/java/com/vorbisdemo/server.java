@@ -214,7 +214,7 @@ public class server extends Activity {
         EditText server_edittext = (EditText) findViewById(R.id.server_edittext);
 		EditText mountpoint_edittext = (EditText)  findViewById(R.id.mountpoint_edittext);
 		EditText username_editid = (EditText)  findViewById(R.id.username_editid);
-        EditText password_edittext = (EditText) findViewById(R.id.password_edittext);
+        final EditText password_edittext = (EditText) findViewById(R.id.password_edittext);
         CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
         TextView tems = (TextView) findViewById(R.id.terms);
         tems.setPaintFlags(tems.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -349,7 +349,12 @@ public class server extends Activity {
 		 EditText mountpoint_edittext = (EditText)  findViewById(R.id.mountpoint_edittext);
 		 EditText username_editid = (EditText)  findViewById(R.id.username_editid);
 		 EditText password_edittext = (EditText)  findViewById(R.id.password_edittext);
-		 
+
+         String servername = server_edittext.getText().toString();
+         String mountpoint = (mountpoint_edittext.getText().toString()).replaceAll("[/]", "");
+         String username = username_editid.getText().toString();
+         String password = password_edittext.getText().toString();
+
 		 coolmic.setServerName(servername);
 		 coolmic.setMountpoint(mountpoint);
 		 coolmic.setUsername(username);
