@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CoolMic-2015-01-12-src.iml" filepath="$PROJECT_DIR$/CoolMic-2015-01-12-src.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CoolMicR21.iml" filepath="$PROJECT_DIR$/CoolMicR21.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

@@ -12,7 +12,7 @@ public class CoolMic {
     private String channels="";
     private String quality=""; 
     private String termCondition="";
- /*   public CoolMic(int id, String title){
+    /*   public CoolMic(int id, String title){
     	 this.id = id;
          this.title = title;
     }
@@ -20,14 +20,13 @@ public class CoolMic {
    	 	this.id = id;
         this.title = title;
         this.generalUsername = generalUsername;
-   }
+   	}
     public CoolMic(String title,String generalUsername){   	 	
         this.title = title;
         this.generalUsername = generalUsername;
-   }*/
+   	}*/
     // constructor
-    public CoolMic(int id, String title, String generalUsername,String servername,String mountpoint,
-    		String username,String password,String sampleRate,String channels,String quality,String termCondition){
+    public CoolMic(int id, String title, String generalUsername,String servername,String mountpoint, String username,String password,String sampleRate,String channels,String quality,String termCondition){
         this.id = id;
         this.title = title;
         this.generalUsername = generalUsername;
@@ -42,8 +41,7 @@ public class CoolMic {
     }
      
     // constructor
-    public CoolMic( String title, String generalUsername,String servername,String mountpoint,
-    		String username,String password,String sampleRate,String channels,String quality,String termCondition){        
+    public CoolMic( String title, String generalUsername,String servername,String mountpoint, String username,String password,String sampleRate,String channels,String quality,String termCondition){        
         this.title = title;
         this.generalUsername = generalUsername;
         this.servername = servername;
@@ -110,11 +108,11 @@ public class CoolMic {
     public String getTitle()
     {
         return title;
-    }    
+    }
     public String getGeneralUsername()
     {
         return generalUsername;
-    }    
+    }
     public String getServerName()
     {
         return servername;
@@ -137,18 +135,18 @@ public class CoolMic {
     }
     public String getChannels()
     {
-        return channels; 
+        return channels;
     }
     public String getQuality()
     {
         return quality;
     }
-    public boolean  isConnectionSet(){ 
+    public boolean  isConnectionSet(){
     	if((this.servername != null && !this.servername.isEmpty()) && (this.mountpoint != null && !this.mountpoint.isEmpty()) &&
     			(this.username != null && !this.username.isEmpty()) && ((this.password != null && !this.password.isEmpty()))	){
     		return true;
     	}else{
-		return false;
-    	} 	
+    		return false;
+    	}
     }
 }

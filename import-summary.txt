@@ -7,138 +7,151 @@ The following files were *not* copied into the new Gradle project; you
 should evaluate whether these are still needed in your project and if
 so manually move them:
 
-* .externalToolBuilders\
-* .externalToolBuilders\NDK_Builder.launch
-* .gitignore
+* .externalToolBuilders/
+* .externalToolBuilders/NDK_Builder.launch
+* .idea/
+* .idea/.name
+* .idea/CoolMicR2.iml
+* .idea/compiler.xml
+* .idea/copyright/
+* .idea/copyright/profiles_settings.xml
+* .idea/encodings.xml
+* .idea/misc.xml
+* .idea/modules.xml
+* .idea/scopes/
+* .idea/scopes/scope_settings.xml
+* .idea/vcs.xml
+* .idea/workspace.xml
 * README.md
-* backup-jni\
-* backup-jni\.gitignore
-* backup-jni\Android.mk
-* backup-jni\Application.mk
-* backup-jni\include\
-* backup-jni\include\ogg\
-* backup-jni\include\ogg\config_types.h
-* backup-jni\include\ogg\ogg.h
-* backup-jni\include\ogg\os_types.h
-* backup-jni\include\stream\
-* backup-jni\include\stream\util.h
-* backup-jni\include\vorbis\
-* backup-jni\include\vorbis\codec.h
-* backup-jni\include\vorbis\vorbisenc.h
-* backup-jni\include\vorbis\vorbisfile.h
-* backup-jni\libogg\
-* backup-jni\libogg\Android.mk
-* backup-jni\libogg\bitwise.c
-* backup-jni\libogg\framing.c
-* backup-jni\libvorbis-jni\
-* backup-jni\libvorbis-jni\Android.mk
-* backup-jni\libvorbis-jni\org_xiph_vorbis_decoder_VorbisDecoder.c
-* backup-jni\libvorbis-jni\org_xiph_vorbis_decoder_VorbisDecoder.h
-* backup-jni\libvorbis-jni\org_xiph_vorbis_encoder_VorbisEncoder.c
-* backup-jni\libvorbis-jni\org_xiph_vorbis_encoder_VorbisEncoder.h
-* backup-jni\libvorbis\
-* backup-jni\libvorbis\Android.mk
-* backup-jni\libvorbis\analysis.c
-* backup-jni\libvorbis\backends.h
-* backup-jni\libvorbis\bitrate.c
-* backup-jni\libvorbis\bitrate.h
-* backup-jni\libvorbis\block.c
-* backup-jni\libvorbis\books\
-* backup-jni\libvorbis\books\Makefile
-* backup-jni\libvorbis\books\Makefile.am
-* backup-jni\libvorbis\books\Makefile.in
-* backup-jni\libvorbis\books\coupled\
-* backup-jni\libvorbis\books\coupled\Makefile
-* backup-jni\libvorbis\books\coupled\Makefile.am
-* backup-jni\libvorbis\books\coupled\Makefile.in
-* backup-jni\libvorbis\books\coupled\res_books_51.h
-* backup-jni\libvorbis\books\coupled\res_books_stereo.h
-* backup-jni\libvorbis\books\floor\
-* backup-jni\libvorbis\books\floor\Makefile
-* backup-jni\libvorbis\books\floor\Makefile.am
-* backup-jni\libvorbis\books\floor\Makefile.in
-* backup-jni\libvorbis\books\floor\floor_books.h
-* backup-jni\libvorbis\books\uncoupled\
-* backup-jni\libvorbis\books\uncoupled\Makefile
-* backup-jni\libvorbis\books\uncoupled\Makefile.am
-* backup-jni\libvorbis\books\uncoupled\Makefile.in
-* backup-jni\libvorbis\books\uncoupled\res_books_uncoupled.h
-* backup-jni\libvorbis\codebook.c
-* backup-jni\libvorbis\codebook.h
-* backup-jni\libvorbis\codec_internal.h
-* backup-jni\libvorbis\envelope.c
-* backup-jni\libvorbis\envelope.h
-* backup-jni\libvorbis\floor0.c
-* backup-jni\libvorbis\floor1.c
-* backup-jni\libvorbis\highlevel.h
-* backup-jni\libvorbis\info.c
-* backup-jni\libvorbis\lookup.c
-* backup-jni\libvorbis\lookup.h
-* backup-jni\libvorbis\lookup_data.h
-* backup-jni\libvorbis\lpc.c
-* backup-jni\libvorbis\lpc.h
-* backup-jni\libvorbis\lsp.c
-* backup-jni\libvorbis\lsp.h
-* backup-jni\libvorbis\mapping0.c
-* backup-jni\libvorbis\masking.h
-* backup-jni\libvorbis\mdct.c
-* backup-jni\libvorbis\mdct.h
-* backup-jni\libvorbis\misc.h
-* backup-jni\libvorbis\modes\
-* backup-jni\libvorbis\modes\Makefile
-* backup-jni\libvorbis\modes\Makefile.am
-* backup-jni\libvorbis\modes\Makefile.in
-* backup-jni\libvorbis\modes\floor_all.h
-* backup-jni\libvorbis\modes\psych_11.h
-* backup-jni\libvorbis\modes\psych_16.h
-* backup-jni\libvorbis\modes\psych_44.h
-* backup-jni\libvorbis\modes\psych_8.h
-* backup-jni\libvorbis\modes\residue_16.h
-* backup-jni\libvorbis\modes\residue_44.h
-* backup-jni\libvorbis\modes\residue_44p51.h
-* backup-jni\libvorbis\modes\residue_44u.h
-* backup-jni\libvorbis\modes\residue_8.h
-* backup-jni\libvorbis\modes\setup_11.h
-* backup-jni\libvorbis\modes\setup_16.h
-* backup-jni\libvorbis\modes\setup_22.h
-* backup-jni\libvorbis\modes\setup_32.h
-* backup-jni\libvorbis\modes\setup_44.h
-* backup-jni\libvorbis\modes\setup_44p51.h
-* backup-jni\libvorbis\modes\setup_44u.h
-* backup-jni\libvorbis\modes\setup_8.h
-* backup-jni\libvorbis\modes\setup_X.h
-* backup-jni\libvorbis\os.h
-* backup-jni\libvorbis\psy.c
-* backup-jni\libvorbis\psy.h
-* backup-jni\libvorbis\registry.c
-* backup-jni\libvorbis\registry.h
-* backup-jni\libvorbis\res0.c
-* backup-jni\libvorbis\scales.h
-* backup-jni\libvorbis\sharedbook.c
-* backup-jni\libvorbis\smallft.c
-* backup-jni\libvorbis\smallft.h
-* backup-jni\libvorbis\synthesis.c
-* backup-jni\libvorbis\vorbisenc.c
-* backup-jni\libvorbis\vorbisfile.c
-* backup-jni\libvorbis\window.c
-* backup-jni\libvorbis\window.h
+* backup-jni/
+* backup-jni/.gitignore
+* backup-jni/Android.mk
+* backup-jni/Application.mk
+* backup-jni/include/
+* backup-jni/include/ogg/
+* backup-jni/include/ogg/config_types.h
+* backup-jni/include/ogg/ogg.h
+* backup-jni/include/ogg/os_types.h
+* backup-jni/include/stream/
+* backup-jni/include/stream/util.h
+* backup-jni/include/vorbis/
+* backup-jni/include/vorbis/codec.h
+* backup-jni/include/vorbis/vorbisenc.h
+* backup-jni/include/vorbis/vorbisfile.h
+* backup-jni/libogg/
+* backup-jni/libogg/Android.mk
+* backup-jni/libogg/bitwise.c
+* backup-jni/libogg/framing.c
+* backup-jni/libvorbis-jni/
+* backup-jni/libvorbis-jni/Android.mk
+* backup-jni/libvorbis-jni/org_xiph_vorbis_decoder_VorbisDecoder.c
+* backup-jni/libvorbis-jni/org_xiph_vorbis_decoder_VorbisDecoder.h
+* backup-jni/libvorbis-jni/org_xiph_vorbis_encoder_VorbisEncoder.c
+* backup-jni/libvorbis-jni/org_xiph_vorbis_encoder_VorbisEncoder.h
+* backup-jni/libvorbis/
+* backup-jni/libvorbis/Android.mk
+* backup-jni/libvorbis/analysis.c
+* backup-jni/libvorbis/backends.h
+* backup-jni/libvorbis/bitrate.c
+* backup-jni/libvorbis/bitrate.h
+* backup-jni/libvorbis/block.c
+* backup-jni/libvorbis/books/
+* backup-jni/libvorbis/books/Makefile
+* backup-jni/libvorbis/books/Makefile.am
+* backup-jni/libvorbis/books/Makefile.in
+* backup-jni/libvorbis/books/coupled/
+* backup-jni/libvorbis/books/coupled/Makefile
+* backup-jni/libvorbis/books/coupled/Makefile.am
+* backup-jni/libvorbis/books/coupled/Makefile.in
+* backup-jni/libvorbis/books/coupled/res_books_51.h
+* backup-jni/libvorbis/books/coupled/res_books_stereo.h
+* backup-jni/libvorbis/books/floor/
+* backup-jni/libvorbis/books/floor/Makefile
+* backup-jni/libvorbis/books/floor/Makefile.am
+* backup-jni/libvorbis/books/floor/Makefile.in
+* backup-jni/libvorbis/books/floor/floor_books.h
+* backup-jni/libvorbis/books/uncoupled/
+* backup-jni/libvorbis/books/uncoupled/Makefile
+* backup-jni/libvorbis/books/uncoupled/Makefile.am
+* backup-jni/libvorbis/books/uncoupled/Makefile.in
+* backup-jni/libvorbis/books/uncoupled/res_books_uncoupled.h
+* backup-jni/libvorbis/codebook.c
+* backup-jni/libvorbis/codebook.h
+* backup-jni/libvorbis/codec_internal.h
+* backup-jni/libvorbis/envelope.c
+* backup-jni/libvorbis/envelope.h
+* backup-jni/libvorbis/floor0.c
+* backup-jni/libvorbis/floor1.c
+* backup-jni/libvorbis/highlevel.h
+* backup-jni/libvorbis/info.c
+* backup-jni/libvorbis/lookup.c
+* backup-jni/libvorbis/lookup.h
+* backup-jni/libvorbis/lookup_data.h
+* backup-jni/libvorbis/lpc.c
+* backup-jni/libvorbis/lpc.h
+* backup-jni/libvorbis/lsp.c
+* backup-jni/libvorbis/lsp.h
+* backup-jni/libvorbis/mapping0.c
+* backup-jni/libvorbis/masking.h
+* backup-jni/libvorbis/mdct.c
+* backup-jni/libvorbis/mdct.h
+* backup-jni/libvorbis/misc.h
+* backup-jni/libvorbis/modes/
+* backup-jni/libvorbis/modes/Makefile
+* backup-jni/libvorbis/modes/Makefile.am
+* backup-jni/libvorbis/modes/Makefile.in
+* backup-jni/libvorbis/modes/floor_all.h
+* backup-jni/libvorbis/modes/psych_11.h
+* backup-jni/libvorbis/modes/psych_16.h
+* backup-jni/libvorbis/modes/psych_44.h
+* backup-jni/libvorbis/modes/psych_8.h
+* backup-jni/libvorbis/modes/residue_16.h
+* backup-jni/libvorbis/modes/residue_44.h
+* backup-jni/libvorbis/modes/residue_44p51.h
+* backup-jni/libvorbis/modes/residue_44u.h
+* backup-jni/libvorbis/modes/residue_8.h
+* backup-jni/libvorbis/modes/setup_11.h
+* backup-jni/libvorbis/modes/setup_16.h
+* backup-jni/libvorbis/modes/setup_22.h
+* backup-jni/libvorbis/modes/setup_32.h
+* backup-jni/libvorbis/modes/setup_44.h
+* backup-jni/libvorbis/modes/setup_44p51.h
+* backup-jni/libvorbis/modes/setup_44u.h
+* backup-jni/libvorbis/modes/setup_8.h
+* backup-jni/libvorbis/modes/setup_X.h
+* backup-jni/libvorbis/os.h
+* backup-jni/libvorbis/psy.c
+* backup-jni/libvorbis/psy.h
+* backup-jni/libvorbis/registry.c
+* backup-jni/libvorbis/registry.h
+* backup-jni/libvorbis/res0.c
+* backup-jni/libvorbis/scales.h
+* backup-jni/libvorbis/sharedbook.c
+* backup-jni/libvorbis/smallft.c
+* backup-jni/libvorbis/smallft.h
+* backup-jni/libvorbis/synthesis.c
+* backup-jni/libvorbis/vorbisenc.c
+* backup-jni/libvorbis/vorbisfile.c
+* backup-jni/libvorbis/window.c
+* backup-jni/libvorbis/window.h
 * build_jni.sh
 * default.properties
 * proguard.cfg
+* test.txt
 
 Moved Files:
 ------------
 Android Gradle projects use a different directory structure than ADT
 Eclipse projects. Here's how the projects were restructured:
 
-* AndroidManifest.xml => app\src\main\AndroidManifest.xml
-* assets\ => app\src\main\assets\
-* jni\ => app\src\main\jni\
-* libs\armeabi\libogg.so => app\src\main\jniLibs\armeabi\libogg.so
-* libs\armeabi\libvorbis-jni.so => app\src\main\jniLibs\armeabi\libvorbis-jni.so
-* libs\armeabi\libvorbis.so => app\src\main\jniLibs\armeabi\libvorbis.so
-* res\ => app\src\main\res\
-* src\ => app\src\main\java\
+* AndroidManifest.xml => app/src/main/AndroidManifest.xml
+* assets/ => app/src/main/assets/
+* jni/ => app/src/main/jni/
+* libs/armeabi/libogg.so => app/src/main/jniLibs/armeabi/libogg.so
+* libs/armeabi/libvorbis-jni.so => app/src/main/jniLibs/armeabi/libvorbis-jni.so
+* libs/armeabi/libvorbis.so => app/src/main/jniLibs/armeabi/libvorbis.so
+* res/ => app/src/main/res/
+* src/ => app/src/main/java/
 
 Next Steps:
 -----------

@@ -13,8 +13,8 @@ public class Refresh extends Activity{
     CoolMic coolmic;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		  setContentView(R.layout.refresh);
+			 super.onCreate(savedInstanceState);
+			 setContentView(R.layout.refresh);
 			 db = new DatabaseHandler(this);
 			 
 			 coolmic=db.getCoolMicDetails(1);
@@ -30,8 +30,9 @@ public class Refresh extends Activity{
 			 coolmic.setSampleRate(sr);;
 			 db.updateCoolMicDetails(coolmic);
 			 
-			Intent i = new Intent(this, MainActivity.class);
-			startActivity(i);
-			Toast.makeText(getApplicationContext(), "Broadcast stopped succesfully !", Toast.LENGTH_LONG).show();
+			 Intent i = new Intent(this, MainActivity.class);
+			 startActivity(i);
+			 finish();
+			 Toast.makeText(getApplicationContext(), "Broadcast stopped succesfully !", Toast.LENGTH_LONG).show();
 	}
 }

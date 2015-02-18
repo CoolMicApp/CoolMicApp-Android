@@ -121,7 +121,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
      
     // Getting contacts Count 
     public int getCoolMicSettingCount() { 
-    	  int count = 0;
+    	int count = 0;
         String countQuery = "SELECT  * FROM " + TABLE_CONTACTS; 
         SQLiteDatabase db = this.getReadableDatabase(); 
         Cursor cursor = db.rawQuery(countQuery, null); 

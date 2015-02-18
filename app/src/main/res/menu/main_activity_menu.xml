@@ -20,4 +20,14 @@
         android:orderInCategory="4"                
         android:title="General">
     </item>
+    <item
+        android:id="@+id/quite_app"
+        android:orderInCategory="6"                
+        android:title="Quit">
+    </item>
+    <item
+        android:id="@+id/help"
+        android:orderInCategory="5"                
+        android:title="Help">
+    </item>
 </menu> 

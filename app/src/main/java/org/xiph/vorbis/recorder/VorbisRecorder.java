@@ -32,7 +32,7 @@ public class VorbisRecorder {
      * Vorbis recorder status flag to notify handler to start encoding
      */
     public static final int START_ENCODING = 1;
-
+    public static final int WRONG_CREDENTIALS = 3;
     /**
      * Vorbis recorder status flag to notify handler to that it has stopped encoding
      */
@@ -318,6 +318,7 @@ public class VorbisRecorder {
                     return amountToWrite;
                 } catch (IOException e) {
                     //Failed to write to the file
+                	recordHandler.sendEmptyMessage(WRONG_CREDENTIALS);
                     Log.e(TAG, "Failed to write data to file, stopping recording", e);
                     stop();
                 }
@@ -344,7 +345,6 @@ public class VorbisRecorder {
                     }
                     outputStream = null;
                 }
-
                 //Stop and clean up the audio recorder
                 if (audioRecorder != null) {
                     audioRecorder.stop();
