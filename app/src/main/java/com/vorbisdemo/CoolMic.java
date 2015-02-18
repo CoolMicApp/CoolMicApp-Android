@@ -1,7 +1,7 @@
 package com.vorbisdemo;
 
-public class CoolMic { 
-	int id;
+public class CoolMic {
+    int id;
     private String artist = "";
     private String title = "";
     private String generalUsername = "";
@@ -15,7 +15,7 @@ public class CoolMic {
     private String termCondition = "";
 
     /*   public CoolMic(int id, String title){
-    	 this.id = id;
+         this.id = id;
          this.title = title;
     }
     public CoolMic(int id,String title,String generalUsername){
@@ -41,11 +41,11 @@ public class CoolMic {
         this.sampleRate = sampleRate;
         this.channels = channels;
         this.quality = quality;
-        this.termCondition = termCondition;        
+        this.termCondition = termCondition;
     }
-     
+
     // constructor
-    public CoolMic( String title, String generalUsername,String servername,String mountpoint, String username,String password,String sampleRate,String channels,String quality,String termCondition){        
+    public CoolMic(String title, String generalUsername, String servername, String mountpoint, String username, String password, String sampleRate, String channels, String quality, String termCondition) {
         this.title = title;
         this.artist = artist;
         this.generalUsername = generalUsername;
@@ -160,9 +160,9 @@ public class CoolMic {
     public boolean isConnectionSet() {
         if ((this.servername != null && !this.servername.isEmpty()) && (this.mountpoint != null && !this.mountpoint.isEmpty()) &&
                 (this.username != null && !this.username.isEmpty()) && ((this.password != null && !this.password.isEmpty()))) {
-    		return true;
+            return true;
         } else {
-    		return false;
-    	}
+            return false;
+        }
     }
 }

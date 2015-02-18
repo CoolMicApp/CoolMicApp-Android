@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="fill_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    >
-<LinearLayout 
-              android:orientation="vertical" android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-               android:id="@+id/main_linear_view">
+    android:layout_height="fill_parent">
+
     <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">     
-        
+        android:id="@+id/main_linear_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
         <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
                 android:id="@+id/available_qualities_layout"
-                android:layout_height="fill_parent">
-        
-            <ImageView
-                android:id="@+id/imageView1"
-                android:layout_width="match_parent"
-                android:layout_height="270dp"
-                android:onClick="onImageClick"
-                android:src="@drawable/mic" />
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="270dp"
+                    android:onClick="onImageClick"
+                    android:src="@drawable/mic" />
+
+            </LinearLayout>
 
         </LinearLayout>
-       
-    </LinearLayout>
- 
-    <LinearLayout
-            android:orientation="horizontal"
+
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-     </LinearLayout>
-    
-    <LinearLayout
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"></LinearLayout>
+
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="horizontal"
-             android:gravity="center" >
-			
+            android:gravity="center"
+            android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/timer"
                 android:layout_width="70dp"
@@ -60,68 +60,75 @@
                 android:text="@string/timerValue"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
-   </LinearLayout>        
-   
-    <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-  		<TextView
-	         android:id="@+id/space"
-	         android:layout_width="wrap_content"
-	         android:layout_height="wrap_content"	               
-	         />
-        <Button
-            android:id="@+id/start_recording_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"   
-            android:onClick="startRecording"                    
-            android:text="Start Broadcast" />
-        
+        </LinearLayout>
 
-    </LinearLayout>
-     
-    <LinearLayout 
-            android:orientation="horizontal"
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-         <Button
-            android:id="@+id/stop_recording_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:onClick="stopRecording"            
-            android:text="Stop Broadcast" />
-      
-    </LinearLayout>
-    <LinearLayout
-	      android:layout_width="fill_parent"
-	      android:layout_height="wrap_content"
-	      android:orientation="vertical" >	
-	   		<TextView
-	         android:id="@+id/general_username_id"
-	         android:layout_width="wrap_content"
-	         android:layout_height="wrap_content"	               
-	         />	
-	</LinearLayout>    
-  <LinearLayout
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/space"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/start_recording_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="startRecording"
+                android:text="Start Broadcast" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/stop_recording_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="stopRecording"
+                android:text="Stop Broadcast" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/general_username_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/log_area"
                 android:layout_width="fill_parent"
                 android:layout_height="191dp"
                 android:scrollbars="vertical" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/log_area"
+                android:layout_width="fill_parent"
+                android:layout_height="191dp"
+                android:scrollbars="vertical" />
+        </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
-   			<TextView
-            android:layout_width="fill_parent"            
-            android:scrollbars="vertical"
-            android:layout_height="191dp"
-            android:id="@+id/log_area"/> 
-            </LinearLayout>
-</LinearLayout>
 </ScrollView>

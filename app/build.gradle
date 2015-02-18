@@ -9,7 +9,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 21
         sourceSets.main {
-            jniLibs.srcDir 'src/main/libs' // use the jni .so compiled from the manual ndk-build command
+            jniLibs.srcDir 'src/main/libs'
+            // use the jni .so compiled from the manual ndk-build command
             jni.srcDirs = [] //disable automatic ndk-build call
         }
     }

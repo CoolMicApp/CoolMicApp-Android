@@ -3,9 +3,10 @@ package org.xiph.vorbis.player;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.*;
+import android.os.Handler;
 import android.os.Process;
 import android.util.Log;
+
 import org.xiph.vorbis.decoder.DecodeFeed;
 import org.xiph.vorbis.decoder.DecodeStreamInfo;
 import org.xiph.vorbis.decoder.VorbisDecoder;
@@ -31,300 +32,33 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class VorbisPlayer implements Runnable {
     /**
-     * Playing state which can either be stopped, playing, or reading the header before playing
-     */
-    private static enum PlayerState {
-        PLAYING, STOPPED, READING_HEADER, BUFFERING
-    }
-
-    /**
      * Playing finished handler message
      */
     public static final int PLAYING_FINISHED = 46314;
-
     /**
      * Playing failed handler message
      */
     public static final int PLAYING_FAILED = 46315;
-
     /**
      * Playing started handler message
      */
     public static final int PLAYING_STARTED = 46316;
-
-    /**
-     * Handler for sending status updates
-     */
-    private final Handler handler;
-
     /**
      * Logging tag
      */
     private static final String TAG = "VorbisPlayer";
-
+    /**
+     * Handler for sending status updates
+     */
+    private final Handler handler;
     /**
      * The decode feed to read and write pcm/vorbis data respectively
      */
     private final DecodeFeed decodeFeed;
-
     /**
      * Current state of the vorbis player
      */
     private AtomicReference<PlayerState> currentState = new AtomicReference<PlayerState>(PlayerState.STOPPED);
-
-    /**
-     * Custom class to easily decode from a file and write to an {@link AudioTrack}
-     */
-    private class FileDecodeFeed implements DecodeFeed {
-        /**
-         * The audio track to write the raw pcm bytes to
-         */
-        private AudioTrack audioTrack;
-
-        /**
-         * The input stream to decode from
-         */
-        private InputStream inputStream;
-        /**
-         * The file to decode ogg/vorbis data from
-         */
-        private final File fileToDecode;
-
-        /**
-         * Creates a decode feed that reads from a file and writes to an {@link AudioTrack}
-         *
-         * @param fileToDecode the file to decode
-         */
-        private FileDecodeFeed(File fileToDecode) throws FileNotFoundException {
-            if (fileToDecode == null) {
-                throw new IllegalArgumentException("File to decode must not be null.");
-            }
-            this.fileToDecode = fileToDecode;
-        }
-
-        @Override
-        public synchronized int readVorbisData(byte[] buffer, int amountToWrite) {
-            //If the player is not playing or reading the header, return 0 to end the native decode method
-            if (currentState.get() == PlayerState.STOPPED) {
-                return 0;
-            }
-
-            //Otherwise read from the file
-            try {
-                int read = inputStream.read(buffer, 0, amountToWrite);
-                return read == -1 ? 0 : read;
-            } catch (IOException e) {
-                //There was a problem reading from the file
-                Log.e(TAG, "Failed to read vorbis data from file.  Aborting.", e);
-                stop();
-                return 0;
-            }
-        }
-
-        @Override
-        public synchronized void writePCMData(short[] pcmData, int amountToRead) {
-            //If we received data and are playing, write to the audio track
-            if (pcmData != null && amountToRead > 0 && audioTrack != null && isPlaying()) {
-                audioTrack.write(pcmData, 0, amountToRead);
-            }
-        }
-
-        @Override
-        public void stop() {
-            if (isPlaying() || isReadingHeader()) {
-                //Closes the file input stream
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to close file input stream", e);
-                    }
-                    inputStream = null;
-                }
-
-                //Stop the audio track
-                if (audioTrack != null) {
-                    audioTrack.stop();
-                    audioTrack.release();
-                    audioTrack = null;
-                }
-            }
-
-            //Set our state to stopped
-            currentState.set(PlayerState.STOPPED);
-        }
-
-        @Override
-        public void start(DecodeStreamInfo decodeStreamInfo) {
-            if (currentState.get() != PlayerState.READING_HEADER) {
-                throw new IllegalStateException("Must read header first!");
-            }
-            if (decodeStreamInfo.getChannels() != 1 && decodeStreamInfo.getChannels() != 2) {
-                throw new IllegalArgumentException("Channels can only be one or two");
-            }
-            if (decodeStreamInfo.getSampleRate() <= 0) {
-                throw new IllegalArgumentException("Invalid sample rate, must be above 0");
-            }
-
-            //Create the audio track
-            int channelConfiguration = decodeStreamInfo.getChannels() == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
-            int minSize = AudioTrack.getMinBufferSize((int) decodeStreamInfo.getSampleRate(), channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
-            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, (int) decodeStreamInfo.getSampleRate(), channelConfiguration, AudioFormat.ENCODING_PCM_16BIT, minSize, AudioTrack.MODE_STREAM);
-            audioTrack.play();
-
-            //We're starting to read actual content
-            currentState.set(PlayerState.PLAYING);
-        }
-
-        @Override
-        public void startReadingHeader() {
-            if (inputStream == null && isStopped()) {
-                handler.sendEmptyMessage(PLAYING_STARTED);
-                try {
-                    inputStream = new BufferedInputStream(new FileInputStream(fileToDecode));
-                    currentState.set(PlayerState.READING_HEADER);
-                } catch (FileNotFoundException e) {
-                    Log.e(TAG, "Failed to find file to decode", e);
-                    stop();
-                }
-            }
-        }
-
-    }
-
-    /**
-     * Custom class to easily buffer and decode from a stream and write to an {@link AudioTrack}
-     */
-    private class BufferedDecodeFeed implements DecodeFeed {
-        /**
-         * The audio track to write the raw pcm bytes to
-         */
-        private AudioTrack audioTrack;
-
-        /**
-         * The initial buffer size
-         */
-        private final long bufferSize;
-
-        /**
-         * The input stream to decode from
-         */
-        private InputStream inputStream;
-
-        /**
-         * The amount of written pcm data to the audio track
-         */
-        private long writtenPCMData = 0;
-
-        /**
-         * Creates a decode feed that reads from a file and writes to an {@link AudioTrack}
-         *
-         * @param streamToDecode the stream to decode
-         */
-        private BufferedDecodeFeed(InputStream streamToDecode, long bufferSize) {
-            if (streamToDecode == null) {
-                throw new IllegalArgumentException("Stream to decode must not be null.");
-            }
-            this.inputStream = streamToDecode;
-            this.bufferSize = bufferSize;
-        }
-
-        @Override
-        public int readVorbisData(byte[] buffer, int amountToWrite) {
-            //If the player is not playing or reading the header, return 0 to end the native decode method
-            if (currentState.get() == PlayerState.STOPPED) {
-                return 0;
-            }
-
-            //Otherwise read from the file
-            try {
-                Log.d(TAG, "Reading...");
-                int read = inputStream.read(buffer, 0, amountToWrite);
-                Log.d(TAG, "Read...");
-                return read == -1 ? 0 : read;
-            } catch (IOException e) {
-                //There was a problem reading from the file
-                Log.e(TAG, "Failed to read vorbis data from file.  Aborting.", e);
-                return 0;
-            }
-        }
-
-        @Override
-        public void writePCMData(short[] pcmData, int amountToRead) {
-            //If we received data and are playing, write to the audio track
-            Log.d(TAG, "Writing data to track");
-            if (pcmData != null && amountToRead > 0 && audioTrack != null && (isPlaying() || isBuffering())) {
-                audioTrack.write(pcmData, 0, amountToRead);
-                writtenPCMData += amountToRead;
-                if (writtenPCMData >= bufferSize) {
-                    audioTrack.play();
-                    currentState.set(PlayerState.PLAYING);
-                }
-            }
-        }
-
-        @Override
-        public void stop() {
-            if (!isStopped()) {
-                //If we were in a state of buffering before we actually started playing, start playing and write some silence to the track
-                if (currentState.get() == PlayerState.BUFFERING) {
-                    audioTrack.play();
-                    audioTrack.write(new byte[20000], 0, 20000);
-                }
-
-                //Closes the file input stream
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to close file input stream", e);
-                    }
-                    inputStream = null;
-                }
-
-                //Stop the audio track
-                if (audioTrack != null) {
-                    audioTrack.stop();
-                    audioTrack.release();
-                    audioTrack = null;
-                }
-            }
-
-            //Set our state to stopped
-            currentState.set(PlayerState.STOPPED);
-        }
-
-        @Override
-        public void start(DecodeStreamInfo decodeStreamInfo) {
-            if (currentState.get() != PlayerState.READING_HEADER) {
-                throw new IllegalStateException("Must read header first!");
-            }
-            if (decodeStreamInfo.getChannels() != 1 && decodeStreamInfo.getChannels() != 2) {
-                throw new IllegalArgumentException("Channels can only be one or two");
-            }
-            if (decodeStreamInfo.getSampleRate() <= 0) {
-                throw new IllegalArgumentException("Invalid sample rate, must be above 0");
-            }
-
-            //Create the audio track
-            int channelConfiguration = decodeStreamInfo.getChannels() == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
-            int minSize = AudioTrack.getMinBufferSize((int) decodeStreamInfo.getSampleRate(), channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
-            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, (int) decodeStreamInfo.getSampleRate(), channelConfiguration, AudioFormat.ENCODING_PCM_16BIT, minSize, AudioTrack.MODE_STREAM);
-            audioTrack.play();
-
-            //We're starting to read actual content
-            currentState.set(PlayerState.BUFFERING);
-        }
-
-        @Override
-        public void startReadingHeader() {
-            if (isStopped()) {
-                handler.sendEmptyMessage(PLAYING_STARTED);
-                currentState.set(PlayerState.READING_HEADER);
-            }
-        }
-
-    }
 
     /**
      * Constructs a new instance of the player with default parameters other than it will decode from a file
@@ -466,5 +200,263 @@ public class VorbisPlayer implements Runnable {
      */
     public synchronized boolean isBuffering() {
         return currentState.get() == PlayerState.BUFFERING;
+    }
+
+    /**
+     * Playing state which can either be stopped, playing, or reading the header before playing
+     */
+    private static enum PlayerState {
+        PLAYING, STOPPED, READING_HEADER, BUFFERING
+    }
+
+    /**
+     * Custom class to easily decode from a file and write to an {@link AudioTrack}
+     */
+    private class FileDecodeFeed implements DecodeFeed {
+        /**
+         * The file to decode ogg/vorbis data from
+         */
+        private final File fileToDecode;
+        /**
+         * The audio track to write the raw pcm bytes to
+         */
+        private AudioTrack audioTrack;
+        /**
+         * The input stream to decode from
+         */
+        private InputStream inputStream;
+
+        /**
+         * Creates a decode feed that reads from a file and writes to an {@link AudioTrack}
+         *
+         * @param fileToDecode the file to decode
+         */
+        private FileDecodeFeed(File fileToDecode) throws FileNotFoundException {
+            if (fileToDecode == null) {
+                throw new IllegalArgumentException("File to decode must not be null.");
+            }
+            this.fileToDecode = fileToDecode;
+        }
+
+        @Override
+        public synchronized int readVorbisData(byte[] buffer, int amountToWrite) {
+            //If the player is not playing or reading the header, return 0 to end the native decode method
+            if (currentState.get() == PlayerState.STOPPED) {
+                return 0;
+            }
+
+            //Otherwise read from the file
+            try {
+                int read = inputStream.read(buffer, 0, amountToWrite);
+                return read == -1 ? 0 : read;
+            } catch (IOException e) {
+                //There was a problem reading from the file
+                Log.e(TAG, "Failed to read vorbis data from file.  Aborting.", e);
+                stop();
+                return 0;
+            }
+        }
+
+        @Override
+        public synchronized void writePCMData(short[] pcmData, int amountToRead) {
+            //If we received data and are playing, write to the audio track
+            if (pcmData != null && amountToRead > 0 && audioTrack != null && isPlaying()) {
+                audioTrack.write(pcmData, 0, amountToRead);
+            }
+        }
+
+        @Override
+        public void stop() {
+            if (isPlaying() || isReadingHeader()) {
+                //Closes the file input stream
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed to close file input stream", e);
+                    }
+                    inputStream = null;
+                }
+
+                //Stop the audio track
+                if (audioTrack != null) {
+                    audioTrack.stop();
+                    audioTrack.release();
+                    audioTrack = null;
+                }
+            }
+
+            //Set our state to stopped
+            currentState.set(PlayerState.STOPPED);
+        }
+
+        @Override
+        public void start(DecodeStreamInfo decodeStreamInfo) {
+            if (currentState.get() != PlayerState.READING_HEADER) {
+                throw new IllegalStateException("Must read header first!");
+            }
+            if (decodeStreamInfo.getChannels() != 1 && decodeStreamInfo.getChannels() != 2) {
+                throw new IllegalArgumentException("Channels can only be one or two");
+            }
+            if (decodeStreamInfo.getSampleRate() <= 0) {
+                throw new IllegalArgumentException("Invalid sample rate, must be above 0");
+            }
+
+            //Create the audio track
+            int channelConfiguration = decodeStreamInfo.getChannels() == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
+            int minSize = AudioTrack.getMinBufferSize((int) decodeStreamInfo.getSampleRate(), channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
+            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, (int) decodeStreamInfo.getSampleRate(), channelConfiguration, AudioFormat.ENCODING_PCM_16BIT, minSize, AudioTrack.MODE_STREAM);
+            audioTrack.play();
+
+            //We're starting to read actual content
+            currentState.set(PlayerState.PLAYING);
+        }
+
+        @Override
+        public void startReadingHeader() {
+            if (inputStream == null && isStopped()) {
+                handler.sendEmptyMessage(PLAYING_STARTED);
+                try {
+                    inputStream = new BufferedInputStream(new FileInputStream(fileToDecode));
+                    currentState.set(PlayerState.READING_HEADER);
+                } catch (FileNotFoundException e) {
+                    Log.e(TAG, "Failed to find file to decode", e);
+                    stop();
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Custom class to easily buffer and decode from a stream and write to an {@link AudioTrack}
+     */
+    private class BufferedDecodeFeed implements DecodeFeed {
+        /**
+         * The initial buffer size
+         */
+        private final long bufferSize;
+        /**
+         * The audio track to write the raw pcm bytes to
+         */
+        private AudioTrack audioTrack;
+        /**
+         * The input stream to decode from
+         */
+        private InputStream inputStream;
+
+        /**
+         * The amount of written pcm data to the audio track
+         */
+        private long writtenPCMData = 0;
+
+        /**
+         * Creates a decode feed that reads from a file and writes to an {@link AudioTrack}
+         *
+         * @param streamToDecode the stream to decode
+         */
+        private BufferedDecodeFeed(InputStream streamToDecode, long bufferSize) {
+            if (streamToDecode == null) {
+                throw new IllegalArgumentException("Stream to decode must not be null.");
+            }
+            this.inputStream = streamToDecode;
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public int readVorbisData(byte[] buffer, int amountToWrite) {
+            //If the player is not playing or reading the header, return 0 to end the native decode method
+            if (currentState.get() == PlayerState.STOPPED) {
+                return 0;
+            }
+
+            //Otherwise read from the file
+            try {
+                Log.d(TAG, "Reading...");
+                int read = inputStream.read(buffer, 0, amountToWrite);
+                Log.d(TAG, "Read...");
+                return read == -1 ? 0 : read;
+            } catch (IOException e) {
+                //There was a problem reading from the file
+                Log.e(TAG, "Failed to read vorbis data from file.  Aborting.", e);
+                return 0;
+            }
+        }
+
+        @Override
+        public void writePCMData(short[] pcmData, int amountToRead) {
+            //If we received data and are playing, write to the audio track
+            Log.d(TAG, "Writing data to track");
+            if (pcmData != null && amountToRead > 0 && audioTrack != null && (isPlaying() || isBuffering())) {
+                audioTrack.write(pcmData, 0, amountToRead);
+                writtenPCMData += amountToRead;
+                if (writtenPCMData >= bufferSize) {
+                    audioTrack.play();
+                    currentState.set(PlayerState.PLAYING);
+                }
+            }
+        }
+
+        @Override
+        public void stop() {
+            if (!isStopped()) {
+                //If we were in a state of buffering before we actually started playing, start playing and write some silence to the track
+                if (currentState.get() == PlayerState.BUFFERING) {
+                    audioTrack.play();
+                    audioTrack.write(new byte[20000], 0, 20000);
+                }
+
+                //Closes the file input stream
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed to close file input stream", e);
+                    }
+                    inputStream = null;
+                }
+
+                //Stop the audio track
+                if (audioTrack != null) {
+                    audioTrack.stop();
+                    audioTrack.release();
+                    audioTrack = null;
+                }
+            }
+
+            //Set our state to stopped
+            currentState.set(PlayerState.STOPPED);
+        }
+
+        @Override
+        public void start(DecodeStreamInfo decodeStreamInfo) {
+            if (currentState.get() != PlayerState.READING_HEADER) {
+                throw new IllegalStateException("Must read header first!");
+            }
+            if (decodeStreamInfo.getChannels() != 1 && decodeStreamInfo.getChannels() != 2) {
+                throw new IllegalArgumentException("Channels can only be one or two");
+            }
+            if (decodeStreamInfo.getSampleRate() <= 0) {
+                throw new IllegalArgumentException("Invalid sample rate, must be above 0");
+            }
+
+            //Create the audio track
+            int channelConfiguration = decodeStreamInfo.getChannels() == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
+            int minSize = AudioTrack.getMinBufferSize((int) decodeStreamInfo.getSampleRate(), channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
+            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, (int) decodeStreamInfo.getSampleRate(), channelConfiguration, AudioFormat.ENCODING_PCM_16BIT, minSize, AudioTrack.MODE_STREAM);
+            audioTrack.play();
+
+            //We're starting to read actual content
+            currentState.set(PlayerState.BUFFERING);
+        }
+
+        @Override
+        public void startReadingHeader() {
+            if (isStopped()) {
+                handler.sendEmptyMessage(PLAYING_STARTED);
+                currentState.set(PlayerState.READING_HEADER);
+            }
+        }
+
     }
 }

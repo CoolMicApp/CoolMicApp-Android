@@ -1,127 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="fill_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    >
-<LinearLayout 
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
-			<LinearLayout
-	       		    android:layout_width="fill_parent"
-	        	    android:layout_height="wrap_content"
-	        		android:orientation="vertical" >    
+    android:layout_height="fill_parent">
 
-			        <TextView
-			            android:id="@+id/server_id"
-			            android:layout_width="fill_parent"
-			            android:layout_height="wrap_content"
-			            android:text="Server"
-			             />
-			
-			        <EditText
-			            android:id="@+id/server_edittext"
-			            android:layout_width="fill_parent"
-			            android:layout_height="wrap_content"
-			            android:ems="10"
-			            android:text="server text"
-			            android:inputType="text" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-	        </LinearLayout> 
-        	<LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="fill_parent"
-	            android:orientation="vertical" >
-	
-	            <TextView
-	                android:id="@+id/username_id"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:text="Username"
-	                />
-	
-	            <EditText
-	                android:id="@+id/username_editid"
-	                android:layout_width="fill_parent"
-	                android:layout_height="wrap_content"
-	                android:ems="10"
-	                android:text="username"
-	                android:inputType="text" />
-	        </LinearLayout>
-	        <LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="fill_parent"
-	            android:orientation="vertical" >
-	
-	            <TextView
-	                android:id="@+id/password_id"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:text="Password"
-	                />
-	
-	            <EditText
-	                android:id="@+id/password_edittext"
-	                android:layout_width="fill_parent"
-	                android:layout_height="wrap_content"
-	                android:ems="10"
-	                android:text="password"
-	                android:inputType="textPassword" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-	        </LinearLayout>
-	        
-	        <LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="fill_parent"
-	            android:orientation="vertical" >
-	            
-	            <CheckBox
-			        android:id="@+id/show_password_check"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignParentRight="true"
-			        android:text="Show Password" />
-	            
-	        </LinearLayout>
-	        
-	       	<LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:orientation="vertical" >
-	
-	            <TextView
-	                android:id="@+id/mountpoint_id"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:text="Mountpoint"
-	                />
-	
-	            <EditText
-	                android:id="@+id/mountpoint_edittext"
-	                android:layout_width="fill_parent"
-	                android:layout_height="wrap_content"
-	                android:ems="10"
-	                android:text="mountpoints"
-	                android:inputType="text" />
-	        </LinearLayout>
-	       	<RelativeLayout
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_weight="0.93" >
+            <TextView
+                android:id="@+id/server_id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Server" />
 
-		        <Button
-		            android:id="@+id/button1"
-		            android:layout_width="fill_parent"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentBottom="true"
-		            android:layout_centerHorizontal="true"
-		            android:onClick="saveConnection"
-		            android:text="Save" />
-		        
-    		</RelativeLayout>
-  
+            <EditText
+                android:id="@+id/server_edittext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:text="server text" />
 
-</LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/username_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username" />
+
+            <EditText
+                android:id="@+id/username_editid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:text="username" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/password_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password" />
+
+            <EditText
+                android:id="@+id/password_edittext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:text="password" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/show_password_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="Show Password" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/mountpoint_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mountpoint" />
+
+            <EditText
+                android:id="@+id/mountpoint_edittext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:text="mountpoints" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.93">
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:onClick="saveConnection"
+                android:text="Save" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
 </ScrollView>

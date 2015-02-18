@@ -11,7 +11,7 @@ public class VorbisEncoder {
      * Load our vorbis-jni library as well as the other dependent libraries
      */
     static {
-        System.loadLibrary("ogg"); 
+        System.loadLibrary("ogg");
         System.loadLibrary("vorbis");
         System.loadLibrary("vorbis-jni");
     }

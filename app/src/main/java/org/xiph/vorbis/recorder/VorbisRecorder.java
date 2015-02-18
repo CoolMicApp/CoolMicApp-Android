@@ -1,10 +1,10 @@
 package org.xiph.vorbis.recorder;
 
-import android.os.Handler;
-import android.os.Process;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Handler;
+import android.os.Process;
 import android.util.Log;
 
 import com.gmail.kunicins.olegs.libshout.Libshout;
@@ -60,6 +60,223 @@ public class VorbisRecorder {
      * Vorbis recorder status flag to notify handler that the encoder has failed to initialize properly
      */
     public static final int ERROR_INITIALIZING = -1;
+    /**
+     * Logging tag
+     */
+    private static final String TAG = "VorbisRecorder";
+    /**
+     * The record handler to post status updates to
+     */
+    private final Handler recordHandler;
+    /**
+     * The encode feed to feed raw pcm and write vorbis data
+     */
+    private final EncodeFeed encodeFeed;
+    /**
+     * The current state of the recorder
+     */
+    private final AtomicReference<RecorderState> currentState = new AtomicReference<RecorderState>(RecorderState.STOPPED);
+    /**
+     * The sample rate of the recorder
+     */
+    private long sampleRate;
+    /**
+     * The number of channels for the recorder
+     */
+    private long numberOfChannels;
+    /**
+     * The output quality of the encoding
+     */
+    private float quality;
+    /**
+     * The target encoding bitrate
+     */
+    private long bitrate;
+    /**
+     * Whether the recording will encode with a quality percent or average bitrate
+     */
+    private RecordingType recordingType;
+    /**
+     * Title metadata
+     */
+    private String metaTitle;
+    /**
+     * Artist metadata
+     */
+    private String metaArtist;
+
+    /**
+     * Constructs a recorder that will record an ogg file
+     *
+     * @param fileToSaveTo  the file to save to
+     * @param recordHandler the handler for receiving status updates about the recording process
+     */
+    public VorbisRecorder(File fileToSaveTo, Handler recordHandler, String title, String artist) {
+        if (fileToSaveTo == null) {
+            throw new IllegalArgumentException("File to play must not be null.");
+        }
+
+        //Delete the file if it exists
+        if (fileToSaveTo.exists()) {
+            fileToSaveTo.deleteOnExit();
+        }
+
+        this.encodeFeed = new FileEncodeFeed(fileToSaveTo);
+        this.recordHandler = recordHandler;
+        this.metaTitle = title;
+        this.metaArtist = artist;
+    }
+
+    /**
+     * Constructs a recorder that will record an ogg output stream
+     *
+     * @param streamToWriteTo the output stream to write the encoded information to
+     * @param recordHandler   the handler for receiving status updates about the recording process
+     * @param title           the title which should appear in the stream
+     * @param artist          the artist which should appear in the stream
+     */
+    public VorbisRecorder(OutputStream streamToWriteTo, Handler recordHandler, String title, String artist) {
+        if (streamToWriteTo == null) {
+            throw new IllegalArgumentException("File to play must not be null.");
+        }
+
+        this.encodeFeed = new OutputStreamEncodeFeed(streamToWriteTo);
+        this.recordHandler = recordHandler;
+        this.metaTitle = title;
+        this.metaArtist = artist;
+    }
+
+    /**
+     * Constructs a vorbis recorder with a custom {@link EncodeFeed}
+     *
+     * @param encodeFeed    the custom {@link EncodeFeed}
+     * @param recordHandler the handler for receiving status updates about the recording process
+     * @param title         the title which should appear in the stream
+     * @param artist        the artist which should appear in the stream
+     */
+    public VorbisRecorder(EncodeFeed encodeFeed, Handler recordHandler, String title, String artist) {
+        if (encodeFeed == null) {
+            throw new IllegalArgumentException("Encode feed must not be null.");
+        }
+
+        this.encodeFeed = encodeFeed;
+        this.recordHandler = recordHandler;
+        this.metaTitle = title;
+        this.metaArtist = artist;
+    }
+
+    /**
+     * Constructs a vorbis recorder with a custom {@link EncodeFeed}
+     *
+     * @param shout         the custom {@link EncodeFeed}
+     * @param recordHandler the handler for receiving status updates about the recording process
+     * @param title         the title which should appear in the stream
+     * @param artist        the artist which should appear in the stream
+     */
+    public VorbisRecorder(Libshout shout, Handler recordHandler, String title, String artist) {
+        if (shout == null) {
+            throw new IllegalArgumentException("Libshout object must not be null.");
+        }
+
+        this.encodeFeed = new LibShoutEncodeFeed(shout);
+        this.recordHandler = recordHandler;
+        this.metaTitle = title;
+        this.metaArtist = artist;
+    }
+
+    /**
+     * Starts the recording/encoding process
+     *
+     * @param sampleRate       the rate to sample the audio at, should be greater than <code>0</code>
+     * @param numberOfChannels the nubmer of channels, must only be <code>1/code> or <code>2</code>
+     * @param quality          the quality at which to encode, must be between <code>-0.1</code> and <code>1.0</code>
+     */
+    @SuppressWarnings("all")
+    public synchronized void start(long sampleRate, long numberOfChannels, float quality) {
+        if (isStopped()) {
+            if (numberOfChannels != 1 && numberOfChannels != 2) {
+                throw new IllegalArgumentException("Channels can only be one or two");
+            }
+            if (sampleRate <= 0) {
+                throw new IllegalArgumentException("Invalid sample rate, must be above 0");
+            }
+            if (quality < -0.1f || quality > 1.0f) {
+                throw new IllegalArgumentException("Quality must be between -0.1 and 1.0");
+            }
+
+            this.sampleRate = sampleRate;
+            this.numberOfChannels = numberOfChannels;
+            this.quality = quality;
+            this.recordingType = RecordingType.WITH_QUALITY;
+
+            //Starts the recording process
+            new Thread(new AsyncEncoding()).start();
+        }
+    }
+
+    /**
+     * Starts the recording/encoding process
+     *
+     * @param sampleRate       the rate to sample the audio at, should be greater than <code>0</code>
+     * @param numberOfChannels the nubmer of channels, must only be <code>1/code> or <code>2</code>
+     * @param bitrate          the bitrate at which to encode, must be greater than <code>-0</code>
+     */
+    @SuppressWarnings("all")
+    public synchronized void start(long sampleRate, long numberOfChannels, long bitrate) {
+        if (isStopped()) {
+            if (numberOfChannels != 1 && numberOfChannels != 2) {
+                throw new IllegalArgumentException("Channels can only be one or two");
+            }
+            if (sampleRate <= 0) {
+                throw new IllegalArgumentException("Invalid sample rate, must be above 0");
+            }
+            if (bitrate <= 0) {
+                throw new IllegalArgumentException("Target bitrate must be greater than 0");
+            }
+
+            this.sampleRate = sampleRate;
+            this.numberOfChannels = numberOfChannels;
+            this.bitrate = bitrate;
+            this.recordingType = RecordingType.WITH_BITRATE;
+
+            //Starts the recording process
+            new Thread(new AsyncEncoding()).start();
+        }
+    }
+
+    /**
+     * Stops the audio recorder and notifies the {@link EncodeFeed}
+     */
+    public synchronized void stop() {
+        encodeFeed.stopEncoding();
+    }
+
+    /**
+     * Checks whether the recording is currently recording
+     *
+     * @return <code>true</code> if recording, <code>false</code> otherwise
+     */
+    public synchronized boolean isRecording() {
+        return currentState.get() == RecorderState.RECORDING;
+    }
+
+    /**
+     * Checks whether the recording is currently stopped (not recording)
+     *
+     * @return <code>true</code> if stopped, <code>false</code> otherwise
+     */
+    public synchronized boolean isStopped() {
+        return currentState.get() == RecorderState.STOPPED;
+    }
+
+    /**
+     * Checks whether the recording is currently stopping (not recording)
+     *
+     * @return <code>true</code> if stopping, <code>false</code> otherwise
+     */
+    public synchronized boolean isStopping() {
+        return currentState.get() == RecorderState.STOPPING;
+    }
 
     /**
      * Whether the recording will encode with a quality percent or average bitrate
@@ -69,66 +286,11 @@ public class VorbisRecorder {
     }
 
     /**
-     * The record handler to post status updates to
-     */
-    private final Handler recordHandler;
-
-    /**
-     * The sample rate of the recorder
-     */
-    private long sampleRate;
-
-    /**
-     * The number of channels for the recorder
-     */
-    private long numberOfChannels;
-
-    /**
-     * The output quality of the encoding
-     */
-    private float quality;
-
-    /**
-     * The target encoding bitrate
-     */
-    private long bitrate;
-
-    /**
-     * Whether the recording will encode with a quality percent or average bitrate
-     */
-    private RecordingType recordingType;
-
-    /**
      * The state of the recorder
      */
     private static enum RecorderState {
         RECORDING, STOPPED, STOPPING
     }
-
-    /**
-     * Logging tag
-     */
-    private static final String TAG = "VorbisRecorder";
-
-    /**
-     * The encode feed to feed raw pcm and write vorbis data
-     */
-    private final EncodeFeed encodeFeed;
-
-    /**
-     * The current state of the recorder
-     */
-    private final AtomicReference<RecorderState> currentState = new AtomicReference<RecorderState>(RecorderState.STOPPED);
-
-    /**
-     * Title metadata
-     */
-    private String metaTitle;
-
-    /**
-     * Artist metadata
-     */
-    private String metaArtist;
 
     /**
      * Helper class that implements {@link EncodeFeed} that will write the processed vorbis data to a file and will
@@ -248,7 +410,7 @@ public class VorbisRecorder {
                 int channelConfiguration = numberOfChannels == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO;
                 int bufferSize = AudioRecord.getMinBufferSize((int) sampleRate, channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
 
-                if(bufferSize < 0) {
+                if (bufferSize < 0) {
                     recordHandler.sendEmptyMessage(UNSUPPORTED_AUDIO_TRACK_RECORD_PARAMETERS);
                 }
 
@@ -331,7 +493,7 @@ public class VorbisRecorder {
                     return amountToWrite;
                 } catch (IOException e) {
                     //Failed to write to the file
-                	recordHandler.sendEmptyMessage(WRONG_CREDENTIALS);
+                    recordHandler.sendEmptyMessage(WRONG_CREDENTIALS);
                     Log.e(TAG, "Failed to write data to file, stopping recording", e);
                     stop();
                 }
@@ -376,18 +538,18 @@ public class VorbisRecorder {
 
         @Override
         public void start() {
-		    if (isStopped()) {
-		        recordHandler.sendEmptyMessage(START_ENCODING);
-		
-		        //Creates the audio recorder
-		        int channelConfiguration = numberOfChannels == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO;
-		        int bufferSize = AudioRecord.getMinBufferSize((int) sampleRate, channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
-		        audioRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, (int) sampleRate, channelConfiguration, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
-		
-		        //Start recording
-		        currentState.set(RecorderState.RECORDING);
-		        audioRecorder.startRecording();
-		    }
+            if (isStopped()) {
+                recordHandler.sendEmptyMessage(START_ENCODING);
+
+                //Creates the audio recorder
+                int channelConfiguration = numberOfChannels == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO;
+                int bufferSize = AudioRecord.getMinBufferSize((int) sampleRate, channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
+                audioRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, (int) sampleRate, channelConfiguration, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+
+                //Start recording
+                currentState.set(RecorderState.RECORDING);
+                audioRecorder.startRecording();
+            }
         }
     }
 
@@ -507,153 +669,6 @@ public class VorbisRecorder {
         }
     }
 
-
-    /**
-     * Constructs a recorder that will record an ogg file
-     *
-     * @param fileToSaveTo  the file to save to
-     * @param recordHandler the handler for receiving status updates about the recording process
-     */
-    public VorbisRecorder(File fileToSaveTo, Handler recordHandler, String title, String artist) {
-        if (fileToSaveTo == null) {
-            throw new IllegalArgumentException("File to play must not be null.");
-        }
-
-        //Delete the file if it exists
-        if (fileToSaveTo.exists()) {
-            fileToSaveTo.deleteOnExit();
-        }
-
-        this.encodeFeed = new FileEncodeFeed(fileToSaveTo);
-        this.recordHandler = recordHandler;
-        this.metaTitle = title;
-        this.metaArtist = artist;
-    }
-
-    /**
-     * Constructs a recorder that will record an ogg output stream
-     *
-     * @param streamToWriteTo the output stream to write the encoded information to
-     * @param recordHandler   the handler for receiving status updates about the recording process
-     * @param title the title which should appear in the stream
-     * @param artist the artist which should appear in the stream
-     */
-    public VorbisRecorder(OutputStream streamToWriteTo, Handler recordHandler, String title, String artist) {
-        if (streamToWriteTo == null) {
-            throw new IllegalArgumentException("File to play must not be null.");
-        }
-
-        this.encodeFeed = new OutputStreamEncodeFeed(streamToWriteTo);
-        this.recordHandler = recordHandler;
-        this.metaTitle = title;
-        this.metaArtist = artist;
-    }
-
-    /**
-     * Constructs a vorbis recorder with a custom {@link EncodeFeed}
-     *
-     * @param encodeFeed    the custom {@link EncodeFeed}
-     * @param recordHandler the handler for receiving status updates about the recording process
-     * @param title the title which should appear in the stream
-     * @param artist the artist which should appear in the stream
-     */
-    public VorbisRecorder(EncodeFeed encodeFeed, Handler recordHandler, String title, String artist) {
-        if (encodeFeed == null) {
-            throw new IllegalArgumentException("Encode feed must not be null.");
-        }
-
-        this.encodeFeed = encodeFeed;
-        this.recordHandler = recordHandler;
-        this.metaTitle = title;
-        this.metaArtist = artist;
-    }
-
-    /**
-     * Constructs a vorbis recorder with a custom {@link EncodeFeed}
-     *
-     * @param shout    the custom {@link EncodeFeed}
-     * @param recordHandler the handler for receiving status updates about the recording process
-     * @param title the title which should appear in the stream
-     * @param artist the artist which should appear in the stream
-     */
-    public VorbisRecorder(Libshout shout, Handler recordHandler, String title, String artist) {
-        if (shout == null) {
-            throw new IllegalArgumentException("Libshout object must not be null.");
-        }
-
-        this.encodeFeed = new LibShoutEncodeFeed(shout);
-        this.recordHandler = recordHandler;
-        this.metaTitle = title;
-        this.metaArtist = artist;
-    }
-
-    /**
-     * Starts the recording/encoding process
-     *
-     * @param sampleRate       the rate to sample the audio at, should be greater than <code>0</code>
-     * @param numberOfChannels the nubmer of channels, must only be <code>1/code> or <code>2</code>
-     * @param quality          the quality at which to encode, must be between <code>-0.1</code> and <code>1.0</code>
-     */
-    @SuppressWarnings("all")
-    public synchronized void start(long sampleRate, long numberOfChannels, float quality) {
-        if (isStopped()) {
-            if (numberOfChannels != 1 && numberOfChannels != 2) {
-                throw new IllegalArgumentException("Channels can only be one or two");
-            }
-            if (sampleRate <= 0) {
-                throw new IllegalArgumentException("Invalid sample rate, must be above 0");
-            }
-            if (quality < -0.1f || quality > 1.0f) {
-                throw new IllegalArgumentException("Quality must be between -0.1 and 1.0");
-            }
-
-            this.sampleRate = sampleRate;
-            this.numberOfChannels = numberOfChannels;
-            this.quality = quality;
-            this.recordingType = RecordingType.WITH_QUALITY;
-
-            //Starts the recording process
-            new Thread(new AsyncEncoding()).start();
-        }
-    }
-
-    /**
-     * Starts the recording/encoding process
-     *
-     * @param sampleRate       the rate to sample the audio at, should be greater than <code>0</code>
-     * @param numberOfChannels the nubmer of channels, must only be <code>1/code> or <code>2</code>
-     * @param bitrate          the bitrate at which to encode, must be greater than <code>-0</code>
-     */
-    @SuppressWarnings("all")
-    public synchronized void start(long sampleRate, long numberOfChannels, long bitrate) {
-        if (isStopped()) {
-            if (numberOfChannels != 1 && numberOfChannels != 2) {
-                throw new IllegalArgumentException("Channels can only be one or two");
-            }
-            if (sampleRate <= 0) {
-                throw new IllegalArgumentException("Invalid sample rate, must be above 0");
-            }
-            if (bitrate <= 0) {
-                throw new IllegalArgumentException("Target bitrate must be greater than 0");
-            }
-
-            this.sampleRate = sampleRate;
-            this.numberOfChannels = numberOfChannels;
-            this.bitrate = bitrate;
-            this.recordingType = RecordingType.WITH_BITRATE;
-
-            //Starts the recording process
-            new Thread(new AsyncEncoding()).start();
-        }
-    }
-
-    /**
-     * Stops the audio recorder and notifies the {@link EncodeFeed}
-     */
-    public synchronized void stop() {
-        encodeFeed.stopEncoding();
-    }
-
     /**
      * Starts the encoding process in a background thread
      */
@@ -686,32 +701,5 @@ public class VorbisRecorder {
                     break;
             }
         }
-    }
-
-    /**
-     * Checks whether the recording is currently recording
-     *
-     * @return <code>true</code> if recording, <code>false</code> otherwise
-     */
-    public synchronized boolean isRecording() {
-        return currentState.get() == RecorderState.RECORDING;
-    }
-
-    /**
-     * Checks whether the recording is currently stopped (not recording)
-     *
-     * @return <code>true</code> if stopped, <code>false</code> otherwise
-     */
-    public synchronized boolean isStopped() {
-        return currentState.get() == RecorderState.STOPPED;
-    }
-
-    /**
-     * Checks whether the recording is currently stopping (not recording)
-     *
-     * @return <code>true</code> if stopping, <code>false</code> otherwise
-     */
-    public synchronized boolean isStopping() {
-        return currentState.get() == RecorderState.STOPPING;
     }
 }

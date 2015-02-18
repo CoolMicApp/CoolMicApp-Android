@@ -1,33 +1,28 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-     <item
+    <item
         android:id="@+id/home"
-        android:orderInCategory="1"   
-        android:icon="@drawable/home"                   
-        android:title="Home"/>
+        android:icon="@drawable/home"
+        android:orderInCategory="1"
+        android:title="Home" />
     <item
         android:id="@+id/server_settings"
         android:orderInCategory="2"
-        android:title="Connection">
-    </item>
-        <item
+        android:title="Connection"></item>
+    <item
         android:id="@+id/audio_settings"
         android:orderInCategory="3"
-        android:title="Audio">
-    </item>
+        android:title="Audio"></item>
     <item
         android:id="@+id/general_setting"
-        android:orderInCategory="4"                
-        android:title="General">
-    </item>
+        android:orderInCategory="4"
+        android:title="General"></item>
     <item
         android:id="@+id/quite_app"
-        android:orderInCategory="6"                
-        android:title="Quit">
-    </item>
+        android:orderInCategory="6"
+        android:title="Quit"></item>
     <item
         android:id="@+id/help"
-        android:orderInCategory="5"                
-        android:title="Help">
-    </item>
+        android:orderInCategory="5"
+        android:title="Help"></item>
 </menu> 
