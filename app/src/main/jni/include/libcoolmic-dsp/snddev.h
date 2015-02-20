@@ -14,11 +14,39 @@
 #ifndef __COOLMIC_DSP_SNDDEV_H__
 #define __COOLMIC_DSP_SNDDEV_H__
 
+#include <stdint.h>
+#include "iohandle.h"
+
+/* constants used */
+#define COOLMIC_DSP_SNDDEV_DRIVER_AUTO   NULL
+#define COOLMIC_DSP_SNDDEV_DRIVER_NULL   "null"
+#define COOLMIC_DSP_SNDDEV_DRIVER_OSS    "oss"
+
+#define COOLMIC_DSP_SNDDEV_RX    0x0001
+#define COOLMIC_DSP_SNDDEV_TX    0x0002
+#define COOLMIC_DSP_SNDDEV_RXTX  (COOLMIC_DSP_SNDDEV_RX|COOLMIC_DSP_SNDDEV_TX)
+
 /* forward declare internally used structures */
 typedef struct coolmic_snddev coolmic_snddev_t;
 
+/* structures exposed to some external components like drivers */
+typedef struct coolmic_snddev_driver coolmic_snddev_driver_t;
+struct coolmic_snddev_driver {
+    /* callbacks */
+    /* free device */
+    int (*free)(coolmic_snddev_driver_t *dev);
+    /* read data off the device (record) */
+    ssize_t (*read)(coolmic_snddev_driver_t *dev, void *buffer, size_t len);
+    /* write data to the device (playback) */
+    ssize_t (*write)(coolmic_snddev_driver_t *dev, const void *buffer, size_t len);
+
+    /* internal storage */
+    int userdata_i;
+    void *userdata_vp;
+};
+
 /* Management of the encoder object */
-coolmic_snddev_t   *coolmic_snddev_new(...);
+coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
 int                 coolmic_snddev_ref(coolmic_snddev_t *self);
 int                 coolmic_snddev_unref(coolmic_snddev_t *self);
 
@@ -32,6 +60,6 @@ coolmic_iohandle_t *coolmic_snddev_get_iohandle(coolmic_snddev_t *self);
  * as given by the attached IO Handle. If needed it will read more data
  * off that handle.
  */
-int                 coolmic_snddev_iter(coolmic_shout_t *self);
+int                 coolmic_snddev_iter(coolmic_snddev_t *self);
 
 #endif
