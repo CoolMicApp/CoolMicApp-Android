@@ -13,11 +13,14 @@
 #ifndef __COOLMIC_DSP_ENC_H__
 #define __COOLMIC_DSP_ENC_H__
 
+#include <stdint.h>
+#include "iohandle.h"
+
 /* forward declare internally used structures */
 typedef struct coolmic_enc coolmic_enc_t;
 
 /* Management of the encoder object */
-coolmic_enc_t      *coolmic_enc_new(...);
+coolmic_enc_t      *coolmic_enc_new(const char *codec, uint_least32_t rate, unsigned int channels);
 int                 coolmic_enc_ref(coolmic_enc_t *self);
 int                 coolmic_enc_unref(coolmic_enc_t *self);
 
