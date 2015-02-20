@@ -5,4 +5,7 @@
 #ifndef __LIBCOOLMIC_DSP_H__
 #define __LIBCOOLMIC_DSP_H__
 
+#define COOLMIC_DSP_CODEC_VORBIS "audio/ogg; codec=vorbis"
+#define COOLMIC_DSP_CODEC_OPUS   "audio/ogg; codec=opus"
+
 #endif
