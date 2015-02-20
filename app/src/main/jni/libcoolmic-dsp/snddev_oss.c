@@ -2,7 +2,10 @@
  *  Copyright (C) 2015      Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  */
 
-/* Please see the corresponding header file for details of this API. */
+/* This is a OSS (Open Sound System) driver.
+ * This driver is meant for testing this library on random POSIX
+ * systems and to help developer to work with this code.
+ */
 
 #include <sys/types.h>
 #include <sys/stat.h>
