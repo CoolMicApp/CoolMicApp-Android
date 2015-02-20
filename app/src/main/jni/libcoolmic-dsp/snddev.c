@@ -46,9 +46,9 @@ coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_le
     if (!driver)
         driver = DEFAULT_DRIVER;
 
-    if (!strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_NULL) == 0) {
+    if (strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_NULL) == 0) {
         driver_open = coolmic_snddev_driver_null_open;
-    } else if (!strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_OSS) == 0) {
+    } else if (strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_OSS) == 0) {
         driver_open = coolmic_snddev_driver_oss_open;
     } else {
         /* unknown driver */
