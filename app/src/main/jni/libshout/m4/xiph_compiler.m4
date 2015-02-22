@@ -1,5 +1,5 @@
 dnl xiph_compiler.m4
-dnl $Id: xiph_compiler.m4 14776 2008-04-19 01:54:11Z karl $
+dnl $Id$
 
 dnl XIPH_FUNC_VA_COPY
 dnl Karl Heyes

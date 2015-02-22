@@ -1,6 +1,6 @@
 /* -*- c-basic-offset: 8; -*- */
 /* theora.c: Ogg Theora data handlers for libshout
- * $Id: theora.c 18174 2012-02-02 00:16:36Z giles $
+ * $Id$
  *
  *  Copyright (C) 2004 the Icecast team <team@icecast.org>
  *

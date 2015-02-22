@@ -1,6 +1,6 @@
 /* -*- c-basic-offset: 8; -*- */
 /* vorbis.c: Ogg Vorbis data handlers for libshout
- * $Id: vorbis.c 18174 2012-02-02 00:16:36Z giles $
+ * $Id$
  *
  *  Copyright (C) 2002-2004 the Icecast team <team@icecast.org>
  *

@@ -48,7 +48,7 @@ int _shout_open_speex(ogg_codec_t *codec, ogg_page *page)
 
 	ogg_stream_packetout(&codec->os, &packet);
 
-	if (!(speex_data->sh = speex_packet_to_header(packet.packet,packet.bytes))) {
+	if (!(speex_data->sh = speex_packet_to_header((char*)packet.packet,packet.bytes))) {
 		free_speex_data(speex_data);
 		
 		return SHOUTERR_UNSUPPORTED;

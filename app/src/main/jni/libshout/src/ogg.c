@@ -1,6 +1,6 @@
 /* -*- c-basic-offset: 8; -*- */
 /* ogg.c: Generic ogg data handler
- * $Id: ogg.c 18306 2012-05-24 18:12:46Z gmaxwell $
+ * $Id$
  *
  *  Copyright (C) 2002-2004 the Icecast team <team@icecast.org>
  *

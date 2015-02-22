@@ -1,6 +1,6 @@
 /* -*- c-basic-offset: 8; -*- */
 /* webm.c: WebM data handler
- * $Id: webm.c 18173 2012-02-02 00:15:39Z giles $
+ * $Id$
  *
  *  Copyright (C) 2002-2012 the Icecast team <team@icecast.org>
  *

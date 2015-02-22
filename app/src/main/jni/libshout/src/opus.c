@@ -242,7 +242,7 @@ static int read_opus_page(ogg_codec_t *codec, ogg_page *page)
       sanely handle non-zero starttimes and slightly saner behavior
       on files with holes. */
    while (ogg_stream_packetout (&codec->os, &packet) > 0){
-      if(packet.bytes>0 && memcmp(packet.packet, "Op",2)!=0){
+      if(packet.bytes>0 && (packet.bytes<2 || memcmp(packet.packet, "Op",2)!=0)){
          int32_t spf;
          spf = packet_get_samples_per_frame(packet.packet,48000);
          if(spf>0){

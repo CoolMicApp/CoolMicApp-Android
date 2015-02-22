@@ -1,6 +1,6 @@
 /* -*- c-basic-offset: 8; -*- */
 /* mp3.c: libshout MP3 format handler
- * $Id: mp3.c 18174 2012-02-02 00:16:36Z giles $
+ * $Id$
  *
  *  Copyright (C) 2002-2003 the Icecast team <team@icecast.org>
  *
@@ -204,7 +204,7 @@ static int send_mp3(shout_t* self, const unsigned char* buff, size_t len)
 				end = pos - 1;
 				count = end - start + 1;
 				if (count > 0)
-					ret = shout_send_raw(self, (char *)&buff[start], count);
+					ret = shout_send_raw(self, &buff[start], count);
 				else
 					ret = 0;
 
@@ -235,7 +235,7 @@ static int send_mp3(shout_t* self, const unsigned char* buff, size_t len)
 		/* if there's no errors, lets send the frames */
 		count = end - start + 1;
 		if (count > 0)
-			ret = shout_send_raw(self, (char *)&buff[start], count);
+			ret = shout_send_raw(self, &buff[start], count);
 		else
 			ret = 0;
 
