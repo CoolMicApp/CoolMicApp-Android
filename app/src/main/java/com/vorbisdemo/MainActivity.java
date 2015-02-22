@@ -22,7 +22,6 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.SystemClock;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -39,16 +38,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gmail.kunicins.olegs.libshout.Libshout;
-
-import org.xiph.vorbis.player.VorbisPlayer;
-import org.xiph.vorbis.recorder.VorbisRecorder;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.UnknownHostException;
+
+import cc.echonet.coolmicdspjava.Wrapper;
 
 /**
  * This activity demonstrates how to use JNI to encode and decode ogg/vorbis audio
@@ -67,7 +62,6 @@ public class MainActivity extends Activity {
     String hostname = "giss.tv";
     PrintWriter output = null;
     BufferedReader reader = null;
-    Libshout icecast = null;
     //Setting newSetting;
     // CoolMicSetting newSetting;
     DatabaseHandler db;
@@ -87,18 +81,7 @@ public class MainActivity extends Activity {
     long timeSwapBuff = 0L;
     long updatedTime = 0L;
     SharedPreferences sharedpreferences;
-    /**
-     * The vorbis player
-     */
-    private VorbisPlayer vorbisPlayer;
-    /**
-     * The vorbis recorder
-     */
-    private VorbisRecorder vorbisRecorder;
-    /**
-     * Recording handler for callbacks
-     */
-    private Handler recordingHandler;
+
     /**
      * Text view to show logged messages
      */
@@ -205,12 +188,7 @@ public class MainActivity extends Activity {
 
     private void exitApp() {
         ClearLED();
-        if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-            isThreadOn = false;
-            vorbisRecorder.stop();
-            icecast.close();
-
-        }
+        Wrapper.stop();
         finish();
         System.exit(0);
     }
@@ -372,12 +350,7 @@ public class MainActivity extends Activity {
             Log.d("VS", log);
         }
 
-        if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-            start_button.startAnimation(animation);
-            start_button.setBackground(trans);
-            trans.startTransition(5000);
-            start_button.setText("Broadcasting");
-        }
+
     }
 
     public void onImageClick(View view) {
@@ -428,77 +401,7 @@ public class MainActivity extends Activity {
     }
 
     private void setLoggingHandlers() {
-        recordingHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case VorbisRecorder.START_ENCODING:
-                        logMessage("Connected to server!");
-                        //code to call timer starts here
-                        startTime = 0L;
-                        timeInMilliseconds = 0L;
-                        timeSwapBuff = 0L;
-                        updatedTime = 0L;
-                        timeSwapBuff += timeInMilliseconds;
-                        customHandler.removeCallbacks(updateTimerThread);
-                        startTime = SystemClock.uptimeMillis();
-                        customHandler.postDelayed(updateTimerThread, 0);
-                        //code to call timer ends here
-                        break;
-                    case VorbisRecorder.STOP_ENCODING:
-                        //code to stop timer starts here
-                        timeSwapBuff += timeInMilliseconds;
-                        customHandler.removeCallbacks(updateTimerThread);
-                        //code to stop timer starts here
-                        start_button.clearAnimation();
-                        start_button.setBackground(buttonColor);
-                        start_button.setText("Start Broadcast");
-                        //logMessage("Stopping the broadcasting");
-                        break;
-                    case VorbisRecorder.WRONG_CREDENTIALS:
-                        //logMessage("wrong credentials");
-                        Toast.makeText(getApplicationContext(), "Server details are not correct.", Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(MainActivity.this, MainActivity.class);
-                        startActivity(i);
-                        break;
-                    case VorbisRecorder.UNSUPPORTED_AUDIO_TRACK_RECORD_PARAMETERS:
-                        logMessage("Your device does not support this configuration");
-                        break;
-                    case VorbisRecorder.ERROR_INITIALIZING:
-                        logMessage("Error in initialization.Try changin audio configuration");
-                        break;
-                    case VorbisRecorder.FAILED_FOR_UNKNOWN_REASON:
-                        start_button.clearAnimation();
-                        start_button.setBackground(buttonColor);
-                        start_button.setText("Start Broadcssast");
-                        logMessage("Failed for unknown reason !");
-                        break;
-                    case VorbisRecorder.FINISHED_SUCCESSFULLY:
-                        start_button.clearAnimation();
-                        start_button.setBackground(buttonColor);
-                        start_button.setText("Start Broadcast");
-                        logMessage("Broadcasting Stop Successfully");
-                        break;
-                }
-            }
-        };
 
-        new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case VorbisPlayer.PLAYING_FAILED:
-                        logMessage("The decoder failed to playback the file, check logs for more details");
-                        break;
-                    case VorbisPlayer.PLAYING_FINISHED:
-                        logMessage("The decoder finished successfully");
-                        break;
-                    case VorbisPlayer.PLAYING_STARTED:
-                        logMessage("Starting to decode");
-                        break;
-                }
-            }
-        };
     }
 
     @Override
@@ -522,11 +425,7 @@ public class MainActivity extends Activity {
                     start_button.clearAnimation();
                     start_button.setBackground(buttonColor);
                     start_button.setText("Start Broadcast");
-                    if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-                        isThreadOn = false;
-                        vorbisRecorder.stop();
-                        icecast.close();
-                    }
+
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
             });
@@ -577,29 +476,9 @@ public class MainActivity extends Activity {
                                     Log.d("VS", server + " " + server + " " + port_num.toString() + " " + username + " " + password + "\n " + mountpoint + "" +
                                             " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
 
-                                    icecast = new Libshout();
-                                    icecast.setHost(server);
-                                    icecast.setPort(port_num);
-                                    icecast.setProtocol(Libshout.PROTOCOL_HTTP);
-                                    icecast.setUser(username);
-                                    icecast.setPassword(password);
-                                    icecast.setMount("/" + mountpoint);
-                                    icecast.setFormat(Libshout.FORMAT_OGG);
-                                    icecast.open();
+                                    Wrapper.init("audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string));
+                                    Log.d("VS", "Status:" + Wrapper.start());
 
-                                } catch (UnknownHostException e) {
-                                    //Toast.makeText(getApplicationContext(), "Server not exist.",Toast.LENGTH_SHORT).show();
-                                    //Log.e("VS", "UnknownHostException",e);
-                                    MainActivity.this.runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            Toast.makeText(getApplicationContext(), "Server details are not correct.", Toast.LENGTH_SHORT).show();
-                                            Intent i = new Intent(MainActivity.this, MainActivity.class);
-                                            startActivity(i);
-                                        }
-                                    });
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    Log.e("VS", "IOException", e);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     Log.e("VS", "IOException", e);
@@ -635,11 +514,9 @@ public class MainActivity extends Activity {
         start_button.setBackground(buttonColor);
         start_button.setText("Start Broadcast");
         stopService(new Intent(getBaseContext(), MyService.class));
-        if (vorbisRecorder != null && vorbisRecorder.isRecording()) {
-            isThreadOn = false;
-            vorbisRecorder.stop();
-            icecast.close();
-        }
+
+        Wrapper.stop();
+
         Editor editor = sharedpreferences.edit();
         editor.putString("TIMER_PER", "");
         editor.putString("TIMER_PER", (String) timerValue.getText());
