@@ -115,14 +115,43 @@ int              coolmic_shout_attach_iohandle(coolmic_shout_t *self, coolmic_io
     return 0;
 }
 
+int              coolmic_shout_start(coolmic_shout_t *self)
+{
+    if (!self)
+        return -1;
+
+    if (shout_get_connected(self->shout) == SHOUTERR_CONNECTED)
+        return 0;
+
+    if (shout_open(self->shout) != SHOUTERR_SUCCESS)
+        return -1;
+
+    return 0;
+}
+int              coolmic_shout_stop(coolmic_shout_t *self)
+{
+    if (!self)
+        return -1;
+
+    if (shout_get_connected(self->shout) == SHOUTERR_UNCONNECTED)
+        return 0;
+
+    if (shout_stop(self->shout) != SHOUTERR_SUCCESS)
+        return -1;
+
+    return 0;
+}
+
 int              coolmic_shout_iter(coolmic_shout_t *self)
 {
     char buffer[1024];
     ssize_t ret;
 
+    if (!self)
+        return -1;
+
     if (shout_get_connected(self->shout) == SHOUTERR_UNCONNECTED)
-        if (shout_open(self->shout) != SHOUTERR_SUCCESS)
-            return -1;
+        return -1;
 
     ret = coolmic_iohandle_read(self->in, buffer, sizeof(buffer));
     if (ret > 0)

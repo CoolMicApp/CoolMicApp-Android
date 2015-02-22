@@ -18,6 +18,7 @@ struct coolmic_simple {
     pthread_mutex_t lock;
     pthread_t thread;
     int running;
+    int need_reset;
 
     coolmic_snddev_t *dev;
     coolmic_enc_t *enc;
@@ -107,6 +108,13 @@ int                 coolmic_simple_unref(coolmic_simple_t *self)
     return 0;
 }
 
+/* reset internal objects */
+static int __reset(coolmic_simple_t *self)
+{
+    /* TODO: reset enc */
+    return -1;
+}
+
 /* worker */
 static void *__worker(void *userdata)
 {
@@ -115,8 +123,17 @@ static void *__worker(void *userdata)
     coolmic_shout_t *shout;
 
     pthread_mutex_lock(&(self->lock));
+    if (self->need_reset) {
+        if (__reset(self) != 0) {
+            self->running = 0;
+            pthread_mutex_unlock(&(self->lock));
+            return NULL;
+        }
+    }
+
     running = self->running;
     coolmic_shout_ref(shout = self->shout);
+    coolmic_shout_start(shout);
     pthread_mutex_unlock(&(self->lock));
 
     while (running == 1) {
@@ -130,6 +147,8 @@ static void *__worker(void *userdata)
 
     pthread_mutex_lock(&(self->lock));
     self->running = 0;
+    self->need_reset = 1;
+    coolmic_shout_stop(shout);
     coolmic_shout_unref(shout);
     pthread_mutex_unlock(&(self->lock));
     return NULL;

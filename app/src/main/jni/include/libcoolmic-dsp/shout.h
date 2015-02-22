@@ -48,6 +48,10 @@ int              coolmic_shout_set_config(coolmic_shout_t *self, const coolmic_s
 /* This is to attach the IO Handle of the Ogg data stream that is to be passed to the Icecast server */
 int              coolmic_shout_attach_iohandle(coolmic_shout_t *self, coolmic_iohandle_t *handle);
 
+/* Those two functions start and stop the connection to the server */
+int              coolmic_shout_start(coolmic_shout_t *self);
+int              coolmic_shout_stop(coolmic_shout_t *self);
+
 /* This function is to iterate. It will check internal state and try to send more data
  * to the Icecast server. If needed it will read more encoded data from the IO Handle that was attached.
  */
