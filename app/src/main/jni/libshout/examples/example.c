@@ -1,5 +1,5 @@
 /* example.c: Demonstration of the libshout API.
- * $Id: example.c 18174 2012-02-02 00:16:36Z giles $
+ * $Id$
  */
 
 #include <stdio.h>
@@ -11,7 +11,7 @@
 int main()
 {
 	shout_t *shout;
-	char buff[4096];
+	unsigned char buff[4096];
 	long read, ret, total;
 
 	shout_init();

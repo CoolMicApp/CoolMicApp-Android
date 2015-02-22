@@ -30,7 +30,7 @@ shout.lo: shout.c ../config.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/asm/errno.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/asm-generic/errno.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/asm-generic/errno-base.h \
- ../include/shout/shout.h net/sock.h \
+ ../include/shout/shout.h common/net/sock.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/unistd.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/sys/select.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/sys/time.h \
@@ -57,13 +57,13 @@ shout.lo: shout.c ../config.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/pathconf.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/sys/uio.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/linux/uio.h \
- timing/timing.h \
+ common/timing/timing.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/inttypes.h \
- httpp/httpp.h avl/avl.h thread/thread.h \
+ common/httpp/httpp.h common/avl/avl.h common/thread/thread.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/pthread.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/time.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/sched.h \
- shout_private.h timing/timing.h util.h
+ shout_private.h common/timing/timing.h util.h
 
 ../config.h:
 
@@ -131,7 +131,7 @@ shout.lo: shout.c ../config.h \
 
 ../include/shout/shout.h:
 
-net/sock.h:
+common/net/sock.h:
 
 /home/stephanj/android/ndk-toolchain/sysroot/usr/include/unistd.h:
 
@@ -185,15 +185,15 @@ net/sock.h:
 
 /home/stephanj/android/ndk-toolchain/sysroot/usr/include/linux/uio.h:
 
-timing/timing.h:
+common/timing/timing.h:
 
 /home/stephanj/android/ndk-toolchain/sysroot/usr/include/inttypes.h:
 
-httpp/httpp.h:
+common/httpp/httpp.h:
 
-avl/avl.h:
+common/avl/avl.h:
 
-thread/thread.h:
+common/thread/thread.h:
 
 /home/stephanj/android/ndk-toolchain/sysroot/usr/include/pthread.h:
 
@@ -203,6 +203,6 @@ thread/thread.h:
 
 shout_private.h:
 
-timing/timing.h:
+common/timing/timing.h:
 
 util.h:

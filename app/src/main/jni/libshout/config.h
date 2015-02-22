@@ -43,6 +43,9 @@
 /* Define if you have libogg installed */
 #define HAVE_OGG 1
 
+/* Define if you have libopenssl. */
+/* #undef HAVE_OPENSSL */
+
 /* Define if you have POSIX threads libraries and header files. */
 /* #undef HAVE_PTHREAD */
 

@@ -25,7 +25,7 @@ mp3.lo: mp3.c \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/alloca.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/strings.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/memory.h \
- ../include/shout/shout.h shout_private.h ../config.h net/sock.h \
+ ../include/shout/shout.h shout_private.h ../config.h common/net/sock.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/unistd.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/sys/select.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/sys/time.h \
@@ -52,7 +52,7 @@ mp3.lo: mp3.c \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/pathconf.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/sys/uio.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/linux/uio.h \
- timing/timing.h \
+ common/timing/timing.h \
  /home/stephanj/android/ndk-toolchain/sysroot/usr/include/inttypes.h \
  util.h
 
@@ -114,7 +114,7 @@ shout_private.h:
 
 ../config.h:
 
-net/sock.h:
+common/net/sock.h:
 
 /home/stephanj/android/ndk-toolchain/sysroot/usr/include/unistd.h:
 
@@ -168,7 +168,7 @@ net/sock.h:
 
 /home/stephanj/android/ndk-toolchain/sysroot/usr/include/linux/uio.h:
 
-timing/timing.h:
+common/timing/timing.h:
 
 /home/stephanj/android/ndk-toolchain/sysroot/usr/include/inttypes.h:
 

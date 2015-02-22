@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac 18320 2012-05-25 15:32:16Z giles $
+# $Id$
 
 m4_define(libshout_major, 2)
 m4_define(libshout_minor, 3)
@@ -185,6 +185,18 @@ fi
 eval shout_includedir="$includedir"
 prefix="$save_prefix"
 
+XIPH_PATH_OPENSSL([
+    XIPH_VAR_APPEND([XIPH_CPPFLAGS],[$OPENSSL_CFLAGS])
+    XIPH_VAR_APPEND([XIPH_LDFLAGS],[$OPENSSL_LDFLAGS])
+    XIPH_VAR_PREPEND([XIPH_LIBS],[$OPENSSL_LIBS])
+    SHOUT_TLS="1"
+    ],
+    [ AC_MSG_NOTICE([SSL disabled!])
+      SHOUT_TLS="0"
+    ])
+AC_SUBST([SHOUT_TLS])
+AM_CONDITIONAL([HAVE_TLS], [test -n "$OPENSSL_LIBS"])
+
 SHOUT_VERSION="$VERSION"
 SHOUT_CPPFLAGS="-I$shout_includedir $VORBIS_CFLAGS $PTHREAD_CPPFLAGS"
 SHOUT_CFLAGS="$PTHREAD_CFLAGS"
@@ -192,7 +204,7 @@ SHOUT_LIBS="-lshout"
 
 XIPH_CLEAN_CCFLAGS([$SHOUT_CPPFLAGS], [SHOUT_CPPFLAGS])
 XIPH_CLEAN_CCFLAGS([$SHOUT_CFLAGS], [SHOUT_CFLAGS])
-XIPH_CLEAN_CCFLAGS([$VORBIS_LIBS $THEORA_LIBS $SPEEX_LIBS $PTHREAD_LIBS $LIBS], [SHOUT_LIBDEPS])
+XIPH_CLEAN_CCFLAGS([$VORBIS_LIBS $THEORA_LIBS $SPEEX_LIBS $PTHREAD_LIBS $OPENSSL_LIBS $OPENSSL_LIBS $LIBS], [SHOUT_LIBDEPS])
 AC_SUBST(PTHREAD_CPPFLAGS)
 AC_SUBST(SHOUT_LIBDEPS)
 AC_SUBST(SHOUT_REQUIRES)
@@ -209,8 +221,9 @@ AC_SUBST(CFLAGS)
 AC_SUBST(PROFILE)
 AC_SUBST(XIPH_CFLAGS)
 AC_SUBST(XIPH_CPPFLAGS)
+AC_SUBST(XIPH_LIBS)
 
-AC_OUTPUT([Makefile debian/Makefile include/Makefile include/shout/Makefile
-  include/shout/shout.h src/Makefile src/net/Makefile src/timing/Makefile
-  src/thread/Makefile src/avl/Makefile src/httpp/Makefile doc/Makefile
+AC_OUTPUT([Makefile include/Makefile include/shout/Makefile
+  include/shout/shout.h src/Makefile src/common/net/Makefile src/common/timing/Makefile
+  src/common/thread/Makefile src/common/avl/Makefile src/common/httpp/Makefile doc/Makefile
   examples/Makefile win32/Makefile shout.pc])

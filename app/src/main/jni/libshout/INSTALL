@@ -38,4 +38,4 @@ $(prefix)/lib/pkgconfig, otherwise it will place a shout-config script
 in $(prefix)/bin. You can force libshout to use shout-config instead
 of pkgconfig with the configure option --disable-pkgconfig.
 
-$Id: INSTALL 8946 2005-02-19 17:49:25Z brendan $
+$Id$

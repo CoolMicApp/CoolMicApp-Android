@@ -1,6 +1,6 @@
 /* -*- c-basic-offset: 8; -*-
  * example.c: Demonstration of the libshout API.
- * $Id: nonblocking.c 16177 2009-06-23 17:45:19Z brendan $
+ * $Id$
  */
 
 #include <stdio.h>
@@ -13,7 +13,7 @@
 int main()
 {
 	shout_t *shout;
-	char buff[4096];
+	unsigned char buff[4096];
 	long read, ret, total;
 
 	shout_init();

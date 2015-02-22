@@ -10,6 +10,6 @@ cflags_only=
 Name: Shout
 Description: Audio streaming library for icecast encoders
 Version: 2.3.1
-Requires: ogg
+Requires.private: ogg, vorbis
 Libs: -L${libdir} -lshout
 Cflags: -I${includedir}  
