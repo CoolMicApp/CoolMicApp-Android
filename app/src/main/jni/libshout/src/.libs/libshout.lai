@@ -5,10 +5,10 @@
 # It is necessary for linking the library.
 
 # The name that we can dlopen(3).
-dlname='libshout.so.3'
+dlname='libshout.so'
 
 # Names of this library.
-library_names='libshout.so.3.2.0 libshout.so.3 libshout.so'
+library_names='libshout.so libshout.so libshout.so'
 
 # The name of the static archive.
 old_library='libshout.a'
@@ -23,8 +23,8 @@ dependency_libs=' -L/home/stephanj/android/coolmic/app/src/main/jni/libshout/../
 weak_library_names=''
 
 # Version information for libshout.
-current=5
-age=2
+current=0
+age=0
 revision=0
 
 # Is this an already installed library?
