@@ -6,6 +6,7 @@ include $(addprefix $(LOCAL_PATH)/, $(addsuffix /Android.mk, \
 	libogg \
 	libvorbis \
     libcoolmic-dsp \
+    libcoolmic-dsp-java \
 ))
 
 
