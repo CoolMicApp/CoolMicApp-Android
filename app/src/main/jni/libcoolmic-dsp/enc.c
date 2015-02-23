@@ -12,8 +12,18 @@
 #include <libcoolmic-dsp/enc.h>
 #include <vorbis/vorbisenc.h>
 
+typedef enum coolmic_enc_state {
+    STATE_NEED_INIT = 0,
+    STATE_RUNNING,
+    STATE_EOF,
+    STATE_NEED_RESET
+} coolmic_enc_state_t;
+
 struct coolmic_enc {
     size_t refc;
+
+    /* overall state */
+    coolmic_enc_state_t state;
 
     /* Audio */
     uint_least32_t rate;
@@ -46,6 +56,9 @@ static int __vorbis_start_encoder(coolmic_enc_t *self)
     ogg_packet header_comm;
     ogg_packet header_code;
 
+    if (self->state != STATE_NEED_INIT)
+        return -1;
+
     vorbis_info_init(&(self->vi));
     if (vorbis_encode_init_vbr(&(self->vi), self->channels, self->rate, 0.1) != 0)
         return -1;
@@ -64,7 +77,9 @@ static int __vorbis_start_encoder(coolmic_enc_t *self)
     ogg_stream_packetin(&(self->os), &header_comm);
     ogg_stream_packetin(&(self->os), &header_code);
 
-    return -1;
+    self->state = STATE_RUNNING;
+
+    return 0;
 }
 
 static int __vorbis_stop_encoder(coolmic_enc_t *self)
@@ -74,6 +89,13 @@ static int __vorbis_stop_encoder(coolmic_enc_t *self)
     vorbis_dsp_clear(&(self->vd));
     vorbis_comment_clear(&(self->vc));
     vorbis_info_clear(&(self->vi));
+
+    memset(&(self->os), 0, sizeof(self->os));
+    memset(&(self->vb), 0, sizeof(self->vb));
+    memset(&(self->vd), 0, sizeof(self->vd));
+    memset(&(self->vc), 0, sizeof(self->vc));
+    memset(&(self->vi), 0, sizeof(self->vi));
+    self->state = STATE_NEED_INIT;
     return 0;
 }
 
@@ -86,12 +108,17 @@ static int __vorbis_read_data(coolmic_enc_t *self)
     unsigned int c;
     size_t i = 0;
 
+    if (self->state == STATE_EOF || self->state == STATE_NEED_RESET) {
+        vorbis_analysis_wrote(&(self->vd), 0);
+        return 0;
+    }
+
     ret = coolmic_iohandle_read(self->in, buffer, sizeof(buffer));
 
     if (ret < 1) {
         if (coolmic_iohandle_eof(self->in) == 1) {
             vorbis_analysis_wrote(&(self->vd), 0);
-            self->offset_in_page = -1;
+            self->state = STATE_EOF;
         }
         return -1;
     }
@@ -153,6 +180,10 @@ static int __need_new_page(coolmic_enc_t *self)
             self->offset_in_page = -1;
             return -1;
         }
+        if (self->state == STATE_NEED_RESET && ogg_page_eos(&(self->og))) {
+            __vorbis_stop_encoder(self);
+            __vorbis_start_encoder(self);
+        }
     }
 
     self->offset_in_page = 0;
@@ -192,10 +223,10 @@ static int __eof(void *userdata)
 {
     coolmic_enc_t *self = userdata;
 
-    if (self->offset_in_page != -1)
-        return 0;
+    if (self->offset_in_page == (self->og.header_len + self->og.body_len) && self->state == STATE_EOF)
+        return 1;
 
-    return coolmic_iohandle_eof(self->in);
+    return 0;
 }
 
 coolmic_enc_t      *coolmic_enc_new(const char *codec, uint_least32_t rate, unsigned int channels)
@@ -214,6 +245,7 @@ coolmic_enc_t      *coolmic_enc_new(const char *codec, uint_least32_t rate, unsi
         return NULL;
 
     ret->refc = 1;
+    ret->state = STATE_NEED_INIT;
     ret->rate = rate;
     ret->channels = channels;
 
@@ -247,6 +279,25 @@ int                 coolmic_enc_unref(coolmic_enc_t *self)
     coolmic_iohandle_unref(self->out);
     free(self);
 
+    return 0;
+}
+
+int                 coolmic_enc_reset(coolmic_enc_t *self)
+{
+    if (!self)
+        return -1;
+    if (self->state != STATE_RUNNING && self->state != STATE_EOF)
+        return -1;
+
+    /* send EOF event */
+    self->state = STATE_EOF;
+
+    /* no process to EOS page and then reset the encoder */
+    while (__need_new_page(self) == 0)
+        if (ogg_page_eos(&(self->og)))
+            break;
+
+    self->state = STATE_NEED_RESET;
     return 0;
 }
 

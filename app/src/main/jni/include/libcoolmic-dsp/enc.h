@@ -24,6 +24,9 @@ coolmic_enc_t      *coolmic_enc_new(const char *codec, uint_least32_t rate, unsi
 int                 coolmic_enc_ref(coolmic_enc_t *self);
 int                 coolmic_enc_unref(coolmic_enc_t *self);
 
+/* Reset the encoder state */
+int                 coolmic_enc_reset(coolmic_enc_t *self);
+
 /* This is to attach the IO Handle of the PCM data stream that is to be passed to the encoder */
 int                 coolmic_enc_attach_iohandle(coolmic_enc_t *self, coolmic_iohandle_t *handle);
 

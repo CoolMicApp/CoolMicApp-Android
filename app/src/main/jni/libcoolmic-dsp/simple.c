@@ -109,10 +109,11 @@ int                 coolmic_simple_unref(coolmic_simple_t *self)
 }
 
 /* reset internal objects */
-static int __reset(coolmic_simple_t *self)
+static inline int __reset(coolmic_simple_t *self)
 {
-    /* TODO: reset enc */
-    return -1;
+    coolmic_enc_reset(self->enc);
+    self->need_reset = 0;
+    return 0;
 }
 
 /* worker */
@@ -141,6 +142,9 @@ static void *__worker(void *userdata)
             break;
 
         pthread_mutex_lock(&(self->lock));
+        if (self->need_reset)
+            if (__reset(self) != 0)
+                self->running = 0;
         running = self->running;
         pthread_mutex_unlock(&(self->lock));
     }

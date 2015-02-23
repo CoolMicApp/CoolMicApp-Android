@@ -136,7 +136,7 @@ int              coolmic_shout_stop(coolmic_shout_t *self)
     if (shout_get_connected(self->shout) == SHOUTERR_UNCONNECTED)
         return 0;
 
-    if (shout_stop(self->shout) != SHOUTERR_SUCCESS)
+    if (shout_close(self->shout) != SHOUTERR_SUCCESS)
         return -1;
 
     return 0;
