@@ -219,8 +219,6 @@ public class server extends Activity {
         EditText username_editid = (EditText) findViewById(R.id.username_editid);
         final EditText password_edittext = (EditText) findViewById(R.id.password_edittext);
         CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
-        TextView tems = (TextView) findViewById(R.id.terms);
-        tems.setPaintFlags(tems.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         mountpoint_edittext.setText("asd");
         server_edittext.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
