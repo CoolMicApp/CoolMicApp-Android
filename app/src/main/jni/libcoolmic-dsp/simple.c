@@ -20,6 +20,9 @@ struct coolmic_simple {
     int running;
     int need_reset;
 
+    coolmic_simple_callback_t callback;
+    void *callback_userdata;
+
     coolmic_snddev_t *dev;
     coolmic_enc_t *enc;
     coolmic_shout_t *shout;
@@ -27,11 +30,29 @@ struct coolmic_simple {
     coolmic_iohandle_t *ogg;
 };
 
+/* emit an event */
+static inline void __emit_event(coolmic_simple_t *self, coolmic_simple_event_t event, void *thread, void *arg0, void *arg1)
+{
+    coolmic_simple_callback_t callback;
+    void *callback_userdata;
+    
+    if (!self->callback)
+        return;
+
+    callback = self->callback;
+    callback_userdata = self->callback_userdata;
+    /* the callback is called in unlocked state. */
+    pthread_mutex_unlock(&(self->lock));
+    callback(self, callback_userdata, event, thread, arg0, arg1);
+    pthread_mutex_lock(&(self->lock));
+}
+
 static void __stop_unlocked(coolmic_simple_t *self)
 {
     if (!self->running)
         return;
     self->running = 2;
+    __emit_event(self, COOLMIC_SIMPLE_EVENT_THREAD_STOP, &(self->thread), NULL, NULL);
     pthread_mutex_unlock(&(self->lock));
     pthread_join(self->thread, NULL);
     pthread_mutex_lock(&(self->lock));
@@ -150,6 +171,8 @@ static void *__worker(void *userdata)
     }
 
     pthread_mutex_lock(&(self->lock));
+    if (self->running != 2)
+        __emit_event(self, COOLMIC_SIMPLE_EVENT_ERROR, &(self->thread), NULL, NULL);
     self->running = 0;
     self->need_reset = 1;
     coolmic_shout_stop(shout);
@@ -167,8 +190,10 @@ int                 coolmic_simple_start(coolmic_simple_t *self)
         return -1;
     pthread_mutex_lock(&(self->lock));
     if (!self->running)
-        if (pthread_create(&(self->thread), NULL, __worker, self) == 0)
+        if (pthread_create(&(self->thread), NULL, __worker, self) == 0) {
             self->running = 1;
+            __emit_event(self, COOLMIC_SIMPLE_EVENT_THREAD_START, &(self->thread), NULL, NULL);
+        }
     running = self->running;
     pthread_mutex_unlock(&(self->lock));
     return running ? 0 : -1;
@@ -181,6 +206,17 @@ int                 coolmic_simple_stop(coolmic_simple_t *self)
     pthread_mutex_lock(&(self->lock));
     if (self->running)
         __stop_unlocked(self);
+    pthread_mutex_unlock(&(self->lock));
+    return 0;
+}
+
+int                 coolmic_simple_set_callback(coolmic_simple_t *self, coolmic_simple_callback_t callback, void *userdata)
+{
+    if (!self)
+        return -1;
+    pthread_mutex_lock(&(self->lock));
+    self->callback = callback;
+    self->callback_userdata = userdata;
     pthread_mutex_unlock(&(self->lock));
     return 0;
 }
