@@ -10,12 +10,24 @@
 #include <libcoolmic-dsp/snddev.h>
 
 /* default driver */
-#define DEFAULT_DRIVER COOLMIC_DSP_SNDDEV_DRIVER_OSS
+#ifndef DEFAULT_SNDDRV_DRIVER
+# ifdef HAVE_SNDDRV_DRIVER_OPENSL
+#  define DEFAULT_SNDDRV_DRIVER COOLMIC_DSP_SNDDEV_DRIVER_OPENSL
+# elif defined(HAVE_SNDDRV_DRIVER_OSS)
+#  define DEFAULT_SNDDRV_DRIVER COOLMIC_DSP_SNDDEV_DRIVER_OSS
+# else
+#  define DEFAULT_SNDDRV_DRIVER COOLMIC_DSP_SNDDEV_DRIVER_NULL
+# endif
+#endif
 
 /* forward decleration of drivers */
 int coolmic_snddev_driver_null_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
+#ifdef HAVE_SNDDRV_DRIVER_OSS
 int coolmic_snddev_driver_oss_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
+#endif
+#ifdef HAVE_SNDDRV_DRIVER_OPENSL
 int coolmic_snddev_driver_opensl_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
+#endif
 
 struct coolmic_snddev {
     /* reference counter */
@@ -45,14 +57,18 @@ coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_le
         return NULL;
 
     if (!driver)
-        driver = DEFAULT_DRIVER;
+        driver = DEFAULT_SNDDRV_DRIVER;
 
     if (strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_NULL) == 0) {
         driver_open = coolmic_snddev_driver_null_open;
+#ifdef HAVE_SNDDRV_DRIVER_OSS
     } else if (strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_OSS) == 0) {
         driver_open = coolmic_snddev_driver_oss_open;
+#endif
+#ifdef HAVE_SNDDRV_DRIVER_OPENSL
     } else if (strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_OPENSL) == 0) {
         driver_open = coolmic_snddev_driver_opensl_open;
+#endif
     } else {
         /* unknown driver */
         return NULL;
