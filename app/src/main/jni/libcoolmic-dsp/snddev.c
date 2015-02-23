@@ -15,6 +15,7 @@
 /* forward decleration of drivers */
 int coolmic_snddev_driver_null_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
 int coolmic_snddev_driver_oss_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
+int coolmic_snddev_driver_opensl_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
 
 struct coolmic_snddev {
     /* reference counter */
@@ -50,6 +51,8 @@ coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_le
         driver_open = coolmic_snddev_driver_null_open;
     } else if (strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_OSS) == 0) {
         driver_open = coolmic_snddev_driver_oss_open;
+    } else if (strcasecmp(driver, COOLMIC_DSP_SNDDEV_DRIVER_OPENSL) == 0) {
+        driver_open = coolmic_snddev_driver_opensl_open;
     } else {
         /* unknown driver */
         return NULL;
