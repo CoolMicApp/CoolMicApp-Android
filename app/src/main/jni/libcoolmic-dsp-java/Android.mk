@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := coolmic-dsp-java
 LOCAL_CFLAGS += -I$(LOCAL_PATH)/../include -fsigned-char
-LOCAL_CFLAGS += -march=armv6 -marm -mfloat-abi=softfp -mfpu=vfp
+#LOCAL_CFLAGS += -march=armv6 -marm -mfloat-abi=softfp -mfpu=vfp
 
 LOCAL_SHARED_LIBRARIES := libogg libvorbis libshout libcoolmic-dsp
 

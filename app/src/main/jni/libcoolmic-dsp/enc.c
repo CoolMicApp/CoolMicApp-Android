@@ -69,8 +69,8 @@ static int __vorbis_start_encoder(coolmic_enc_t *self)
     vorbis_analysis_init(&(self->vd), &(self->vi));
     vorbis_block_init(&(self->vd), &(self->vb));
 
-    srand(time(NULL)); /* TODO FIXME: move this out */
-    ogg_stream_init(&(self->os), rand());
+    srand48(time(NULL)); /* TODO FIXME: move this out */
+    ogg_stream_init(&(self->os), lrand48());
 
     vorbis_analysis_headerout(&(self->vd), &(self->vc), &header, &header_comm, &header_code);
     ogg_stream_packetin(&(self->os), &header); /* automatically placed in its own page */
