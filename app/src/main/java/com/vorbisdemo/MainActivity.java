@@ -18,6 +18,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -476,6 +478,7 @@ public class MainActivity extends Activity {
                                     Log.d("VS", server + " " + server + " " + port_num.toString() + " " + username + " " + password + "\n " + mountpoint + "" +
                                             " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
 
+                                    Log.d("VS", "Minimum Buffer Size: " + String.valueOf(AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT)));
                                     Wrapper.init("audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string));
                                     Log.d("VS", "Status:" + Wrapper.start());
 
