@@ -8,7 +8,9 @@ LOCAL_CFLAGS += -I$(LOCAL_PATH)/../include -fsigned-char -DHAVE_SNDDRV_DRIVER_OP
 
 LOCAL_SHARED_LIBRARIES := libogg libvorbis libshout
 
-LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lOpenSLES -lshout -L$(LOCAL_PATH)/../libshout/src/.libs/
+#-lshout -L$(LOCAL_PATH)/../libshout/src/.libs/
+
+LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lOpenSLES
 
 LOCAL_SRC_FILES := \
 	coolmic-dsp.c \

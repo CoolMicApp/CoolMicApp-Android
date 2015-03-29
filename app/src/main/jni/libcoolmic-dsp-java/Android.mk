@@ -8,7 +8,8 @@ LOCAL_CFLAGS += -I$(LOCAL_PATH)/../include -fsigned-char
 
 LOCAL_SHARED_LIBRARIES := libogg libvorbis libshout libcoolmic-dsp
 
-LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lshout -L$(LOCAL_PATH)/../libshout/src/.libs/
+LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog
+#-lshout -L$(LOCAL_PATH)/../libshout/src/.libs/
 
 LOCAL_SRC_FILES := \
 	wrapper.c
