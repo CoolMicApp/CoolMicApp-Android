@@ -270,7 +270,7 @@ int                 coolmic_enc_unref(coolmic_enc_t *self)
     if (!self)
         return -1;
     self->refc--;
-    if (self->refc)
+    if (self->refc != 1) /* 1 = reference in self->out */
         return 0;
 
     __vorbis_stop_encoder(self);

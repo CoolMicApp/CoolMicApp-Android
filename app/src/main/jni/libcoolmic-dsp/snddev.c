@@ -106,8 +106,7 @@ int                 coolmic_snddev_unref(coolmic_snddev_t *self)
         return -1;
     self->refc--;
 
-    /* FIXME: This does not reflect references hold by self->rx and self->tx */
-    if (self->refc)
+    if (self->refc != 1) /* 1=reference in self->rx */
         return 0;
 
     coolmic_iohandle_unref(self->rx);
