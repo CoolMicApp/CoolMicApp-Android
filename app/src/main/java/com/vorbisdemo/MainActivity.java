@@ -191,6 +191,7 @@ public class MainActivity extends Activity {
     private void exitApp() {
         ClearLED();
         Wrapper.stop();
+        Wrapper.unref();
         finish();
         System.exit(0);
     }
@@ -519,6 +520,7 @@ public class MainActivity extends Activity {
         stopService(new Intent(getBaseContext(), MyService.class));
 
         Wrapper.stop();
+        Wrapper.unref();
 
         Editor editor = sharedpreferences.edit();
         editor.putString("TIMER_PER", "");
