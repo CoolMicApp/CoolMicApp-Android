@@ -20,5 +20,6 @@ LOCAL_SRC_FILES := \
 	simple.c \
 	snddev.c \
 	snddev_null.c\
+	snddev_opensl.c
 
 include $(BUILD_SHARED_LIBRARY)
