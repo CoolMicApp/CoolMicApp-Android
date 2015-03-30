@@ -45,6 +45,8 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env,
 
     coolmic_shout_config_t shout_config;
 
+    memset(&shout_config, 0, sizeof(shout_config));
+
     shout_config.hostname = "source.echonet.cc";
     shout_config.port     = 8000;
     shout_config.username = "test";
