@@ -8,9 +8,18 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 #include <libcoolmic-dsp/snddev.h>
+
+#define BUFFERFRAMES 1024
+
+typedef struct snddev_opensl_lock {
+    pthread_mutex_t mutex;
+    pthread_cond_t  cond;
+    unsigned char   s;
+} snddev_opensl_lock_t;
 
 typedef struct snddev_opensl {
     /* engine interfaces */
@@ -21,7 +30,77 @@ typedef struct snddev_opensl {
     SLObjectItf recorder_object;
     SLRecordItf recorder_record;
     SLAndroidSimpleBufferQueueItf recorder_buffer_queue;
+    size_t recorder_buffer_length;
+    size_t recorder_buffer_offset;
+    void * recorder_buffer;
+    void * recorder_buffer_other;
+    snddev_opensl_lock_t * recorder_lock;
 } snddev_opensl_t;
+
+snddev_opensl_lock_t *__lock_new(void)
+{
+    snddev_opensl_lock_t *ret = calloc(1, sizeof(snddev_opensl_lock_t));
+
+    if (!ret)
+        return NULL;
+
+    if (pthread_mutex_init(&ret->mutex, NULL) != 0) {
+        free(ret);
+        return NULL;
+    }
+
+    if (pthread_cond_init(&ret->cond, NULL) != 0) {
+        pthread_mutex_destroy(&ret->mutex);
+        free(ret);
+        return NULL;
+    }
+
+    ret->s = 1;
+
+    return ret;
+}
+
+void __lock_wait(snddev_opensl_lock_t *lock)
+{
+    pthread_mutex_lock(&lock->mutex);
+
+    while (!lock->s)
+        pthread_cond_wait(&lock->cond, &lock->mutex);
+
+    lock->s = 0;
+
+    pthread_mutex_unlock(&lock->mutex);
+}
+
+void __lock_notify(snddev_opensl_lock_t *lock)
+{
+    pthread_mutex_lock(&lock->mutex);
+
+    lock->s = 1;
+
+    pthread_cond_signal(&lock->cond);
+    pthread_mutex_unlock(&lock->mutex);
+}
+
+void __lock_free(snddev_opensl_lock_t *lock)
+{
+    if (!lock)
+        return;
+
+    /* send notify, just in case someone is still waiting for it */
+    __lock_notify(lock);
+
+    /* lock it before we destory to avoid anyone using it */
+    pthread_mutex_lock(&lock->mutex);
+
+    pthread_cond_destroy(&lock->cond);
+
+    /* finnaly unlock and destroy */
+    pthread_mutex_unlock(&lock->mutex);
+    pthread_mutex_destroy(&lock->mutex);
+
+    free(lock);
+}
 
 static SLuint32 __samplerate_to_SLuint32(uint_least32_t rate)
 {
@@ -76,7 +155,8 @@ static SLresult openSLCreateEngine(snddev_opensl_t *self)
 
 void __recorder_callback(SLAndroidSimpleBufferQueueItf bq, void *context)
 {
-  snddev_opensl_t *self = context;
+    snddev_opensl_t *self = context;
+    __lock_notify(self->recorder_lock);
 }
 
 static SLresult __recorder_open(snddev_opensl_t *self, uint_least32_t rate, SLuint32 channels)
@@ -104,6 +184,12 @@ static SLresult __recorder_open(snddev_opensl_t *self, uint_least32_t rate, SLui
     format_pcm = (SLDataFormat_PCM){SL_DATAFORMAT_PCM, channels, sr,
                                     SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16,
                                     speakers, SL_BYTEORDER_LITTLEENDIAN};
+
+
+    self->recorder_buffer_length = channels*BUFFERFRAMES*2;
+    self->recorder_buffer_offset = self->recorder_buffer_length;
+    self->recorder_buffer = calloc(1, self->recorder_buffer_length);
+    self->recorder_buffer_other = calloc(1, self->recorder_buffer_length);
 
     /* create audio recorder
      * (requires the RECORD_AUDIO permission)
@@ -142,10 +228,26 @@ static SLresult __recorder_open(snddev_opensl_t *self, uint_least32_t rate, SLui
 static ssize_t __read(coolmic_snddev_driver_t *dev, void *buffer, size_t len)
 {
     snddev_opensl_t *self = dev->userdata_vp;
-    SLresult result = (*(self->recorder_buffer_queue))->Enqueue(self->recorder_buffer_queue, buffer, len);
-    if (result == SL_RESULT_SUCCESS)
-        return len;
-    return 0;
+
+    if (self->recorder_buffer_offset == self->recorder_buffer_length) {
+        void *other;
+        __lock_wait(self->recorder_lock);
+        SLresult result = (*(self->recorder_buffer_queue))->Enqueue(self->recorder_buffer_queue, self->recorder_buffer, self->recorder_buffer_length);
+        if (result != SL_RESULT_SUCCESS)
+            return 0;
+        self->recorder_buffer_offset = 0;
+        other = self->recorder_buffer_other;
+        self->recorder_buffer_other = self->recorder_buffer;
+        self->recorder_buffer = other;
+    }
+
+    if (len > (self->recorder_buffer_length - self->recorder_buffer_offset))
+        len = self->recorder_buffer_length - self->recorder_buffer_offset;
+
+    memcpy(buffer, self->recorder_buffer + self->recorder_buffer_offset, len);
+    self->recorder_buffer_offset += len;
+
+    return len;
 }
 
 static ssize_t __write(coolmic_snddev_driver_t *dev, const void *buffer, size_t len)
@@ -164,6 +266,13 @@ static int __free(coolmic_snddev_driver_t *dev)
     /* destroy engine object, and invalidate all associated interfaces */
     if (self->engine_object)
         (*(self->engine_object))->Destroy(self->engine_object);
+
+    if (self->recorder_buffer)
+        free(self->recorder_buffer);
+    if (self->recorder_buffer_other)
+        free(self->recorder_buffer_other);
+
+    __lock_free(self->recorder_lock);
 
     free(dev->userdata_vp);
     memset(dev, 0, sizeof(*dev));
@@ -185,6 +294,12 @@ int coolmic_snddev_driver_opensl_open(coolmic_snddev_driver_t *dev, const char *
     dev->read = __read;
     dev->write = __write;
     dev->userdata_vp = self;
+
+    self->recorder_lock = __lock_new();
+    if (!self->recorder_lock) {
+        __free(dev);
+        return -1;
+    }
 
     if (openSLCreateEngine(self) != SL_RESULT_SUCCESS) {
         __free(dev);
