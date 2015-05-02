@@ -18,25 +18,29 @@ typedef enum coolmic_simple_event {
  /* some invalid event
   * arg0 and arg1 are undefined.
   */
- COOLMIC_SIMPLE_EVENT_INVALID      = -1,
+ COOLMIC_SIMPLE_EVENT_INVALID           = -1,
  /* no event happend.
   * arg0 and arg1 are undefined.
   */
- COOLMIC_SIMPLE_EVENT_NONE         =  0,
+ COOLMIC_SIMPLE_EVENT_NONE              =  0,
  /* an error happend.
   * arg0 points to an const int containing the error value or NULL.
   * YOU MUST NOT ALTER THIS VALUE.
   * arg0 and arg1 are undefined.
   */
- COOLMIC_SIMPLE_EVENT_ERROR        =  1,
+ COOLMIC_SIMPLE_EVENT_ERROR             =  1,
  /* a thread got started.
   * arg1 is undefined.
   */
- COOLMIC_SIMPLE_EVENT_THREAD_START =  2,
+ COOLMIC_SIMPLE_EVENT_THREAD_START      =  2,
+ /* as COOLMIC_SIMPLE_EVENT_THREAD_START but ran inside the thread. */
+ COOLMIC_SIMPLE_EVENT_THREAD_POST_START =  3,
  /* a thread is stopped.
   * arg0 and arg1 are undefined.
   */
- COOLMIC_SIMPLE_EVENT_THREAD_STOP  =  3,
+ COOLMIC_SIMPLE_EVENT_THREAD_STOP       =  4,
+ /* as COOLMIC_SIMPLE_EVENT_THREAD_STOP but ran inside the thread. */
+ COOLMIC_SIMPLE_EVENT_THREAD_PRE_STOP   =  5
 } coolmic_simple_event_t;
 
 /* Generic callback for events.

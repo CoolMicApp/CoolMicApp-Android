@@ -145,6 +145,7 @@ static void *__worker(void *userdata)
     coolmic_shout_t *shout;
 
     pthread_mutex_lock(&(self->lock));
+    __emit_event(self, COOLMIC_SIMPLE_EVENT_THREAD_POST_START, &(self->thread), NULL, NULL);
     if (self->need_reset) {
         if (__reset(self) != 0) {
             self->running = 0;
@@ -177,6 +178,7 @@ static void *__worker(void *userdata)
     self->need_reset = 1;
     coolmic_shout_stop(shout);
     coolmic_shout_unref(shout);
+    __emit_event(self, COOLMIC_SIMPLE_EVENT_THREAD_PRE_STOP, &(self->thread), NULL, NULL);
     pthread_mutex_unlock(&(self->lock));
     return NULL;
 }
