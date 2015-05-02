@@ -4,7 +4,7 @@
 #include <android/log.h>
 
 
-#define LOG_TAG "Wrapper"
+#define LOG_TAG "wrapper.c"
 #define LOGI(x...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG,x)
 
 #ifdef __cplusplus
