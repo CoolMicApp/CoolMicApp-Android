@@ -549,7 +549,29 @@ public class MainActivity extends Activity {
         final int what_final = what;
         MainActivity.this.runOnUiThread(new Runnable(){
             public void run(){
-                Toast.makeText(MainActivity.this, String.valueOf(what_final), Toast.LENGTH_LONG).show();
+                switch(what_final) {
+                    case 1:
+                        timeInMilliseconds = 0L;
+                        timeSwapBuff = 0L;
+                        updatedTime = 0L;
+                        timeSwapBuff += timeInMilliseconds;
+                        customHandler.removeCallbacks(updateTimerThread);
+                        startTime = SystemClock.uptimeMillis();
+                        customHandler.postDelayed(updateTimerThread, 0);
+                        break;
+                    case 2:
+                        //code to stop timer starts here
+                        timeSwapBuff += timeInMilliseconds;
+                        customHandler.removeCallbacks(updateTimerThread);
+                        //code to stop timer starts here
+                        start_button.clearAnimation();
+                        start_button.setBackground(buttonColor);
+                        start_button.setText("Start Broadcast");
+                        //logMessage("Stopping the broadcasting");
+                        break;
+                    case 3:
+                        Toast.makeText(MainActivity.this, "there was an error!", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
