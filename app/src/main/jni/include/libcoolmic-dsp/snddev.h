@@ -47,7 +47,7 @@ struct coolmic_snddev_driver {
 };
 
 /* Management of the encoder object */
-coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
+coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags, ssize_t buffer);
 int                 coolmic_snddev_ref(coolmic_snddev_t *self);
 int                 coolmic_snddev_unref(coolmic_snddev_t *self);
 

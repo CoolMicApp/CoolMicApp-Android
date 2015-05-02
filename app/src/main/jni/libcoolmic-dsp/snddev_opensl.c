@@ -159,7 +159,7 @@ void __recorder_callback(SLAndroidSimpleBufferQueueItf bq, void *context)
     __lock_notify(self->recorder_lock);
 }
 
-static SLresult __recorder_open(snddev_opensl_t *self, uint_least32_t rate, SLuint32 channels)
+static SLresult __recorder_open(snddev_opensl_t *self, uint_least32_t rate, SLuint32 channels, ssize_t buffer)
 {
     SLDataLocator_IODevice loc_dev = {SL_DATALOCATOR_IODEVICE, SL_IODEVICE_AUDIOINPUT,
                                       SL_DEFAULTDEVICEID_AUDIOINPUT, NULL};
@@ -186,7 +186,7 @@ static SLresult __recorder_open(snddev_opensl_t *self, uint_least32_t rate, SLui
                                     speakers, SL_BYTEORDER_LITTLEENDIAN};
 
 
-    self->recorder_buffer_length = channels*BUFFERFRAMES*2;
+    self->recorder_buffer_length = (buffer > 0) ? buffer : channels*BUFFERFRAMES*2;
     self->recorder_buffer_offset = self->recorder_buffer_length;
     self->recorder_buffer = calloc(1, self->recorder_buffer_length);
     self->recorder_buffer_other = calloc(1, self->recorder_buffer_length);
@@ -279,7 +279,7 @@ static int __free(coolmic_snddev_driver_t *dev)
     return 0;
 }
 
-int coolmic_snddev_driver_opensl_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags)
+int coolmic_snddev_driver_opensl_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags, ssize_t buffer)
 {
     snddev_opensl_t *self;
 
@@ -307,7 +307,7 @@ int coolmic_snddev_driver_opensl_open(coolmic_snddev_driver_t *dev, const char *
     }
 
     if (flags & COOLMIC_DSP_SNDDEV_RX) {
-        if (__recorder_open(self, rate, channels) != SL_RESULT_SUCCESS) {
+        if (__recorder_open(self, rate, channels, buffer) != SL_RESULT_SUCCESS) {
             __free(dev);
             return -1;
         }

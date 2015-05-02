@@ -58,7 +58,7 @@ static void __stop_unlocked(coolmic_simple_t *self)
     pthread_mutex_lock(&(self->lock));
 }
 
-coolmic_simple_t   *coolmic_simple_new(const char *codec, uint_least32_t rate, unsigned int channels, const coolmic_shout_config_t *conf)
+coolmic_simple_t   *coolmic_simple_new(const char *codec, uint_least32_t rate, unsigned int channels, ssize_t buffer, const coolmic_shout_config_t *conf)
 {
     coolmic_simple_t *ret = calloc(1, sizeof(coolmic_simple_t));
     if (!ret)
@@ -68,7 +68,7 @@ coolmic_simple_t   *coolmic_simple_new(const char *codec, uint_least32_t rate, u
     pthread_mutex_init(&(ret->lock), NULL);
 
     do {
-        if ((ret->dev = coolmic_snddev_new(COOLMIC_DSP_SNDDEV_DRIVER_AUTO, NULL, rate, channels, COOLMIC_DSP_SNDDEV_RX)) == NULL)
+        if ((ret->dev = coolmic_snddev_new(COOLMIC_DSP_SNDDEV_DRIVER_AUTO, NULL, rate, channels, COOLMIC_DSP_SNDDEV_RX, buffer)) == NULL)
             break;
         if ((ret->enc = coolmic_enc_new(codec, rate, channels)) == NULL)
             break;

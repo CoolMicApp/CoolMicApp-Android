@@ -21,12 +21,12 @@
 #endif
 
 /* forward decleration of drivers */
-int coolmic_snddev_driver_null_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
+int coolmic_snddev_driver_null_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags, ssize_t buffer);
 #ifdef HAVE_SNDDRV_DRIVER_OSS
-int coolmic_snddev_driver_oss_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
+int coolmic_snddev_driver_oss_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags, ssize_t buffer);
 #endif
 #ifdef HAVE_SNDDRV_DRIVER_OPENSL
-int coolmic_snddev_driver_opensl_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags);
+int coolmic_snddev_driver_opensl_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags, ssize_t buffer);
 #endif
 
 struct coolmic_snddev {
@@ -47,10 +47,10 @@ static ssize_t __read(void *userdata, void *buffer, size_t len)
     return self->driver.read(&(self->driver), buffer, len);
 }
 
-coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags)
+coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags, ssize_t buffer)
 {
     coolmic_snddev_t *ret;
-    int (*driver_open)(coolmic_snddev_driver_t*, const char*, void*, uint_least32_t, unsigned int, int) = NULL;
+    int (*driver_open)(coolmic_snddev_driver_t*, const char*, void*, uint_least32_t, unsigned int, int, ssize_t) = NULL;
 
     /* check arguments */
     if (!rate || !channels || !flags)
@@ -78,7 +78,7 @@ coolmic_snddev_t   *coolmic_snddev_new(const char *driver, void *device, uint_le
     if (!ret)
         return NULL;
 
-    if (driver_open(&(ret->driver), driver, device, rate, channels, flags) != 0) {
+    if (driver_open(&(ret->driver), driver, device, rate, channels, flags, buffer) != 0) {
         free(ret);
         return NULL;
     }

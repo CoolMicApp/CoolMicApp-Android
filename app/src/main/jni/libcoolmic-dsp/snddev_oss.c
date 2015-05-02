@@ -32,12 +32,13 @@ static ssize_t __write(coolmic_snddev_driver_t *dev, const void *buffer, size_t 
     return write(dev->userdata_i, buffer, len);
 }
 
-int coolmic_snddev_driver_oss_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags)
+int coolmic_snddev_driver_oss_open(coolmic_snddev_driver_t *dev, const char *driver, void *device, uint_least32_t rate, unsigned int channels, int flags, ssize_t buffer)
 {
     int mode;
     int req;
 
     (void)driver;
+    (void)buffer; /* TODO: implement this. */
 
     if (!device)
         device = DEFAULT_DEVICE;

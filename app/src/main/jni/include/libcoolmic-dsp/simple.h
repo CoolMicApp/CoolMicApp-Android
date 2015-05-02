@@ -56,7 +56,7 @@ typedef enum coolmic_simple_event {
 typedef int (*coolmic_simple_callback_t)(coolmic_simple_t *inst, void *userdata, coolmic_simple_event_t event, void *thread, void *arg0, void *arg1);
 
 /* Management of the encoder object */
-coolmic_simple_t   *coolmic_simple_new(const char *codec, uint_least32_t rate, unsigned int channels, const coolmic_shout_config_t *conf);
+coolmic_simple_t   *coolmic_simple_new(const char *codec, uint_least32_t rate, unsigned int channels, ssize_t buffer, const coolmic_shout_config_t *conf);
 int                 coolmic_simple_ref(coolmic_simple_t *self);
 int                 coolmic_simple_unref(coolmic_simple_t *self);
 
