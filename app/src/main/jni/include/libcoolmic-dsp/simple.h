@@ -24,12 +24,12 @@ typedef enum coolmic_simple_event {
   */
  COOLMIC_SIMPLE_EVENT_NONE         =  0,
  /* an error happend.
+  * arg0 points to an const int containing the error value or NULL.
+  * YOU MUST NOT ALTER THIS VALUE.
   * arg0 and arg1 are undefined.
   */
  COOLMIC_SIMPLE_EVENT_ERROR        =  1,
  /* a thread got started.
-  * arg0 points to an const int containing the error value or NULL.
-  * YOU MUST NOT ALTER THIS VALUE.
   * arg1 is undefined.
   */
  COOLMIC_SIMPLE_EVENT_THREAD_START =  2,
