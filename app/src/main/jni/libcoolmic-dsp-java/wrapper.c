@@ -38,7 +38,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
     return coolmic_simple_unref(coolmic_simple_obj);
 }
 
-JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jstring codec, jint rate, jint channels)
+JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jstring codec, jint rate, jint channels, jint buffersize)
 {
     LOGI("start init");
     const char *codecNative = (*env)->GetStringUTFChars(env, codec, 0);
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env,
     shout_config.password = "test123";
     shout_config.mount    = "test.ogg";
 
-    coolmic_simple_obj = coolmic_simple_new(codecNative, rate, channels, -1, &shout_config);
+    coolmic_simple_obj = coolmic_simple_new(codecNative, rate, channels, buffersize, &shout_config);
 
     if(coolmic_simple_obj == NULL)
     {

@@ -16,5 +16,5 @@ public class Wrapper {
     public static native int stop();
     public static native int ref();
     public static native int unref();
-    public static native void init(String codec, int rate, int channels);
+    public static native void init(String codec, int rate, int channels, int buffersize);
 }

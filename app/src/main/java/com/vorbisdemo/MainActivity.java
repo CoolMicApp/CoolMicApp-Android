@@ -476,11 +476,12 @@ public class MainActivity extends Activity {
                                     String quality_string = coolmic.getQuality();
                                     String title = coolmic.getTitle();
                                     String artist = coolmic.getArtist();
+                                    Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
                                     Log.d("VS", server + " " + server + " " + port_num.toString() + " " + username + " " + password + "\n " + mountpoint + "" +
                                             " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
 
-                                    Log.d("VS", "Minimum Buffer Size: " + String.valueOf(AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT)));
-                                    Wrapper.init("audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string));
+                                    Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
+                                    Wrapper.init("audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
                                     Log.d("VS", "Status:" + Wrapper.start());
 
                                 } catch (Exception e) {
