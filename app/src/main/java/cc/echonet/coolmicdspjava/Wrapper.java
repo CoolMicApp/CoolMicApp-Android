@@ -1,5 +1,7 @@
 package cc.echonet.coolmicdspjava;
 
+import android.app.Activity;
+
 /**
  * Created by stephanj on 2/22/15.
  */
@@ -16,5 +18,5 @@ public class Wrapper {
     public static native int stop();
     public static native int ref();
     public static native int unref();
-    public static native void init(String codec, int rate, int channels, int buffersize);
+    public static native void init(Activity handler, String codec, int rate, int channels, int buffersize);
 }

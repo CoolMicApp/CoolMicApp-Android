@@ -481,7 +481,7 @@ public class MainActivity extends Activity {
                                             " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
 
                                     Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-                                    Wrapper.init("audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
+                                    Wrapper.init(MainActivity.this, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
                                     Log.d("VS", "Status:" + Wrapper.start());
 
                                 } catch (Exception e) {
@@ -540,6 +540,18 @@ public class MainActivity extends Activity {
             logArea.scrollTo(0, scrollAmount);
         else
             logArea.scrollTo(0, 0);
+    }
+
+    private void callbackHandler(int what)
+    {
+        Log.d("Handler", String.valueOf(what));
+
+        final int what_final = what;
+        MainActivity.this.runOnUiThread(new Runnable(){
+            public void run(){
+                Toast.makeText(MainActivity.this, String.valueOf(what_final), Toast.LENGTH_LONG).show();
+            }
+        });
     }
     //code for displaying timer ends here
 }
