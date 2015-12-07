@@ -448,6 +448,8 @@ public class MainActivity extends Activity {
                     //screenreceiver.setThreadStatus(true);
                     startService(new Intent(getBaseContext(), MyService.class));
                     RedFlashLight();
+                    timeInMilliseconds = 0L;
+                    timeSwapBuff = 0L;
                     start_button.startAnimation(animation);
                     start_button.setBackground(trans);
                     trans.startTransition(5000);
@@ -570,7 +572,17 @@ public class MainActivity extends Activity {
                         //logMessage("Stopping the broadcasting");
                         break;
                     case 3:
+                        //code to stop timer starts here
+                        timeSwapBuff += timeInMilliseconds;
+                        customHandler.removeCallbacks(updateTimerThread);
+                        //code to stop timer starts here
+                        start_button.clearAnimation();
+                        start_button.setBackground(buttonColor);
+                        start_button.setText("Start Broadcast");
+
                         Toast.makeText(MainActivity.this, "there was an error!", Toast.LENGTH_LONG).show();
+
+                        break;
                 }
             }
         });
