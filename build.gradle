@@ -14,11 +14,4 @@ allprojects {
     }
 }
 
-task ndkBuild(type: Exec) {
-    commandLine 'ndk-build', '-C', file('src/main/jni').absolutePath
-}
-
-tasks.withType(JavaCompile) {
-    compileTask -> compileTask.dependsOn ndkBuild
-}
 
