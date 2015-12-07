@@ -99,10 +99,14 @@ int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event_t even
     }
 }
 
-JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring codec, jint rate, jint channels, jint buffersize)
+JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
 {
     LOGI("start init");
-    const char *codecNative = (*env)->GetStringUTFChars(env, codec, 0);
+    const char *codecNative    = (*env)->GetStringUTFChars(env, codec,    0);
+    const char *hostnameNative = (*env)->GetStringUTFChars(env, hostname, 0);
+    const char *usernameNative = (*env)->GetStringUTFChars(env, username, 0);
+    const char *passwordNative = (*env)->GetStringUTFChars(env, password, 0);
+    const char *mountNative    = (*env)->GetStringUTFChars(env, mount,    0);
 
     if (!(*env)->GetJavaVM(env, &g_vm) < 0)
         return;
@@ -119,11 +123,11 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env,
 
     memset(&shout_config, 0, sizeof(shout_config));
 
-    shout_config.hostname = "source.echonet.cc";
-    shout_config.port     = 8000;
-    shout_config.username = "test";
-    shout_config.password = "test123";
-    shout_config.mount    = "test.ogg";
+    shout_config.hostname = hostnameNative;
+    shout_config.port     = port;
+    shout_config.username = usernameNative;
+    shout_config.password = passwordNative;
+    shout_config.mount    = mountNative;
 
     coolmic_simple_obj = coolmic_simple_new(codecNative, rate, channels, buffersize, &shout_config);
 
@@ -139,6 +143,11 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env,
     coolmic_simple_set_callback(coolmic_simple_obj, callback, 0);
 
     (*env)->ReleaseStringUTFChars(env, codec, codecNative);
+    (*env)->ReleaseStringUTFChars(env, codec, hostnameNative);
+    (*env)->ReleaseStringUTFChars(env, codec, usernameNative);
+    (*env)->ReleaseStringUTFChars(env, codec, passwordNative);
+    (*env)->ReleaseStringUTFChars(env, codec, mountNative);
+
     LOGI("end init");
 }
 

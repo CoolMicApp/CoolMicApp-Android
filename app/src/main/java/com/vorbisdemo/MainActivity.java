@@ -481,7 +481,7 @@ public class MainActivity extends Activity {
                                             " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
 
                                     Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-                                    Wrapper.init(MainActivity.this, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
+                                    Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
                                     Log.d("VS", "Status:" + Wrapper.start());
 
                                 } catch (Exception e) {
