@@ -1,4 +1,4 @@
-package com.vorbisdemo;
+package cc.echonet.coolmicapp;
 
 
 import android.app.ActionBar;
@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,7 +21,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class server extends Activity {
@@ -60,7 +58,7 @@ public class server extends Activity {
                 audioSetting();
                 return true;
             case R.id.help:
-                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://coolmic.net/help/"));
+                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://cc.echonet.coolmicapp.net/help/"));
                 startActivity(helpIntent);
                 return true;
             case R.id.quite_app:
@@ -310,7 +308,7 @@ public class server extends Activity {
     }
 
     public void termConditionLink(@SuppressWarnings("unused") View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://echonet.cc/terms/coolmic/"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://echonet.cc/terms/cc.echonet.coolmicapp/"));
         startActivity(browserIntent);
     }
 

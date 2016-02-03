@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vorbisdemo"
+    package="cc.echonet.coolmicapp"
     android:versionCode="5"
     android:versionName="1.0">
 
@@ -16,7 +16,7 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name">
         <activity
-            android:name=".MainActivity"
+            android:name="com.cc.echonet.coolmic.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name">
             <intent-filter>
@@ -25,45 +25,45 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.vorbisdemo.server"
+            android:name="com.cc.echonet.coolmic.server"
             android:label="Connection"
-            android:parentActivityName="com.vorbisdemo.MainActivity"
+            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
             android:windowSoftInputMode="adjustResize"></activity>
         <activity
-            android:name="com.vorbisdemo.audio"
+            android:name="com.cc.echonet.coolmic.audio"
             android:label="Audio"
-            android:parentActivityName="com.vorbisdemo.MainActivity"
+            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vorbisdemo.MainActivity" />
+                android:value="com.cc.echonet.coolmic.MainActivity" />
         </activity>
         <activity
-            android:name="com.vorbisdemo.home"
+            android:name="com.cc.echonet.coolmic.home"
             android:label="Cool Mic"
-            android:parentActivityName="com.vorbisdemo.MainActivity"
+            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vorbisdemo.MainActivity" />
+                android:value="com.cc.echonet.coolmic.MainActivity" />
         </activity>
         <activity
-            android:name="com.vorbisdemo.general"
+            android:name="com.cc.echonet.coolmic.general"
             android:label="General"
-            android:parentActivityName="com.vorbisdemo.MainActivity"
+            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vorbisdemo.MainActivity" />
+                android:value="com.cc.echonet.coolmic.MainActivity" />
         </activity>
         <activity
-            android:name="com.vorbisdemo.Refresh"
+            android:name="com.cc.echonet.coolmic.Refresh"
             android:label="General"
-            android:parentActivityName="com.vorbisdemo.MainActivity"
+            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
             android:windowSoftInputMode="adjustResize"></activity>
 
         <service
-            android:name=".MyService"
+            android:name="com.cc.echonet.coolmic.MyService"
             android:enabled="true"
             android:stopWithTask="false" />
     </application>

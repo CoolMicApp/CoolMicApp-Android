@@ -10,8 +10,8 @@ public class Wrapper {
         System.loadLibrary("ogg");
         System.loadLibrary("vorbis");
         System.loadLibrary("shout");
-        System.loadLibrary("coolmic-dsp");
-        System.loadLibrary("coolmic-dsp-java");
+        System.loadLibrary("cc.echonet.coolmicapp-dsp");
+        System.loadLibrary("cc.echonet.coolmicapp-dsp-java");
     }
 
     public static native int start();

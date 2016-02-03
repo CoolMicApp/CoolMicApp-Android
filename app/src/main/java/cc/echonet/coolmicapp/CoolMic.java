@@ -1,4 +1,4 @@
-package com.vorbisdemo;
+package cc.echonet.coolmicapp;
 
 public class CoolMic {
     int id;

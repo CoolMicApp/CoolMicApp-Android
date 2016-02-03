@@ -1,4 +1,4 @@
-package com.vorbisdemo;
+package cc.echonet.coolmicapp;
 
 import android.app.NotificationManager;
 import android.app.Service;

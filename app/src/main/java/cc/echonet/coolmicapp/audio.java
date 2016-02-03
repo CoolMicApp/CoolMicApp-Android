@@ -1,4 +1,4 @@
-package com.vorbisdemo;
+package cc.echonet.coolmicapp;
 
 
 import android.app.ActionBar;
@@ -77,7 +77,7 @@ public class audio extends Activity {
                 //audioSetting();
                 return true;
             case R.id.help:
-                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://coolmic.net/help/"));
+                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://cc.echonet.coolmicapp.net/help/"));
                 startActivity(helpIntent);
                 return true;
             case R.id.quite_app:

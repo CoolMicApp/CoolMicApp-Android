@@ -1,4 +1,4 @@
-package com.vorbisdemo;
+package cc.echonet.coolmicapp;
 
 import android.content.ContentValues;
 import android.content.Context;
