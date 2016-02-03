@@ -2,3 +2,4 @@ build/
 app/build/
 app/src/main/libs/
 app/src/main/obj/
+local.properties
