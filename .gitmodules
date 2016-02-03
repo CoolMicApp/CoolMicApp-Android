@@ -1,3 +1,0 @@
-[submodule "app/src/main/jni/libshout"]
-	path = app/src/main/jni/libshout
-	url = /home/stephanj/android/coolmic/../libshout
