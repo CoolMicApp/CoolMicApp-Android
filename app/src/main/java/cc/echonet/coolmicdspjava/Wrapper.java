@@ -50,8 +50,8 @@ public class Wrapper {
             System.loadLibrary("ogg");
             System.loadLibrary("vorbis");
             System.loadLibrary("shout");
-            System.loadLibrary("cc.echonet.coolmicapp-dsp");
-            System.loadLibrary("cc.echonet.coolmicapp-dsp-java");
+            System.loadLibrary("coolmic-dsp");
+            System.loadLibrary("coolmic-dsp-java");
 
             state = WrapperInitializationStatus.WRAPPER_INTITIALIZED;
         }
