@@ -375,6 +375,30 @@ public class MainActivity extends Activity {
         }
 
 
+        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_UNINITIALIZED)
+        {
+            if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
+            {
+                Log.d("WrapperInit", Wrapper.getInitException().toString());
+                Toast.makeText(getApplicationContext(), "Could not initialize native components :( Blocking controls!", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Native components initialized!", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
+        {
+            Toast.makeText(getApplicationContext(), "Previous problem detected with native components :( Blocking controls!", Toast.LENGTH_SHORT).show();
+        }
+        else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
+        {
+            Toast.makeText(getApplicationContext(), "Native components previously initialized!", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Native components in unknown state!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void onImageClick(View view) {
@@ -460,8 +484,9 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
-        if (isOnline()) {
-            if (coolmic.isConnectionSet()) {
+        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+            if (isOnline()) {
+                if (coolmic.isConnectionSet()) {
                     invalidateOptionsMenu();
                     isThreadOn = true;
                     //screenreceiver.setThreadStatus(true);
@@ -515,39 +540,51 @@ public class MainActivity extends Activity {
 
                     });
                     streamThread.start();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
+                }
             } else {
-                Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Check Internet Connection !", Toast.LENGTH_LONG).show();
             }
-        } else {
-            Toast.makeText(getApplicationContext(), "Check Internet Connection !", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
         }
     }
 
     @SuppressWarnings("deprecation")
     public void stopRecording(@SuppressWarnings("unused") View view) {
-        //code to stop timer starts here
-        Log.d("shared", sharedpreferences.getString("TIMER_PER", "") + "1111");
-        Log.d("shared123", "shared pref not disp");
-        timeSwapBuff += timeInMilliseconds;
-        customHandler.removeCallbacks(updateTimerThread);
-        //code to stop timer starts here
-        ClearLED();
-        invalidateOptionsMenu();
-        start_button.clearAnimation();
-        start_button.setBackground(buttonColor);
-        start_button.setText("Start Broadcast");
-        stopService(new Intent(getBaseContext(), MyService.class));
+        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+            //code to stop timer starts here
+            Log.d("shared", sharedpreferences.getString("TIMER_PER", "") + "1111");
+            Log.d("shared123", "shared pref not disp");
+            timeSwapBuff += timeInMilliseconds;
+            customHandler.removeCallbacks(updateTimerThread);
+            //code to stop timer starts here
+            ClearLED();
+            invalidateOptionsMenu();
+            start_button.clearAnimation();
+            start_button.setBackground(buttonColor);
+            start_button.setText("Start Broadcast");
+            stopService(new Intent(getBaseContext(), MyService.class));
 
-        Wrapper.stop();
-        Wrapper.unref();
 
-        Editor editor = sharedpreferences.edit();
-        editor.putString("TIMER_PER", "");
-        editor.putString("TIMER_PER", (String) timerValue.getText());
-        editor.commit();
-        Intent i = new Intent(MainActivity.this, MainActivity.class);
-        startActivity(i);
-        finish();
+            Wrapper.stop();
+            Wrapper.unref();
+
+            Editor editor = sharedpreferences.edit();
+            editor.putString("TIMER_PER", "");
+            editor.putString("TIMER_PER", (String) timerValue.getText());
+            editor.commit();
+            Intent i = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(i);
+            finish();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void logMessage(String msg) {

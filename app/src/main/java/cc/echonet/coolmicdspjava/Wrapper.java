@@ -28,12 +28,40 @@ import android.app.Activity;
  * Created by stephanj on 2/22/15.
  */
 public class Wrapper {
-    static {
-        System.loadLibrary("ogg");
-        System.loadLibrary("vorbis");
-        System.loadLibrary("shout");
-        System.loadLibrary("cc.echonet.coolmicapp-dsp");
-        System.loadLibrary("cc.echonet.coolmicapp-dsp-java");
+
+    public  enum WrapperInitializationStatus { WRAPPER_UNINITIALIZED, WRAPPER_INITIALIZATION_ERROR, WRAPPER_INTITIALIZED }
+    private static WrapperInitializationStatus state = WrapperInitializationStatus.WRAPPER_UNINITIALIZED;
+    private static Throwable initException = null;
+
+    public static WrapperInitializationStatus getState()
+    {
+        return state;
+    }
+
+    public static Throwable getInitException()
+    {
+        return initException;
+    }
+
+    public static WrapperInitializationStatus init()
+    {
+        try
+        {
+            System.loadLibrary("ogg");
+            System.loadLibrary("vorbis");
+            System.loadLibrary("shout");
+            System.loadLibrary("cc.echonet.coolmicapp-dsp");
+            System.loadLibrary("cc.echonet.coolmicapp-dsp-java");
+
+            state = WrapperInitializationStatus.WRAPPER_INTITIALIZED;
+        }
+        catch (Throwable ex)
+        {
+            initException = ex;
+            state = WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR;
+        }
+
+        return state;
     }
 
     public static native int start();
