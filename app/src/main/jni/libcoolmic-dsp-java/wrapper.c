@@ -1,3 +1,6 @@
+/* %%%COPYRIGHT%%% */
+
+/* %%%LICENSE%%% */
 #include <jni.h>
 #include "libcoolmic-dsp/simple.h"
 #include "libcoolmic-dsp/shout.h"

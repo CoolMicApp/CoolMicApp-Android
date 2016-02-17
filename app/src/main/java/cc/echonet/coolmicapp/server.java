@@ -1,3 +1,6 @@
+/* %%%COPYRIGHT%%% */
+
+/* %%%LICENSE%%% */
 package cc.echonet.coolmicapp;
 
 
