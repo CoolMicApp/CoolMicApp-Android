@@ -48,7 +48,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_SAMPLERATE = "samplerate";
     private static final String KEY_CHANNELS = "channel";
     private static final String KEY_QUALITY = "quality";
-    private static final String TERM_CONDITION = "termcondition";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -62,8 +61,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_GENERAL_USERNAME + " TEXT," + KEY_SERVERNAME + " TEXT,"
                 + KEY_MOUNTPOINT + " TEXT," + KEY_USERNAME + " TEXT,"
                 + KEY_PASSWORD + " TEXT," + KEY_SAMPLERATE + " TEXT,"
-                + KEY_CHANNELS + " TEXT," + KEY_QUALITY + " TEXT,"
-                + TERM_CONDITION + " TEXT" + ")";
+                + KEY_CHANNELS + " TEXT," + KEY_QUALITY + " TEXT)";
         db.execSQL(CREATE_COOLMIC_TABLE);
     }
 
@@ -94,7 +92,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_SAMPLERATE, coolmic.getSampleRate());              // 
         values.put(KEY_CHANNELS, coolmic.getChannels());                 // 
         values.put(KEY_QUALITY, coolmic.getQuality());                  // 
-        values.put(TERM_CONDITION, coolmic.getTermCondition());           // 
         db.insert(TABLE_COOLMIC, null, values);                        //
         db.close();                                                     //
     }
@@ -104,14 +101,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_COOLMIC, new String[]{KEY_ID, KEY_TITLE, KEY_ARTIST,
                         KEY_GENERAL_USERNAME, KEY_SERVERNAME, KEY_MOUNTPOINT, KEY_USERNAME,
-                        KEY_PASSWORD, KEY_SAMPLERATE, KEY_CHANNELS, KEY_QUALITY, TERM_CONDITION}, KEY_ID + "=?",
+                        KEY_PASSWORD, KEY_SAMPLERATE, KEY_CHANNELS, KEY_QUALITY}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
         CoolMic coolmic = new CoolMic(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4),
                 cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8),
-                cursor.getString(9), cursor.getString(10), cursor.getString(11));
+                cursor.getString(9), cursor.getString(10));
         return coolmic;
     }
 
@@ -130,7 +127,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_SAMPLERATE, coolmic.getSampleRate());             // 
         values.put(KEY_CHANNELS, coolmic.getChannels());                 //  
         values.put(KEY_QUALITY, coolmic.getQuality());                   //  
-        values.put(TERM_CONDITION, coolmic.getTermCondition());
+
         // updating row 
         return db.update(TABLE_COOLMIC, values, KEY_ID + " = ?",
                 new String[]{String.valueOf(coolmic.getID())});

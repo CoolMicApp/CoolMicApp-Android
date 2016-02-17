@@ -369,9 +369,9 @@ public class MainActivity extends Activity {
             db.updateCoolMicDetails(coolmic);
             coolmic = db.getCoolMicDetails(1);
         } else {
-            db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "", "44100", "1", "-0.1", "false"));
+            db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "", "44100", "1", "-0.1"));
             CoolMic cm = db.getCoolMicDetails(1);
-            String log = "Id: " + cm.getID() + " ,title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername() + ", servername: " + cm.getServerName() + " , mountpoint: " + cm.getMountpoint() + ", username: " + cm.getUsername() + ", password: " + cm.getPassword() + ", sampleRate: " + cm.getSampleRate() + ", channels: " + cm.getChannels() + ", quality: " + cm.getQuality() + ", termCondition: " + cm.getTermCondition();
+            String log = "Id: " + cm.getID() + " ,title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername() + ", servername: " + cm.getServerName() + " , mountpoint: " + cm.getMountpoint() + ", username: " + cm.getUsername() + ", password: " + cm.getPassword() + ", sampleRate: " + cm.getSampleRate() + ", channels: " + cm.getChannels() + ", quality: " + cm.getQuality();
             Log.d("VS", log);
         }
 
@@ -461,10 +461,8 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
-
         if (isOnline()) {
             if (coolmic.isConnectionSet()) {
-                if (Boolean.valueOf((coolmic.getTermCondition()))) {
                     invalidateOptionsMenu();
                     isThreadOn = true;
                     //screenreceiver.setThreadStatus(true);
@@ -518,9 +516,6 @@ public class MainActivity extends Activity {
 
                     });
                     streamThread.start();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Accept the Term and Conditions !", Toast.LENGTH_LONG).show();
-                }
             } else {
                 Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
             }

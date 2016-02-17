@@ -34,7 +34,6 @@ public class CoolMic {
     private String sampleRate = "";
     private String channels = "";
     private String quality = "";
-    private String termCondition = "";
 
     /*   public CoolMic(int id, String title){
          this.id = id;
@@ -51,7 +50,7 @@ public class CoolMic {
    	}*/
     // constructor
     public CoolMic(int id, String title, String artist, String generalUsername, String servername, String mountpoint,
-                   String username, String password, String sampleRate, String channels, String quality, String termCondition) {
+                   String username, String password, String sampleRate, String channels, String quality) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -63,22 +62,6 @@ public class CoolMic {
         this.sampleRate = sampleRate;
         this.channels = channels;
         this.quality = quality;
-        this.termCondition = termCondition;
-    }
-
-    // constructor
-    public CoolMic(String title, String generalUsername, String servername, String mountpoint, String username, String password, String sampleRate, String channels, String quality, String termCondition) {
-        this.title = title;
-        this.artist = artist;
-        this.generalUsername = generalUsername;
-        this.servername = servername;
-        this.mountpoint = mountpoint;
-        this.username = username;
-        this.password = password;
-        this.sampleRate = sampleRate;
-        this.channels = channels;
-        this.quality = quality;
-        this.termCondition = termCondition;
     }
 
     // getting ID
@@ -89,14 +72,6 @@ public class CoolMic {
     // setting id
     public void setID(int id) {
         this.id = id;
-    }
-
-    public String getTermCondition() {
-        return termCondition;
-    }
-
-    public void setTermCondition(String termCondition) {
-        this.termCondition = termCondition;
     }
 
     public String getTitle() {
