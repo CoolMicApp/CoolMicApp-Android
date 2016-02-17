@@ -370,9 +370,8 @@ public class MainActivity extends Activity {
             coolmic = db.getCoolMicDetails(1);
         } else {
             db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "", "44100", "1", "-0.1"));
-            CoolMic cm = db.getCoolMicDetails(1);
-            String log = "Id: " + cm.getID() + " ,title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername() + ", servername: " + cm.getServerName() + " , mountpoint: " + cm.getMountpoint() + ", username: " + cm.getUsername() + ", password: " + cm.getPassword() + ", sampleRate: " + cm.getSampleRate() + ", channels: " + cm.getChannels() + ", quality: " + cm.getQuality();
-            Log.d("VS", log);
+            coolmic = db.getCoolMicDetails(1);
+            Log.d("VS", "Id: " + coolmic.getID() + " ,title: " + coolmic.getTitle() + " ,generalUsername: " + coolmic.getGeneralUsername() + ", servername: " + coolmic.getServerName() + " , mountpoint: " + coolmic.getMountpoint() + ", username: " + coolmic.getUsername() + ", password: " + coolmic.getPassword() + ", sampleRate: " + coolmic.getSampleRate() + ", channels: " + coolmic.getChannels() + ", quality: " + coolmic.getQuality());
         }
 
 
