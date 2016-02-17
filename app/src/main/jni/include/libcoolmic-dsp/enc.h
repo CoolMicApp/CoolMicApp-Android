@@ -1,6 +1,6 @@
-/*
- *  Copyright (C) 2015      Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
- */
+/* %%%COPYRIGHT%%% */
+
+/* %%%LICENSE%%% */
 
 /*
  * This file defines the API for the encoder part of this library.

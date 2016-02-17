@@ -1,6 +1,6 @@
-/*
- *  Copyright (C) 2015      Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
- */
+/* %%%COPYRIGHT%%% */
+
+/* %%%LICENSE%%% */
 
 /* This is a OSS (Open Sound System) driver.
  * This driver is meant for testing this library on random POSIX

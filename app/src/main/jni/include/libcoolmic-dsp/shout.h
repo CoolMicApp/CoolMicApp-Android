@@ -1,6 +1,6 @@
-/*
- *  Copyright (C) 2015      Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
- */
+/* %%%COPYRIGHT%%% */
+
+/* %%%LICENSE%%% */
 
 /*
  * This defines the API used to send a stream (IO Handle) to an Icecast server.
