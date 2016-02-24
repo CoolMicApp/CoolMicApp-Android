@@ -195,7 +195,7 @@ public class MainActivity extends Activity {
             case R.id.help:
                 editor.putString("TIMER_PER", "");
                 editor.commit();
-                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://cc.echonet.coolmicapp.net/help/"));
+                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://coolmic.net/help"));
                 startActivity(helpIntent);
                 return true;
             case R.id.quite_app:
@@ -393,7 +393,6 @@ public class MainActivity extends Activity {
         }
         else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
         {
-            Toast.makeText(getApplicationContext(), "Native components previously initialized!", Toast.LENGTH_SHORT).show();
         }
         else
         {
