@@ -1,0 +1,10 @@
+How to build coolmic:
+1. Download Android Studio and the NDK
+2. Clone this repository
+3. Run the following commands:
+$ git submodule init
+$ git submodule update --init --recursive
+4. Import the Project into Android Studio. Select gradle-wrapper. 
+5. Hit build(Arrovdown with 011001 next to it. 
+6. Hit the Build Menu and then Build APK
+7. You can find the resulting APK under ./app/build/outputs/apk/
