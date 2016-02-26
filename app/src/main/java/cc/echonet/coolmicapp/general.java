@@ -242,8 +242,6 @@ public class general extends Activity {
         // newSetting=CoolMicSetting.getInstance();
         EditText title_edittext = (EditText) findViewById(R.id.title_edittext);
         EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
-        CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
-        TextView tems = (TextView) findViewById(R.id.terms);
 
         title_edittext.setText(coolmic.getTitle());
         artist_edittext.setText(coolmic.getArtist());
@@ -277,22 +275,6 @@ public class general extends Activity {
                 flag = true;
             }
         });
-        termCondition.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                flag = true;
-            }
-        });
-
-        try {
-            if (Boolean.valueOf(coolmic.getTermCondition())) {
-                termCondition.setChecked(true);
-            } else {
-                termCondition.setChecked(false);
-            }
-        } catch (Exception e) {
-            Log.v("VS", e.getMessage());
-        }
-
     }
 
     public void saveGeneral(@SuppressWarnings("unused") View view) {
@@ -301,21 +283,10 @@ public class general extends Activity {
         EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
         String title = title_edittext.getText().toString();
         String artist = artist_edittext.getText().toString();
-        CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
-        if (termCondition.isChecked()) {
-            coolmic.setTermCondition("true");
-        } else {
-            coolmic.setTermCondition("false");
-            Toast.makeText(getApplicationContext(), "Accept the Terms and Conditions !", Toast.LENGTH_LONG).show();
-            //return;
-        }
+
         coolmic.setArtist(artist);
         coolmic.setTitle(title);
-        if (termCondition.isChecked()) {
-            coolmic.setTermCondition("true");
-        } else {
-            coolmic.setTermCondition("false");
-        }
+
         if (db.updateCoolMicDetails(coolmic) == 1) {
             Toast.makeText(getApplicationContext(), "General settings saved!", Toast.LENGTH_LONG).show();
         } else {
@@ -334,23 +305,10 @@ public class general extends Activity {
         EditText artist_edittext = (EditText) findViewById(R.id.artist_edittext);
         String title = title_edittext.getText().toString();
         String artist = artist_edittext.getText().toString();
-        CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
-        if (termCondition.isChecked()) {
-            coolmic.setTermCondition("true");
-        } else {
-            coolmic.setTermCondition("false");
-            Toast.makeText(getApplicationContext(), "Accept the Terms and Conditions !", Toast.LENGTH_LONG).show();
-            //return;
-        }
+
         coolmic.setArtist(artist);
         coolmic.setTitle(title);
-        if (termCondition.isChecked()) {
-            coolmic.setTermCondition("true");
-        } else {
-            coolmic.setTermCondition("false");
-        }
         if (db.updateCoolMicDetails(coolmic) == 1) {
-
             Toast.makeText(getApplicationContext(), "General settings saved!", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getApplicationContext(), "Error to save General Setting", Toast.LENGTH_LONG).show();
@@ -360,10 +318,5 @@ public class general extends Activity {
          }else{
          	Toast.makeText(getApplicationContext(), "Error to save General Setting", Toast.LENGTH_LONG).show();
          }*/
-    }
-
-    public void termConditionLink(@SuppressWarnings("unused") View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://echonet.cc/terms/cc.echonet.coolmicapp/"));
-        startActivity(browserIntent);
     }
 }

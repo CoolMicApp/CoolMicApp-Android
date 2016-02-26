@@ -238,7 +238,6 @@ public class server extends Activity {
         EditText mountpoint_edittext = (EditText) findViewById(R.id.mountpoint_edittext);
         EditText username_editid = (EditText) findViewById(R.id.username_editid);
         final EditText password_edittext = (EditText) findViewById(R.id.password_edittext);
-        CheckBox termCondition = (CheckBox) findViewById(R.id.term_condition_checkbx);
         mountpoint_edittext.setText("asd");
         server_edittext.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
@@ -325,13 +324,8 @@ public class server extends Activity {
 
         //	 DatabaseHandler db = new DatabaseHandler(this);
         //	 CoolMic cm=db.getContact(1);
-        //       String log = " her Id: "+cm.getID()+" , her title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername()+", servername: "+cm.getServerName()+" , mountpoint: "+cm.getMountpoint()+", username: "+cm.getUsername()+", password: "+cm.getPassword()+", sampleRate: "+cm.getSampleRate()+", channels: "+cm.getChannels()	+", quality: "+cm.getQuality()+", termCondition: "+cm.getTermCondition();
+        //       String log = " her Id: "+cm.getID()+" , her title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername()+", servername: "+cm.getServerName()+" , mountpoint: "+cm.getMountpoint()+", username: "+cm.getUsername()+", password: "+cm.getPassword()+", sampleRate: "+cm.getSampleRate()+", channels: "+cm.getChannels()	+", quality: "+cm.getQuality();
         //    Log.d("VS", log);
-    }
-
-    public void termConditionLink(@SuppressWarnings("unused") View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://echonet.cc/terms/cc.echonet.coolmicapp/"));
-        startActivity(browserIntent);
     }
 
     public void saveConnection(@SuppressWarnings("unused") View view) {

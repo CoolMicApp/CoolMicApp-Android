@@ -16,7 +16,7 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name">
         <activity
-            android:name="com.cc.echonet.coolmic.MainActivity"
+            android:name="cc.echonet.coolmicapp.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name">
             <intent-filter>
@@ -25,45 +25,45 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.cc.echonet.coolmic.server"
+            android:name="cc.echonet.coolmicapp.server"
             android:label="Connection"
-            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
+            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
             android:windowSoftInputMode="adjustResize"></activity>
         <activity
-            android:name="com.cc.echonet.coolmic.audio"
+            android:name="cc.echonet.coolmicapp.audio"
             android:label="Audio"
-            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
+            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.cc.echonet.coolmic.MainActivity" />
+                android:value="cc.echonet.coolmicapp.MainActivity" />
         </activity>
         <activity
-            android:name="com.cc.echonet.coolmic.home"
+            android:name="cc.echonet.coolmicapp.home"
             android:label="Cool Mic"
-            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
+            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.cc.echonet.coolmic.MainActivity" />
+                android:value="cc.echonet.coolmicapp.MainActivity" />
         </activity>
         <activity
-            android:name="com.cc.echonet.coolmic.general"
+            android:name="cc.echonet.coolmicapp.general"
             android:label="General"
-            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
+            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.cc.echonet.coolmic.MainActivity" />
+                android:value="cc.echonet.coolmicapp.MainActivity" />
         </activity>
         <activity
-            android:name="com.cc.echonet.coolmic.Refresh"
+            android:name="cc.echonet.coolmicapp.Refresh"
             android:label="General"
-            android:parentActivityName="com.cc.echonet.coolmic.MainActivity"
+            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
             android:windowSoftInputMode="adjustResize"></activity>
 
         <service
-            android:name="com.cc.echonet.coolmic.MyService"
+            android:name="cc.echonet.coolmicapp.MyService"
             android:enabled="true"
             android:stopWithTask="false" />
     </application>

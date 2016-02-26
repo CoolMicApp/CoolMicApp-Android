@@ -195,7 +195,7 @@ public class MainActivity extends Activity {
             case R.id.help:
                 editor.putString("TIMER_PER", "");
                 editor.commit();
-                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://cc.echonet.coolmicapp.net/help/"));
+                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://coolmic.net/help"));
                 startActivity(helpIntent);
                 return true;
             case R.id.quite_app:
@@ -369,13 +369,35 @@ public class MainActivity extends Activity {
             db.updateCoolMicDetails(coolmic);
             coolmic = db.getCoolMicDetails(1);
         } else {
-            db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "", "44100", "1", "-0.1", "false"));
-            CoolMic cm = db.getCoolMicDetails(1);
-            String log = "Id: " + cm.getID() + " ,title: " + cm.getTitle() + " ,generalUsername: " + cm.getGeneralUsername() + ", servername: " + cm.getServerName() + " , mountpoint: " + cm.getMountpoint() + ", username: " + cm.getUsername() + ", password: " + cm.getPassword() + ", sampleRate: " + cm.getSampleRate() + ", channels: " + cm.getChannels() + ", quality: " + cm.getQuality() + ", termCondition: " + cm.getTermCondition();
-            Log.d("VS", log);
+            db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "", "44100", "1", "-0.1"));
+            coolmic = db.getCoolMicDetails(1);
+            Log.d("VS", "Id: " + coolmic.getID() + " ,title: " + coolmic.getTitle() + " ,generalUsername: " + coolmic.getGeneralUsername() + ", servername: " + coolmic.getServerName() + " , mountpoint: " + coolmic.getMountpoint() + ", username: " + coolmic.getUsername() + ", password: " + coolmic.getPassword() + ", sampleRate: " + coolmic.getSampleRate() + ", channels: " + coolmic.getChannels() + ", quality: " + coolmic.getQuality());
         }
 
 
+        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_UNINITIALIZED)
+        {
+            if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
+            {
+                Log.d("WrapperInit", Wrapper.getInitException().toString());
+                Toast.makeText(getApplicationContext(), "Could not initialize native components :( Blocking controls!", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Native components initialized!", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
+        {
+            Toast.makeText(getApplicationContext(), "Previous problem detected with native components :( Blocking controls!", Toast.LENGTH_SHORT).show();
+        }
+        else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
+        {
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Native components in unknown state!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void onImageClick(View view) {
@@ -461,10 +483,9 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
-
-        if (isOnline()) {
-            if (coolmic.isConnectionSet()) {
-                if (Boolean.valueOf((coolmic.getTermCondition()))) {
+        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+            if (isOnline()) {
+                if (coolmic.isConnectionSet()) {
                     invalidateOptionsMenu();
                     isThreadOn = true;
                     //screenreceiver.setThreadStatus(true);
@@ -519,41 +540,50 @@ public class MainActivity extends Activity {
                     });
                     streamThread.start();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Accept the Term and Conditions !", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Check Internet Connection !", Toast.LENGTH_LONG).show();
             }
-        } else {
-            Toast.makeText(getApplicationContext(), "Check Internet Connection !", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
         }
     }
 
     @SuppressWarnings("deprecation")
     public void stopRecording(@SuppressWarnings("unused") View view) {
-        //code to stop timer starts here
-        Log.d("shared", sharedpreferences.getString("TIMER_PER", "") + "1111");
-        Log.d("shared123", "shared pref not disp");
-        timeSwapBuff += timeInMilliseconds;
-        customHandler.removeCallbacks(updateTimerThread);
-        //code to stop timer starts here
-        ClearLED();
-        invalidateOptionsMenu();
-        start_button.clearAnimation();
-        start_button.setBackground(buttonColor);
-        start_button.setText("Start Broadcast");
-        stopService(new Intent(getBaseContext(), MyService.class));
+        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+            //code to stop timer starts here
+            Log.d("shared", sharedpreferences.getString("TIMER_PER", "") + "1111");
+            Log.d("shared123", "shared pref not disp");
+            timeSwapBuff += timeInMilliseconds;
+            customHandler.removeCallbacks(updateTimerThread);
+            //code to stop timer starts here
+            ClearLED();
+            invalidateOptionsMenu();
+            start_button.clearAnimation();
+            start_button.setBackground(buttonColor);
+            start_button.setText("Start Broadcast");
+            stopService(new Intent(getBaseContext(), MyService.class));
 
-        Wrapper.stop();
-        Wrapper.unref();
 
-        Editor editor = sharedpreferences.edit();
-        editor.putString("TIMER_PER", "");
-        editor.putString("TIMER_PER", (String) timerValue.getText());
-        editor.commit();
-        Intent i = new Intent(MainActivity.this, MainActivity.class);
-        startActivity(i);
-        finish();
+            Wrapper.stop();
+            Wrapper.unref();
+
+            Editor editor = sharedpreferences.edit();
+            editor.putString("TIMER_PER", "");
+            editor.putString("TIMER_PER", (String) timerValue.getText());
+            editor.commit();
+            Intent i = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(i);
+            finish();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void logMessage(String msg) {
