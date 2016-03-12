@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ??? -->
     <string name="app_name">Cool Mic</string>
+
+    <!-- common -->
+    <string name="save">Save</string>
+
+    <!-- home*.xml -->
     <string name="timerValue">00:00:00</string>
     <string name="timer">Timer:</string>
+    <string name="start_broadcast">Start Broadcast</string>
+    <string name="stop_broadcast">Stop Broadcast</string>
+
+    <!-- main.xml -->
+    <string name="sample_rate">Sample Rate</string>
+    <string name="channel_configuration">Channel Configuration</string>
+    <string name="quality_level">Quality Level</string>
+
+    <!-- settings.xml -->
+    <string name="settings_title">Title</string>
+    <string name="settings_artist">Artist</string>
+    <string name="settings_genre">Genre</string>
+
+    <!-- connection_setting.xml -->
+    <string name="settings_server">Server</string>
+    <string name="settings_username">Username</string>
+    <string name="settings_password">Password</string>
+    <string name="settings_show_password">Show Password</string>
+    <string name="settings_mountpoint">Mountpoint</string>
 </resources>

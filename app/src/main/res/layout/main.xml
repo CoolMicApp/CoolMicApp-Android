@@ -17,7 +17,7 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sample Rate" />
+                android:text="@string/sample_rate" />
 
             <Spinner
                 android:id="@+id/sample_rate_spinner"
@@ -29,7 +29,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Channel Configuration" />
+                android:text="@string/channel_configuration" />
 
             <Spinner
                 android:id="@+id/channel_config_spinner"
@@ -47,7 +47,7 @@
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Quality Level" />
+                    android:text="@string/quality_level" />
 
                 <Spinner
                     android:id="@+id/quality_spinner"
@@ -87,7 +87,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:onClick="saveAudio"
-                android:text="Save" />
+                android:text="@string/save" />
 
         </RelativeLayout>
     </LinearLayout>

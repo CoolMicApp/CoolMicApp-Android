@@ -18,7 +18,7 @@
                 android:id="@+id/title_label"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Title" />
+                android:text="@string/settings_title" />
 
             <EditText
                 android:id="@+id/title_edittext"
@@ -36,7 +36,7 @@
                     android:id="@+id/artist_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Artist" />
+                    android:text="@string/settings_artist" />
 
                 <EditText
                     android:id="@+id/artist_edittext"
@@ -55,7 +55,7 @@
                       android:id="@+id/text4"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:text="Genre"
+                      android:text="@string/settings_genre"
                       />
 
                   <EditText
@@ -80,7 +80,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:onClick="saveGeneral"
-                android:text="Save" />
+                android:text="@string/save" />
 
         </RelativeLayout>
     </LinearLayout>

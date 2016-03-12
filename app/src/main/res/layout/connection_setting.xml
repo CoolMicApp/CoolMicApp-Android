@@ -17,7 +17,7 @@
                 android:id="@+id/server_id"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Server" />
+                android:text="@string/settings_server" />
 
             <EditText
                 android:id="@+id/server_edittext"
@@ -38,7 +38,7 @@
                 android:id="@+id/username_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Username" />
+                android:text="@string/settings_username" />
 
             <EditText
                 android:id="@+id/username_editid"
@@ -58,7 +58,7 @@
                 android:id="@+id/password_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Password" />
+                android:text="@string/settings_password" />
 
             <EditText
                 android:id="@+id/password_edittext"
@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="Show Password" />
+                android:text="@string/settings_show_password" />
 
         </LinearLayout>
 
@@ -93,7 +93,7 @@
                 android:id="@+id/mountpoint_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mountpoint" />
+                android:text="@string/settings_mountpoint" />
 
             <EditText
                 android:id="@+id/mountpoint_edittext"
@@ -116,7 +116,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:onClick="saveConnection"
-                android:text="Save" />
+                android:text="@string/save" />
 
         </RelativeLayout>
 
