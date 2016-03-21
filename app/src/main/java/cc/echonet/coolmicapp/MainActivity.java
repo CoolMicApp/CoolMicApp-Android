@@ -473,6 +473,8 @@ public class MainActivity extends Activity {
                     start_button.setBackground(buttonColor);
                     start_button.setText("Start Broadcast");
 
+                    ClearLED();
+
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
             });
@@ -621,6 +623,8 @@ public class MainActivity extends Activity {
                         start_button.clearAnimation();
                         start_button.setBackground(buttonColor);
                         start_button.setText("Start Broadcast");
+
+                        ClearLED();
                         //logMessage("Stopping the broadcasting");
                         break;
                     case 3:
@@ -631,6 +635,8 @@ public class MainActivity extends Activity {
                         start_button.clearAnimation();
                         start_button.setBackground(buttonColor);
                         start_button.setText("Start Broadcast");
+
+                        ClearLED();
 
                         Toast.makeText(MainActivity.this, "there was an error!", Toast.LENGTH_LONG).show();
 
