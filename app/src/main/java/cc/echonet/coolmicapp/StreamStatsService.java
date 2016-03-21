@@ -15,6 +15,8 @@ public class StreamStatsService extends IntentService {
 
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
 
+    int counter = 0;
+
     public StreamStatsService() {
         super("StreamStatsService");
     }
@@ -40,7 +42,7 @@ public class StreamStatsService extends IntentService {
             if (Constants.ACTION_STATS_FETCH.equals(action)) {
                 final String url = intent.getStringExtra(Constants.EXTRA_URL);
 
-                StreamStats obj = new StreamStats(-1, -1);
+                StreamStats obj = new StreamStats(counter++, -1);
 
                 Intent localIntent = new Intent(Constants.BROADCAST_STREAM_STATS_SERVICE).putExtra(Constants.EXTRA_DATA_STATS_OBJ, obj);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
