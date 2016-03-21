@@ -47,6 +47,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -105,6 +106,10 @@ public class MainActivity extends Activity {
     long timeSwapBuff = 0L;
     long updatedTime = 0L;
     SharedPreferences sharedpreferences;
+
+
+    StreamStatsReceiver mStreamStatsReceiver = new StreamStatsReceiver();
+
 
     /**
      * Text view to show logged messages
@@ -398,6 +403,12 @@ public class MainActivity extends Activity {
         {
             Toast.makeText(getApplicationContext(), "Native components in unknown state!", Toast.LENGTH_SHORT).show();
         }
+
+
+        IntentFilter mStatusIntentFilter = new IntentFilter( Constants.BROADCAST_STREAM_STATS_SERVICE );
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mStreamStatsReceiver, mStatusIntentFilter);
+
     }
 
     public void onImageClick(View view) {
@@ -537,6 +548,7 @@ public class MainActivity extends Activity {
                                     Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
                                     Log.d("VS", "Status:" + Wrapper.start());
 
+                                    StreamStatsService.startActionStatsFetch(MainActivity.this, String.format("http://%s:%s@%s:%s/admin.stats.xml?mount=%s", username, password, server, port_num, mountpoint));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     Log.e("VS", "IOException", e);
@@ -655,5 +667,22 @@ public class MainActivity extends Activity {
             }
         });
     }
-    //code for displaying timer ends here
+
+
+    // Broadcast receiver for receiving status updates from the IntentService
+    private class StreamStatsReceiver extends BroadcastReceiver
+    {
+        // Prevents instantiation
+        private StreamStatsReceiver() {
+        }
+        // Called when the BroadcastReceiver gets an Intent it's registered to receive
+
+        public void onReceive(Context context, Intent intent) {
+            StreamStats obj = (StreamStats)intent.getSerializableExtra("StreamStats");
+
+            TextView txtListeners = (TextView) findViewById(R.id.txtListeners);
+
+            txtListeners.setText(obj.getListenersCurrent()+'('+obj.getListenersPeak()+')');
+        }
+    }
 }
