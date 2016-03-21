@@ -31,4 +31,5 @@
     <string name="settings_mountpoints">mountpoints</string>
     <string name="lblListeners">Listeners:</string>
     <string name="txtListeners">N/A(N/A)</string>
+    <string name="cmd_connection_qrcode">Scan QRCode</string>
 </resources>
