@@ -45,6 +45,9 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 public class server extends Activity {
 
     //	 CoolMicSetting newSetting;
@@ -358,6 +361,12 @@ public class server extends Activity {
          }*/
     }
 
+    public void onScanQRCode(@SuppressWarnings("unused") View view) {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setTitle("Please scan a fully qualified URI");
+        integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
+    }
+
     public void saveConnectionNavigation() {
         EditText server_edittext = (EditText) findViewById(R.id.server_edittext);
         EditText mountpoint_edittext = (EditText) findViewById(R.id.mountpoint_edittext);
@@ -385,5 +394,42 @@ public class server extends Activity {
          }else{
          	Toast.makeText(getApplicationContext(), "Error to save Connection Setting", Toast.LENGTH_LONG).show();
          }*/
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null) {
+            Uri u;
+            try {
+                u = Uri.parse(scanResult.getContents());
+            } catch (Exception e1) {
+                Toast.makeText(getApplicationContext(), "Please scan a valid URI!", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            flag = true;
+
+            EditText server_edittext = (EditText) findViewById(R.id.server_edittext);
+            EditText mountpoint_edittext = (EditText) findViewById(R.id.mountpoint_edittext);
+            EditText username_editid = (EditText) findViewById(R.id.username_editid);
+            EditText password_edittext = (EditText) findViewById(R.id.password_edittext);
+
+            String authority[] = u.getUserInfo().split(":");
+
+            String host = u.getHost();
+
+            if(u.getPort() != 80)
+            {
+                host = host+":"+u.getPort();
+            }
+
+            server_edittext.setText(host);
+            username_editid.setText(authority[0]);
+            password_edittext.setText(authority[1]);
+            mountpoint_edittext.setText(u.getPath());
+
+            saveConnectionNavigation();
+        }
     }
 }
