@@ -28,4 +28,5 @@
     <string name="settings_password">Password</string>
     <string name="settings_show_password">Show Password</string>
     <string name="settings_mountpoint">Mountpoint</string>
+    <string name="settings_mountpoints">mountpoints</string>
 </resources>
