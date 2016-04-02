@@ -37,4 +37,5 @@ tasks.withType(JavaCompile) {
 }
 dependencies {
     compile 'com.android.support:support-v4:24.0.0-alpha1'
+    compile 'com.google.zxing:android-integration:3.2.1'
 }
