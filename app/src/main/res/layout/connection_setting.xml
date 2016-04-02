@@ -110,7 +110,7 @@
             android:layout_weight="0.93">
 
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
