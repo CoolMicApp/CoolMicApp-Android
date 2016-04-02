@@ -485,6 +485,12 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
+        if(isThreadOn) {
+            stopRecording(view);
+
+            return;
+        }
+
         if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             if (isOnline()) {
                 if (coolmic.isConnectionSet()) {
@@ -573,6 +579,8 @@ public class MainActivity extends Activity {
 
             Wrapper.stop();
             Wrapper.unref();
+
+            isThreadOn = false;
 
             Editor editor = sharedpreferences.edit();
             editor.putString("TIMER_PER", "");
