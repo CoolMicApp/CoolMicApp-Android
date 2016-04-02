@@ -1,6 +1,5 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 apply plugin: 'com.android.application'
-
 android {
     compileSdkVersion 19
     buildToolsVersion "21.1.2"
@@ -25,16 +24,17 @@ android {
 
 
 }
-
 task ndkBuild(type: Exec) {
     def ndkDir = android.ndkDirectory.getAbsolutePath()
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine ndkDir+'\\ndk-build.cmd', '-C', file('src/main').absolutePath
+        commandLine ndkDir + '\\ndk-build.cmd', '-C', file('src/main').absolutePath
     } else {
-        commandLine ndkDir+'/ndk-build', '-C', file('src/main').absolutePath
+        commandLine ndkDir + '/ndk-build', '-C', file('src/main').absolutePath
     }
 }
-
 tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn ndkBuild
+}
+dependencies {
+    compile 'com.android.support:support-v4:24.0.0-alpha1'
 }
