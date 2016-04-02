@@ -554,7 +554,7 @@ public class MainActivity extends Activity {
                                     Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
                                     Log.d("VS", "Status:" + Wrapper.start());
 
-                                    strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin.stats.xml?mount=%s", username, password, server, port_num, mountpoint);
+                                    strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     Log.e("VS", "IOException", e);
