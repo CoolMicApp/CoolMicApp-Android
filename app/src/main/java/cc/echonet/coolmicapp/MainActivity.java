@@ -142,7 +142,7 @@ public class MainActivity extends Activity {
                             + String.format("%02d", mins) + ":"
                             + String.format("%02d", secs));
 
-                    if(lastStatsFetch == 0L || lastStatsFetch+15*1000 < timeInMilliseconds) {
+                    if(lastStatsFetch+15*1000 < timeInMilliseconds) {
                         StreamStatsService.startActionStatsFetch(MainActivity.this, strStreamFetchStatsURL);
                         lastStatsFetch = timeInMilliseconds;
                     }
