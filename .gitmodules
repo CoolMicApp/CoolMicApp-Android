@@ -1,3 +1,6 @@
 [submodule "app/src/main/jni/libshout/libshout"]
 	path = app/src/main/jni/libshout/libshout
 	url = ../icecast-libshout.git
+[submodule "app/src/main/jni/libcoolmic-dsp/libcoolmic-dsp"]
+	path = app/src/main/jni/libcoolmic-dsp/libcoolmic-dsp
+	url = ../libcoolmic-dsp.git

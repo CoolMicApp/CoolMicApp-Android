@@ -21,8 +21,8 @@
  * along with Cool Mic.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <jni.h>
-#include "libcoolmic-dsp/simple.h"
-#include "libcoolmic-dsp/shout.h"
+#include "coolmic-dsp/simple.h"
+#include "coolmic-dsp/shout.h"
 #include <android/log.h>
 
 
