@@ -646,6 +646,8 @@ public class MainActivity extends Activity {
 
                         ClearLED();
 
+                        isThreadOn = false;
+
                         Toast.makeText(MainActivity.this, "there was an error!", Toast.LENGTH_LONG).show();
 
                         break;
