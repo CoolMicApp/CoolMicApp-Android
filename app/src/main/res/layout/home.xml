@@ -64,6 +64,32 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/lblListeners"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblListeners"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/txtListeners"
+                android:layout_width="85dp"
+                android:layout_height="wrap_content"
+                android:text="@string/txtListeners"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:layout_weight="0.06"
+                android:gravity="left" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 

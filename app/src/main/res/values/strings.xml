@@ -29,4 +29,6 @@
     <string name="settings_show_password">Show Password</string>
     <string name="settings_mountpoint">Mountpoint</string>
     <string name="settings_mountpoints">mountpoints</string>
+    <string name="lblListeners">Listeners:</string>
+    <string name="txtListeners">N/A(N/A)</string>
 </resources>

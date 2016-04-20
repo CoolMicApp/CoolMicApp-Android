@@ -12,59 +12,68 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <android:uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name">
         <activity
-            android:name="cc.echonet.coolmicapp.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="cc.echonet.coolmicapp.server"
+            android:name=".server"
             android:label="Connection"
-            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="cc.echonet.coolmicapp.audio"
+            android:name=".audio"
             android:label="Audio"
-            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cc.echonet.coolmicapp.MainActivity" />
         </activity>
         <activity
-            android:name="cc.echonet.coolmicapp.home"
+            android:name=".home"
             android:label="Cool Mic"
-            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cc.echonet.coolmicapp.MainActivity" />
         </activity>
         <activity
-            android:name="cc.echonet.coolmicapp.general"
+            android:name=".general"
             android:label="General"
-            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cc.echonet.coolmicapp.MainActivity" />
         </activity>
         <activity
-            android:name="cc.echonet.coolmicapp.Refresh"
+            android:name=".Refresh"
             android:label="General"
-            android:parentActivityName="cc.echonet.coolmicapp.MainActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize" />
 
         <service
-            android:name="cc.echonet.coolmicapp.MyService"
+            android:name=".MyService"
             android:enabled="true"
             android:stopWithTask="false" />
+        <service
+            android:name=".StreamStatsService"
+            android:exported="false"></service>
     </application>
+
 </manifest>
