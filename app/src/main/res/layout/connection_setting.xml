@@ -104,10 +104,11 @@
                 android:text="@string/settings_mountpoints" />
         </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.93">
+            android:layout_weight="0.93"
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/button"
@@ -118,7 +119,16 @@
                 android:onClick="saveConnection"
                 android:text="@string/save" />
 
-        </RelativeLayout>
+            <Button
+                android:id="@+id/cmdScanQRCode"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:onClick="onScanQRCode"
+                android:text="@string/cmd_connection_qrcode" />
+
+        </LinearLayout>
 
 
     </LinearLayout>
