@@ -2,18 +2,13 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/main_linear_view"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/available_qualities_layout"
@@ -26,123 +21,80 @@
                     android:layout_width="match_parent"
                     android:layout_height="270dp"
                     android:onClick="onImageClick"
-                    android:src="@drawable/mic" />
+                    android:src="@drawable/mic"
+                    android:contentDescription="@string/img_content"/>
 
             </LinearLayout>
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <GridLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"></LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:columnCount="2"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:rowCount="2">
 
             <TextView
                 android:id="@+id/timer"
-                android:layout_width="70dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:gravity="start"
                 android:text="@string/timer"
                 android:textColor="#ffffff"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+
+                />
 
             <TextView
                 android:id="@+id/timerValue"
-                android:layout_width="85dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="right"
+                android:gravity="center"
                 android:text="@string/timerValue"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:weightSum="1">
 
             <TextView
                 android:id="@+id/lblListeners"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
+
                 android:layout_height="wrap_content"
+                android:gravity="start"
                 android:text="@string/lblListeners"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/txtListeners"
-                android:layout_width="85dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@string/txtListeners"
                 android:textColor="#ffffff"
-                android:textSize="20sp"
-                android:layout_weight="0.06"
-                android:gravity="left" />
-        </LinearLayout>
+                android:textSize="20sp" />
+        </GridLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
+
+        <Button
+            android:id="@+id/start_recording_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:onClick="startRecording"
+            android:text="@string/start_broadcast" />
 
-            <TextView
-                android:id="@+id/space"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/start_recording_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="startRecording"
-                android:text="@string/start_broadcast" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <Button
+            android:id="@+id/stop_recording_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:onClick="stopRecording"
+            android:text="@string/stop_broadcast" />
 
-            <Button
-                android:id="@+id/stop_recording_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="stopRecording"
-                android:text="@string/stop_broadcast" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/log_area"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/general_username_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/log_area"
-                android:layout_width="fill_parent"
-                android:layout_height="191dp"
-                android:scrollbars="vertical" />
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
     </LinearLayout>
 </ScrollView>

@@ -11,6 +11,7 @@
     <string name="timer">Timer:</string>
     <string name="start_broadcast">Start Broadcast</string>
     <string name="stop_broadcast">Stop Broadcast</string>
+    <string name="img_content">CoolMic Logo</string>
 
     <!-- main.xml -->
     <string name="sample_rate">Sample Rate</string>
