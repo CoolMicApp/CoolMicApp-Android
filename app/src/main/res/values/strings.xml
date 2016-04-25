@@ -34,4 +34,74 @@
     <string name="txtListeners">N/A(N/A)</string>
     <string name="cmd_connection_qrcode">Scan QRCode</string>
     <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- General -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_general_title">Title</string>
+    <string name="pref_title_general_artist">Artist</string>
+
+    <string name="pref_default_general_title"></string>
+    <string name="pref_default_general_artist"></string>
+
+    <!-- Connection -->
+    <string name="pref_header_connection">Connection</string>
+    <string name="pref_title_connection_address">Server</string>
+    <string name="pref_title_connection_username">Username</string>
+    <string name="pref_title_connection_mountpoint">Mountpoint</string>
+    <string name="pref_title_connection_password">Password</string>
+
+    <string name="pref_default_connection_address">source.coolmic.net:80</string>
+    <string name="pref_default_connection_username">coolmic</string>
+    <string name="pref_default_connection_password">12345</string>
+    <string name="pref_default_connection_mountpoint">coolmic.ogg</string>
+
+    <!-- Audio -->
+    <string name="pref_header_audio">Audio</string>
 </resources>
