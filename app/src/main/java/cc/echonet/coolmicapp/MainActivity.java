@@ -238,7 +238,7 @@ public class MainActivity extends Activity {
     }
 
     private void generalSetting() {
-        Intent i = new Intent(MainActivity.this, general.class);
+        Intent i = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(i);
         finish();
     }
