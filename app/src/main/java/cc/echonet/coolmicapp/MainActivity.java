@@ -344,12 +344,16 @@ public class MainActivity extends Activity {
         };
         getApplicationContext().registerReceiver(mPowerKeyReceiver, theFilter);
         imageView1 = (ImageView) findViewById(R.id.imageView1);
-        if (getResources().getConfiguration().orientation ==
-                Configuration.ORIENTATION_PORTRAIT) {
-            imageView1.getLayoutParams().height = 400;
+
+        android.view.ViewGroup.LayoutParams layoutParams = imageView1.getLayoutParams();
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layoutParams.height = 400;
         } else {
-            imageView1.getLayoutParams().height = 180;
+            layoutParams.height = 180;
         }
+
+        imageView1.setLayoutParams(layoutParams);
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
