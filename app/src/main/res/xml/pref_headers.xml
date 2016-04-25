@@ -1,0 +1,17 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="cc.echonet.coolmicapp.SettingsActivity$GeneralPreferenceFragment"
+        android:title="@string/pref_header_general" />
+
+    <header
+        android:fragment="cc.echonet.coolmicapp.SettingsActivity$ConnectionPreferenceFragment"
+        android:title="@string/pref_header_connection" />
+
+    <header
+        android:fragment="cc.echonet.coolmicapp.SettingsActivity$AudioPreferenceFragment"
+        android:title="@string/pref_header_audio" />
+
+</preference-headers>
