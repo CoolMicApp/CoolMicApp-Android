@@ -345,6 +345,8 @@ public class MainActivity extends Activity {
         getApplicationContext().registerReceiver(mPowerKeyReceiver, theFilter);
         imageView1 = (ImageView) findViewById(R.id.imageView1);
 
+        Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
+
         android.view.ViewGroup.LayoutParams layoutParams = imageView1.getLayoutParams();
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
