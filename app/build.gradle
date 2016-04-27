@@ -36,6 +36,18 @@ task ndkBuild(type: Exec) {
         commandLine ndkDir + '/ndk-build', '-C', file('src/main').absolutePath
     }
 }
+
+task ndkClean(type: Exec) {
+    def ndkDir = android.ndkDirectory.getAbsolutePath()
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine ndkDir + '\\ndk-build.cmd', '-C', file('src/main').absolutePath, 'clean'
+    } else {
+        commandLine ndkDir + '/ndk-build', '-C', file('src/main').absolutePath, 'clean'
+    }
+}
+
+clean.dependsOn 'ndkClean'
+
 tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn ndkBuild
 }
