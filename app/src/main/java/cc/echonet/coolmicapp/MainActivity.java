@@ -274,11 +274,7 @@ public class MainActivity extends Activity {
 
     private void RedFlashLight() {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Notification notif = new Notification();
-        notif.ledARGB = 0xFFff0000;
-        notif.flags = Notification.FLAG_SHOW_LIGHTS;
-        notif.ledOnMS = 100;
-        notif.ledOffMS = 100;
+        Notification notif = new Notification.Builder(context).setLights(0xFFff0000, 100, 100).setSmallIcon(R.drawable.icon).setContentTitle("Streaming").setContentText("Streaming...").build();
         nm.notify(LED_NOTIFICATION_ID, notif);
     }
 
@@ -291,13 +287,7 @@ public class MainActivity extends Activity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (isThreadOn) {
-            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            Notification notif = new Notification();
-            notif.ledARGB = 0xFFff0000;
-            notif.flags = Notification.FLAG_SHOW_LIGHTS;
-            notif.ledOnMS = 100;
-            notif.ledOffMS = 100;
-            nm.notify(LED_NOTIFICATION_ID, notif);
+            RedFlashLight();
         }
     }
 
@@ -305,8 +295,7 @@ public class MainActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         Log.v("$$$$$$", "In Method: onDestroy()");
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(LED_NOTIFICATION_ID);
+        ClearLED();
     }
 
     @Override
@@ -331,13 +320,7 @@ public class MainActivity extends Activity {
                 String strAction = intent.getAction();
                 if (strAction.equals(Intent.ACTION_SCREEN_OFF) || strAction.equals(Intent.ACTION_SCREEN_ON) || strAction.equals(Intent.ACTION_USER_PRESENT)) {
                     if (isThreadOn) {
-                        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                        Notification notif = new Notification();
-                        notif.ledARGB = 0xFFff0000;
-                        notif.flags = Notification.FLAG_SHOW_LIGHTS;
-                        notif.ledOnMS = 100;
-                        notif.ledOffMS = 100;
-                        nm.notify(LED_NOTIFICATION_ID, notif);
+                        RedFlashLight();
                     }
                 }
             }
