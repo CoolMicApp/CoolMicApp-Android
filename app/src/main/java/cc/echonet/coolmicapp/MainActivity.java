@@ -89,8 +89,7 @@ public class MainActivity extends Activity {
     BufferedReader reader = null;
     //Setting newSetting;
     // CoolMicSetting newSetting;
-    DatabaseHandler db;
-    CoolMic coolmic;
+    CoolMic coolmic = null;
     Button start_button;
     Button stop_button;
     Animation animation = new AlphaAnimation(1, 0);
@@ -159,13 +158,9 @@ public class MainActivity extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         if (isThreadOn) {
-            menu.findItem(R.id.server_settings).setVisible(false);
-            menu.findItem(R.id.audio_settings).setVisible(false);
-            menu.findItem(R.id.general_setting).setVisible(false);
+            menu.findItem(R.id.menu_action_settings).setVisible(false);
         } else {
-            menu.findItem(R.id.server_settings).setVisible(true);
-            menu.findItem(R.id.audio_settings).setVisible(true);
-            menu.findItem(R.id.general_setting).setVisible(true);
+            menu.findItem(R.id.menu_action_settings).setVisible(true);
         }
         return true;
     }
@@ -190,20 +185,10 @@ public class MainActivity extends Activity {
                 goHome();
                 return true;
             // action with ID action_settings was selected
-            case R.id.general_setting:
+            case R.id.menu_action_settings:
                 editor.putString("TIMER_PER", "");
                 editor.commit();
-                generalSetting();
-                return true;
-            case R.id.server_settings:
-                editor.putString("TIMER_PER", "");
-                editor.commit();
-                serverSetting();
-                return true;
-            case R.id.audio_settings:
-                editor.putString("TIMER_PER", "");
-                editor.commit();
-                audioSetting();
+                goSettings();
                 return true;
             case R.id.help:
                 editor.putString("TIMER_PER", "");
@@ -237,20 +222,8 @@ public class MainActivity extends Activity {
         finish();
     }
 
-    private void generalSetting() {
+    private void goSettings() {
         Intent i = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivity(i);
-        finish();
-    }
-
-    private void audioSetting() {
-        Intent i = new Intent(MainActivity.this, audio.class);
-        startActivity(i);
-        finish();
-    }
-
-    private void serverSetting() {
-        Intent i = new Intent(MainActivity.this, server.class);
         startActivity(i);
         finish();
     }
@@ -354,28 +327,7 @@ public class MainActivity extends Activity {
         logArea.setMovementMethod(new ScrollingMovementMethod());
         setLoggingHandlers();
 
-        db = new DatabaseHandler(this);
-        if (db.getCoolMicSettingCount() >= 1) {
-            coolmic = db.getCoolMicDetails(1);
-            String sr = coolmic.getSampleRate();
-            coolmic.setSampleRate("8000");
-            db.updateCoolMicDetails(coolmic);
-
-            coolmic = db.getCoolMicDetails(1);
-            coolmic.setSampleRate("11025");
-            db.updateCoolMicDetails(coolmic);
-
-            coolmic = db.getCoolMicDetails(1);
-            coolmic.setSampleRate(sr);
-
-            db.updateCoolMicDetails(coolmic);
-            coolmic = db.getCoolMicDetails(1);
-        } else {
-            db.addCoolMicSetting(new CoolMic(1, "", "", "", "", "", "", "", "44100", "1", "-0.1"));
-            coolmic = db.getCoolMicDetails(1);
-            Log.d("VS", "Id: " + coolmic.getID() + " ,title: " + coolmic.getTitle() + " ,generalUsername: " + coolmic.getGeneralUsername() + ", servername: " + coolmic.getServerName() + " , mountpoint: " + coolmic.getMountpoint() + ", username: " + coolmic.getUsername() + ", password: " + coolmic.getPassword() + ", sampleRate: " + coolmic.getSampleRate() + ", channels: " + coolmic.getChannels() + ", quality: " + coolmic.getQuality());
-        }
-
+        coolmic = new CoolMic(this, "default");
 
         if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_UNINITIALIZED)
         {
@@ -410,7 +362,6 @@ public class MainActivity extends Activity {
 
         try {
             String portnum = "";
-            coolmic = db.getCoolMicDetails(1);
             String server = coolmic.getServerName();
             Integer port_num = 8000;
             int counter = 0;
@@ -538,7 +489,6 @@ public class MainActivity extends Activity {
                                     Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
                                     Log.d("VS", server + " " + server + " " + port_num.toString() + " " + username + " " + password + "\n " + mountpoint + "" +
                                             " " + sampleRate_string + " " + channel_string + " " + quality_string + " " + title);
-
                                     Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
                                     Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
 

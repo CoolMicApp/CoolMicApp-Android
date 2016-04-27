@@ -25,34 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".server"
-            android:label="Connection"
-            android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".audio"
-            android:label="Audio"
-            android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="cc.echonet.coolmicapp.MainActivity" />
-        </activity>
-        <activity
-            android:name=".general"
-            android:label="General"
-            android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="cc.echonet.coolmicapp.MainActivity" />
-        </activity>
-        <activity
-            android:name=".Refresh"
-            android:label="General"
-            android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".MyService"

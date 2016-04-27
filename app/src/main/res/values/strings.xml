@@ -104,4 +104,46 @@
 
     <!-- Audio -->
     <string name="pref_header_audio">Audio</string>
+
+    <string name="pref_title_audio_samplerate">Samplerate</string>
+    <string name="pref_title_audio_channels">Channel Configuration</string>
+    <string name="pref_title_audio_quality">Quality Level</string>
+
+    <string name="pref_default_audio_samplerate">44100</string>
+    <string name="pref_default_audio_channels">1</string>
+    <string name="pref_default_audio_quality">-0.1</string>
+
+    <string-array name="pref_titles_audio_channels">
+        <item>Mono (1 Channel)</item>
+        <item>Stereo (2 Channels)</item>
+    </string-array>
+
+    <string-array name="pref_values_audio_samplerate">
+        <item>8000</item>
+        <item>11025</item>
+        <item>16000</item>
+        <item>22050</item>
+        <item>44100</item>
+        <item>48000</item>
+    </string-array>
+
+    <string-array name="pref_values_audio_channels">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="pref_values_audio_quality">
+        <item>-0.1</item>
+        <item>0</item>
+        <item>0.1</item>
+        <item>0.2</item>
+        <item>0.3</item>
+        <item>0.4</item>
+        <item>0.5</item>
+        <item>0.6</item>
+        <item>0.7</item>
+        <item>0.8</item>
+        <item>0.9</item>
+        <item>1</item>
+    </string-array>
 </resources>

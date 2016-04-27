@@ -22,141 +22,61 @@
  */
 package cc.echonet.coolmicapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 public class CoolMic {
-    int id;
-    private String artist = "";
-    private String title = "";
-    private String generalUsername = "";
-    private String servername = "";
-    private String mountpoint = "";
-    private String username = "";
-    private String password = "";
-    private String sampleRate = "";
-    private String channels = "";
-    private String quality = "";
+     SharedPreferences prefs = null;
+     Context context = null;
 
-    /*   public CoolMic(int id, String title){
-         this.id = id;
-         this.title = title;
-    }
-    public CoolMic(int id,String title,String generalUsername){
-   	 	this.id = id;
-        this.title = title;
-        this.generalUsername = generalUsername;
-   	}
-    public CoolMic(String title,String generalUsername){   	 	
-        this.title = title;
-        this.generalUsername = generalUsername;
-   	}*/
-    // constructor
-    public CoolMic(int id, String title, String artist, String generalUsername, String servername, String mountpoint,
-                   String username, String password, String sampleRate, String channels, String quality) {
-        this.id = id;
-        this.title = title;
-        this.artist = artist;
-        this.generalUsername = generalUsername;
-        this.servername = servername;
-        this.mountpoint = mountpoint;
-        this.username = username;
-        this.password = password;
-        this.sampleRate = sampleRate;
-        this.channels = channels;
-        this.quality = quality;
-    }
+     public CoolMic(Context context, String settingskey) {
+        this.prefs = context.getSharedPreferences(settingskey, Context.MODE_PRIVATE);
+        this.context = context;
 
-    // getting ID
-    public int getID() {
-        return this.id;
-    }
+         if (!this.prefs.getBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, false)) {
+             PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_audio, true);
+             PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_connection, true);
+             PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_general, true);
 
-    // setting id
-    public void setID(int id) {
-        this.id = id;
-    }
+             prefs.edit().putBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true).apply();
+         }
+     }
 
     public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+        return prefs.getString("general_title", context.getString(R.string.pref_default_general_title));
     }
 
     public String getArtist() {
-        return artist;
+        return prefs.getString("general_artist", context.getString(R.string.pref_default_general_artist));
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public String getGeneralUsername() {
-        return generalUsername;
-    }
-
-    public void setGeneralUsername(String generalUsername) {
-        this.generalUsername = generalUsername;
-    }
-
-    public String getServerName() {
-        return servername;
-    }
-
-    public void setServerName(String servername) {
-        this.servername = servername;
-    }
+    public String getServerName() { return prefs.getString("connection_address", context.getString(R.string.pref_default_connection_address)); }
 
     public String getMountpoint() {
-        return mountpoint;
-    }
-
-    public void setMountpoint(String mountpoint) {
-        this.mountpoint = mountpoint;
+        return prefs.getString("connection_mountpoint", context.getString(R.string.pref_default_connection_mountpoint));
     }
 
     public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+        return prefs.getString("connection_username", context.getString(R.string.pref_default_connection_username));
     }
 
     public String getPassword() {
-        return password;
+        return prefs.getString("connection_password", context.getString(R.string.pref_default_connection_password));
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getSampleRate() {
-        return sampleRate;
-    }
-
-    public void setSampleRate(String sampleRate) {
-        this.sampleRate = sampleRate;
-    }
+    public String getSampleRate() { return prefs.getString("audio_samplerate", context.getString(R.string.pref_default_audio_samplerate)); }
 
     public String getChannels() {
-        return channels;
-    }
-
-    public void setChannels(String channels) {
-        this.channels = channels;
+        return prefs.getString("audio_channels", context.getString(R.string.pref_default_audio_channels));
     }
 
     public String getQuality() {
-        return quality;
-    }
-
-    public void setQuality(String quality) {
-        this.quality = quality;
+        return prefs.getString("audio_quality", context.getString(R.string.pref_default_audio_quality));
     }
 
     public boolean isConnectionSet() {
-        if ((this.servername != null && !this.servername.isEmpty()) && (this.mountpoint != null && !this.mountpoint.isEmpty()) &&
-                (this.username != null && !this.username.isEmpty()) && ((this.password != null && !this.password.isEmpty()))) {
+        if (!this.getServerName().isEmpty() && !this.getMountpoint().isEmpty() && !this.getUsername().isEmpty() && !this.getPassword().isEmpty()) {
             return true;
         } else {
             return false;

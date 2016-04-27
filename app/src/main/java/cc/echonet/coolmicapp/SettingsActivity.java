@@ -110,10 +110,10 @@ public class SettingsActivity extends PreferenceActivity {
 //    }
 //
 //    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setupActionBar();
-//    }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setupActionBar();
+    }
 
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -184,6 +184,9 @@ public class SettingsActivity extends PreferenceActivity {
             // guidelines.
             //bindPreferenceSummaryToValue(findPreference("example_text"));
             //bindPreferenceSummaryToValue(findPreference("example_list"));
+
+            getPreferenceManager().setSharedPreferencesName("default");
+            getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
         }
 
         @Override
@@ -214,6 +217,9 @@ public class SettingsActivity extends PreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             //bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+
+            getPreferenceManager().setSharedPreferencesName("default");
+            getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
         }
 
         @Override
@@ -244,6 +250,9 @@ public class SettingsActivity extends PreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             //bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+
+            getPreferenceManager().setSharedPreferencesName("default");
+            getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
         }
 
         @Override

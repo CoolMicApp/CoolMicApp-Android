@@ -6,17 +6,9 @@
         android:orderInCategory="1"
         android:title="Home" />
     <item
-        android:id="@+id/server_settings"
+        android:id="@+id/menu_action_settings"
         android:orderInCategory="2"
-        android:title="Connection"></item>
-    <item
-        android:id="@+id/audio_settings"
-        android:orderInCategory="3"
-        android:title="Audio"></item>
-    <item
-        android:id="@+id/general_setting"
-        android:orderInCategory="4"
-        android:title="General"></item>
+        android:title="Settings"></item>
     <item
         android:id="@+id/quite_app"
         android:orderInCategory="6"
