@@ -558,12 +558,28 @@ public class MainActivity extends Activity {
 
                                     Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
                                     Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
-                                    Log.d("VS", "Status:" + Wrapper.start());
+
+                                    int status = Wrapper.start();
+
+                                    Log.d("VS", "Status:" + status);
+
+                                    if(status != 0)
+                                    {
+                                        throw new Exception("Failed to start Recording: "+String.valueOf(status));
+                                    }
 
                                     strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    Log.e("VS", "IOException", e);
+                                    Log.e("VS", "Recording Start: Exception: ", e);
+
+                                    MainActivity.this.runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            stopRecording(null);
+
+                                            Toast.makeText(MainActivity.this, "Failed to start Recording. ", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
                                 }
                             }
 
