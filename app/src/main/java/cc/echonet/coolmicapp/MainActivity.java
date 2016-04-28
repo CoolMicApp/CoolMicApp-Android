@@ -626,9 +626,6 @@ public class MainActivity extends Activity {
             editor.putString("TIMER_PER", "");
             editor.putString("TIMER_PER", (String) timerValue.getText());
             editor.commit();
-            Intent i = new Intent(MainActivity.this, MainActivity.class);
-            startActivity(i);
-            finish();
         }
         else
         {
