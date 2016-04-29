@@ -28,8 +28,6 @@ import android.content.Intent;
 import android.os.IBinder;
 
 public class MyService extends Service {
-    private static final int LED_NOTIFICATION_ID = 0;
-
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
@@ -43,7 +41,7 @@ public class MyService extends Service {
 
     public void onTaskRemoved(Intent rootIntent) {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(LED_NOTIFICATION_ID);
+        nm.cancel(Constants.NOTIFICATION_ID_LED);
         stopSelf();
     }
 

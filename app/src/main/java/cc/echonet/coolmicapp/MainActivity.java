@@ -33,8 +33,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -63,32 +61,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.PrintWriter;
-
 import cc.echonet.coolmicdspjava.Wrapper;
 
 /**
  * This activity demonstrates how to use JNI to encode and decode ogg/vorbis audio
  */
 public class MainActivity extends Activity {
-    public static final String TIMER_PER = "00:00:00";
-    /**
-     * Logging tag
-     */
-    private static final String TAG = "MainActivity";
-    private static final int LED_NOTIFICATION_ID = 0;
+
+
     final Context context = this;
     Thread streamThread;
     boolean isThreadOn = false;
-    DataOutputStream dos;
-    String hostname = "giss.tv";
-    PrintWriter output = null;
-    BufferedReader reader = null;
-    //Setting newSetting;
-    // CoolMicSetting newSetting;
     CoolMic coolmic = null;
     Button start_button;
     Button stop_button;
@@ -104,7 +87,6 @@ public class MainActivity extends Activity {
     long timeInMilliseconds = 0L;
     long timeSwapBuff = 0L;
     long updatedTime = 0L;
-    SharedPreferences sharedpreferences;
 
     TextView txtListeners;
 
@@ -116,8 +98,6 @@ public class MainActivity extends Activity {
      * Text view to show logged messages
      */
     private TextView logArea;
-    private int port = 8000;
-    private ClipData myClip;
     //variable declaration for timer starts here
     private long startTime = 0L;
     private long lastStatsFetch = 0L;
@@ -136,10 +116,8 @@ public class MainActivity extends Activity {
                     int hours = mins / 60;
                     secs = secs % 60;
                     mins = mins % 60;
-                    int milliseconds = (int) (updatedTime % 1000);
-                    timerValue.setText("" + String.format("%02d", hours) + ":"
-                            + String.format("%02d", mins) + ":"
-                            + String.format("%02d", secs));
+
+                    timerValue.setText(MainActivity.this.getString(R.string.timer_format, hours, mins, secs));
 
                     if(lastStatsFetch+15*1000 < timeInMilliseconds) {
                         StreamStatsService.startActionStatsFetch(MainActivity.this, strStreamFetchStatsURL);
@@ -169,36 +147,21 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_menu, menu);
-        menu.findItem(R.id.home).setVisible(false);
         myMenu = menu;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Editor editor = sharedpreferences.edit();
         switch (item.getItemId()) {
-            // action with ID action_refresh was selected
-            case R.id.home:
-                editor.putString("TIMER_PER", "");
-                editor.commit();
-                goHome();
-                return true;
-            // action with ID action_settings was selected
             case R.id.menu_action_settings:
-                editor.putString("TIMER_PER", "");
-                editor.commit();
                 goSettings();
                 return true;
             case R.id.help:
-                editor.putString("TIMER_PER", "");
-                editor.commit();
                 Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://coolmic.net/help"));
                 startActivity(helpIntent);
                 return true;
-            case R.id.quite_app:
-                editor.putString("TIMER_PER", "");
-                editor.commit();
+            case R.id.quit_app:
                 exitApp();
                 return true;
             default:
@@ -214,12 +177,6 @@ public class MainActivity extends Activity {
         Wrapper.unref();
         finish();
         System.exit(0);
-    }
-
-    private void goHome() {
-        Intent i = new Intent(MainActivity.this, MainActivity.class);
-        startActivity(i);
-        finish();
     }
 
     private void goSettings() {
@@ -248,12 +205,12 @@ public class MainActivity extends Activity {
     private void RedFlashLight() {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification notif = new Notification.Builder(context).setLights(0xFFff0000, 100, 100).setSmallIcon(R.drawable.icon).setContentTitle("Streaming").setContentText("Streaming...").build();
-        nm.notify(LED_NOTIFICATION_ID, notif);
+        nm.notify(Constants.NOTIFICATION_ID_LED, notif);
     }
 
     private void ClearLED() {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(LED_NOTIFICATION_ID);
+        nm.cancel(Constants.NOTIFICATION_ID_LED);
     }
 
     @Override
@@ -277,17 +234,7 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.home);
         timerValue = (TextView) findViewById(R.id.timerValue);
-        BroadcastReceiver mPowerKeyReceiver = null;
-        final IntentFilter theFilter = new IntentFilter();
-        /** System Defined Broadcast */
-        theFilter.addAction(Intent.ACTION_SCREEN_ON);
-        theFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        theFilter.addAction(Intent.ACTION_USER_PRESENT);
-        sharedpreferences = getSharedPreferences(TIMER_PER, Context.MODE_PRIVATE);
-        if (!sharedpreferences.getString("TIMER_PER", "").equals("")) {
-            timerValue.setText(sharedpreferences.getString("TIMER_PER", ""));
-        }
-        mPowerKeyReceiver = new BroadcastReceiver() {
+        BroadcastReceiver mPowerKeyReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String strAction = intent.getAction();
@@ -298,7 +245,14 @@ public class MainActivity extends Activity {
                 }
             }
         };
+        final IntentFilter theFilter = new IntentFilter();
+        /** System Defined Broadcast */
+        theFilter.addAction(Intent.ACTION_SCREEN_ON);
+        theFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        theFilter.addAction(Intent.ACTION_USER_PRESENT);
+
         getApplicationContext().registerReceiver(mPowerKeyReceiver, theFilter);
+
         imageView1 = (ImageView) findViewById(R.id.imageView1);
 
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
@@ -322,10 +276,9 @@ public class MainActivity extends Activity {
         animation.setRepeatMode(Animation.REVERSE);
         start_button = (Button) findViewById(R.id.start_recording_button);
         stop_button = (Button) findViewById(R.id.stop_recording_button);
-        buttonColor = (Drawable) start_button.getBackground();
+        buttonColor = start_button.getBackground();
         logArea = (TextView) findViewById(R.id.log_area);
         logArea.setMovementMethod(new ScrollingMovementMethod());
-        setLoggingHandlers();
 
         coolmic = new CoolMic(this, "default");
 
@@ -345,10 +298,7 @@ public class MainActivity extends Activity {
         {
             Toast.makeText(getApplicationContext(), "Previous problem detected with native components :( Blocking controls!", Toast.LENGTH_SHORT).show();
         }
-        else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
-        {
-        }
-        else
+        else if(Wrapper.init() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
         {
             Toast.makeText(getApplicationContext(), "Native components in unknown state!", Toast.LENGTH_SHORT).show();
         }
@@ -392,19 +342,15 @@ public class MainActivity extends Activity {
             Log.d("VS", portnum);
             if (server != null && !server.isEmpty()) {
                 String text = server + ":" + port_num.toString() + "/" + coolmic.getMountpoint();
-                myClip = ClipData.newPlainText("text", text);
+                ClipData myClip = ClipData.newPlainText("text", text);
                 myClipboard.setPrimaryClip(myClip);
                 Toast.makeText(getApplicationContext(), "Broadcast URL copied to clipboard!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Set the connection details", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-            Log.e("VS", "Excpetion", e);
+            Log.e("VS", "Exception", e);
         }
-
-    }
-
-    private void setLoggingHandlers() {
 
     }
 
@@ -428,7 +374,7 @@ public class MainActivity extends Activity {
                     invalidateOptionsMenu();
                     start_button.clearAnimation();
                     start_button.setBackground(buttonColor);
-                    start_button.setText("Start Broadcast");
+                    start_button.setText(R.string.start_broadcast);
 
                     ClearLED();
 
@@ -448,125 +394,117 @@ public class MainActivity extends Activity {
             return;
         }
 
-        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            if (isOnline()) {
-                if (coolmic.isConnectionSet()) {
-                    invalidateOptionsMenu();
-                    isThreadOn = true;
-                    //screenreceiver.setThreadStatus(true);
-                    startService(new Intent(getBaseContext(), MyService.class));
-                    RedFlashLight();
-                    timeInMilliseconds = 0L;
-                    timeSwapBuff = 0L;
-                    start_button.startAnimation(animation);
-                    start_button.setBackground(trans);
-                    trans.startTransition(5000);
-                    start_button.setText("Broadcasting");
-                    streamThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isThreadOn) {
-                                try {
-                                    String portnum = "";
-                                    String server = coolmic.getServerName();
-                                    Integer port_num = 8000;
-                                    if (server.indexOf(":") > 0) {
-                                        String[] split = server.split(":");
-                                        server = split[0];
-                                        portnum = split[1];
-                                        port_num = Integer.parseInt(portnum);
-                                    }
-                                    Log.d("VS", server);
-                                    Log.d("VS", port_num.toString());
-                                    String username = coolmic.getUsername();
-                                    String password = coolmic.getPassword();
-                                    String mountpoint = coolmic.getMountpoint();
-                                    String sampleRate_string = coolmic.getSampleRate();
-                                    String channel_string = coolmic.getChannels();
-                                    String quality_string = coolmic.getQuality();
-                                    String title = coolmic.getTitle();
-                                    String artist = coolmic.getArtist();
+        if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+            Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-                                    Log.d("VS", String.format("Server: %s Port: %d Username: %s Password: %s Mountpoint: %s Samplerate: %s Channels: %s Quality: %s Title: %s Artist: %s", server, port_num, username, password, mountpoint, sampleRate_string, channel_string, quality_string, title, artist));
+        if (!isOnline()) {
+            Toast.makeText(getApplicationContext(), "Check Internet Connection !", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-                                    Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-                                    Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-                                    Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
+        if (!coolmic.isConnectionSet()) {
+            Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
+        }
 
-                                    int status = Wrapper.start();
+        invalidateOptionsMenu();
+        isThreadOn = true;
+        //screenreceiver.setThreadStatus(true);
+        startService(new Intent(getBaseContext(), MyService.class));
+        RedFlashLight();
+        timeInMilliseconds = 0L;
+        timeSwapBuff = 0L;
+        start_button.startAnimation(animation);
+        start_button.setBackground(trans);
+        trans.startTransition(5000);
+        start_button.setText(R.string.broadcasting);
+        streamThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isThreadOn) {
+                    try {
+                        String portnum;
+                        String server = coolmic.getServerName();
+                        Integer port_num = 8000;
 
-                                    Log.d("VS", "Status:" + status);
-
-                                    if(status != 0)
-                                    {
-                                        throw new Exception("Failed to start Recording: "+String.valueOf(status));
-                                    }
-
-                                    strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    Log.e("VS", "Recording Start: Exception: ", e);
-
-                                    MainActivity.this.runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            stopRecording(null);
-
-                                            Toast.makeText(MainActivity.this, "Failed to start Recording. ", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-                            }
-
+                        if (server.indexOf(":") > 0) {
+                            String[] split = server.split(":");
+                            server = split[0];
+                            portnum = split[1];
+                            port_num = Integer.parseInt(portnum);
                         }
 
-                    });
-                    streamThread.start();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
+                        Log.d("VS", server);
+                        Log.d("VS", port_num.toString());
+                        String username = coolmic.getUsername();
+                        String password = coolmic.getPassword();
+                        String mountpoint = coolmic.getMountpoint();
+                        String sampleRate_string = coolmic.getSampleRate();
+                        String channel_string = coolmic.getChannels();
+                        String quality_string = coolmic.getQuality();
+                        String title = coolmic.getTitle();
+                        String artist = coolmic.getArtist();
+
+                        Log.d("VS", String.format("Server: %s Port: %d Username: %s Password: %s Mountpoint: %s Samplerate: %s Channels: %s Quality: %s Title: %s Artist: %s", server, port_num, username, password, mountpoint, sampleRate_string, channel_string, quality_string, title, artist));
+
+                        Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+                        Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
+                        Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
+
+                        int status = Wrapper.start();
+
+                        Log.d("VS", "Status:" + status);
+
+                        if(status != 0)
+                        {
+                            throw new Exception("Failed to start Recording: "+String.valueOf(status));
+                        }
+
+                        strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("VS", "Recording Start: Exception: ", e);
+
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                stopRecording(null);
+
+                                Toast.makeText(MainActivity.this, "Failed to start Recording. ", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
-            } else {
-                Toast.makeText(getApplicationContext(), "Check Internet Connection !", Toast.LENGTH_LONG).show();
+
             }
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
-        }
+
+        });
+        streamThread.start();
     }
 
-    @SuppressWarnings("deprecation")
     public void stopRecording(@SuppressWarnings("unused") View view) {
-        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            //code to stop timer starts here
-            Log.d("shared", sharedpreferences.getString("TIMER_PER", "") + "1111");
-            Log.d("shared123", "shared pref not disp");
-            timeSwapBuff += timeInMilliseconds;
-            customHandler.removeCallbacks(updateTimerThread);
-            //code to stop timer starts here
-            ClearLED();
-            invalidateOptionsMenu();
-            start_button.clearAnimation();
-            start_button.setBackground(buttonColor);
-            start_button.setText("Start Broadcast");
-            stopService(new Intent(getBaseContext(), MyService.class));
-
-
-            Wrapper.stop();
-            Wrapper.unref();
-
-            isThreadOn = false;
-
-            Editor editor = sharedpreferences.edit();
-            editor.putString("TIMER_PER", "");
-            editor.putString("TIMER_PER", (String) timerValue.getText());
-            editor.commit();
-        }
-        else
-        {
+        if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
         }
+
+        timeSwapBuff += timeInMilliseconds;
+        customHandler.removeCallbacks(updateTimerThread);
+        //code to stop timer starts here
+        ClearLED();
+        invalidateOptionsMenu();
+        start_button.clearAnimation();
+        start_button.setBackground(buttonColor);
+        start_button.setText(R.string.start_broadcast);
+        stopService(new Intent(getBaseContext(), MyService.class));
+
+
+        Wrapper.stop();
+        Wrapper.unref();
+
+        isThreadOn = false;
     }
 
+    @SuppressWarnings("unused")
     private void logMessage(String msg) {
         logArea.append(msg + "\n");
         final int scrollAmount = logArea.getLayout().getLineTop(logArea.getLineCount())
@@ -577,6 +515,7 @@ public class MainActivity extends Activity {
             logArea.scrollTo(0, 0);
     }
 
+    @SuppressWarnings("unused")
     private void callbackHandler(int what)
     {
         Log.d("Handler", String.valueOf(what));
@@ -601,7 +540,7 @@ public class MainActivity extends Activity {
                         //code to stop timer starts here
                         start_button.clearAnimation();
                         start_button.setBackground(buttonColor);
-                        start_button.setText("Start Broadcast");
+                        start_button.setText(R.string.start_broadcast);
 
                         ClearLED();
                         //logMessage("Stopping the broadcasting");
@@ -613,7 +552,7 @@ public class MainActivity extends Activity {
                         //code to stop timer starts here
                         start_button.clearAnimation();
                         start_button.setBackground(buttonColor);
-                        start_button.setText("Start Broadcast");
+                        start_button.setText(R.string.start_broadcast);
 
                         ClearLED();
 
@@ -637,7 +576,7 @@ public class MainActivity extends Activity {
         // Called when the BroadcastReceiver gets an Intent it's registered to receive
 
         public void onReceive(Context context, Intent intent) {
-            StreamStats obj = (StreamStats)intent.getParcelableExtra(Constants.EXTRA_DATA_STATS_OBJ);
+            StreamStats obj = intent.getParcelableExtra(Constants.EXTRA_DATA_STATS_OBJ);
 
             txtListeners.setText(String.format("%s(%s)", obj.getListenersCurrent(), obj.getListenersPeak()));
         }

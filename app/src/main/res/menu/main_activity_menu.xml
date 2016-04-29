@@ -1,16 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/home"
-        android:icon="@drawable/home"
-        android:orderInCategory="1"
-        android:title="Home" />
-    <item
         android:id="@+id/menu_action_settings"
         android:orderInCategory="2"
         android:title="Settings"></item>
     <item
-        android:id="@+id/quite_app"
+        android:id="@+id/quit_app"
         android:orderInCategory="6"
         android:title="Quit"></item>
     <item

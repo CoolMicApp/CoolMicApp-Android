@@ -10,4 +10,6 @@ public class Constants {
     public static final String BROADCAST_STREAM_STATS_SERVICE = "cc.echonet.coolmicapp.BROADCAST_SSS";
 
     public static final String EXTRA_DATA_STATS_OBJ = "cc.echonet.coolmicapp.extra_STREAM_STATS_OBJ";
+
+    public static final int NOTIFICATION_ID_LED = 0;
 }
