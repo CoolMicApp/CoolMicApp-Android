@@ -35,9 +35,7 @@ public class CoolMic {
         this.context = context;
 
          if (!this.prefs.getBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, false)) {
-             PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_audio, true);
-             PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_connection, true);
-             PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_general, true);
+             PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_all, true);
 
              prefs.edit().putBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true).apply();
          }

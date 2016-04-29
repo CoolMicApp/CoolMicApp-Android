@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_header_general">
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_general_title"
+            android:inputType="text"
+            android:key="general_title"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_general_title" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_general_artist"
+            android:inputType="text"
+            android:key="general_artist"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_general_artist" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_connection">
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_connection_address"
+            android:inputType="text"
+            android:key="connection_address"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_connection_address" />
+
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_connection_username"
+            android:inputType="text"
+            android:key="connection_username"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_connection_username" />
+
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_connection_password"
+            android:inputType="textPassword"
+            android:key="connection_password"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_connection_password" />
+
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_connection_mountpoint"
+            android:inputType="text"
+            android:key="connection_mountpoint"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_connection_mountpoint" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_audio">
+        <ListPreference
+            android:defaultValue="@string/pref_default_audio_samplerate"
+            android:entries="@array/pref_values_audio_samplerate"
+            android:entryValues="@array/pref_values_audio_samplerate"
+            android:key="audio_samplerate"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_audio_samplerate" />
+
+        <ListPreference
+            android:defaultValue="@string/pref_default_audio_channels"
+            android:entries="@array/pref_titles_audio_channels"
+            android:entryValues="@array/pref_values_audio_channels"
+            android:key="audio_channels"
+            android:title="@string/pref_title_audio_channels" />
+
+        <ListPreference
+            android:defaultValue="@string/pref_default_audio_quality"
+            android:entries="@array/pref_values_audio_quality"
+            android:entryValues="@array/pref_values_audio_quality"
+            android:key="audio_quality"
+            android:title="@string/pref_title_audio_quality" />
+    </PreferenceCategory>
+</PreferenceScreen>
