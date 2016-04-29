@@ -224,8 +224,6 @@ public class SettingsActivity extends PreferenceActivity {
                     host = host+":"+u.getPort();
                 }
 
-
-
                 editor.putString("connection_address", host);
                 editor.putString("connection_username", authority[0]);
                 editor.putString("connection_password", authority[1]);
