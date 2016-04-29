@@ -63,7 +63,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
     return coolmic_simple_unref(coolmic_simple_obj);
 }
 
-void javaCallback(int val) {
+static void javaCallback(int val) {
 	JNIEnv * env;
 	// double check it's all ok
 	int getEnvStat = (*g_vm)->GetEnv(g_vm,  (void **) &env, JNI_VERSION_1_6);
@@ -87,37 +87,34 @@ void javaCallback(int val) {
 	(*g_vm)->DetachCurrentThread(g_vm);
 }
 
-int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event_t event, void *thread, void *arg0, void *arg1)
+static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event_t event, void *thread, void *arg0, void *arg1)
 {
-    LOGI("EVENT: %d", event);
+    LOGI("EVENT: %d %p %p", event, arg0, arg1);
 
-    if(event == COOLMIC_SIMPLE_EVENT_THREAD_POST_START)
+    if(event == COOLMIC_SIMPLE_EVENT_THREAD_START)
     {
         LOGI("THREAD START!");
-        /*
-        (*vm)->AttachCurrentThread(vm, &env, NULL);
-        */
+    }
+    else if(event == COOLMIC_SIMPLE_EVENT_THREAD_POST_START)
+    {
+        LOGI("THREAD POST START!");
+
         javaCallback(1);
     }
     else if(event == COOLMIC_SIMPLE_EVENT_THREAD_PRE_STOP)
     {
         LOGI("THREAD STOP");
+
         javaCallback(2);
-        /*
-        int check = (*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6);
-        LOGI("Detach destructor ==: %d", check);
-        if (check != JNI_EDETACHED) {
-
-            javaCallback(2);
-
-            int detach = (*vm)->DetachCurrentThread(vm);
-        }
-        */
     }
     else if(event == COOLMIC_SIMPLE_EVENT_ERROR)
     {
         javaCallback(3);
-        LOGI("ERROR: %d",(const int )arg0);
+        LOGI("ERROR: %p", arg0);
+    }
+    else
+    {
+        LOGI("UNKNOWN EVENT: %d %p %p", event, arg0, arg1);
     }
 }
 
