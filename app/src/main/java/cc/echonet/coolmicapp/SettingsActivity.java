@@ -5,7 +5,8 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -13,9 +14,13 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,15 +60,6 @@ public class SettingsActivity extends PreferenceActivity {
             return true;
         }
     };
-
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
 
     /**
      * Binds a preference's summary to its value. More specifically, when the
@@ -106,12 +102,11 @@ public class SettingsActivity extends PreferenceActivity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
-                Intent i = new Intent(this, MainActivity.class);
-                startActivity(i);
-            }
+            NavUtils.navigateUpFromSameTask(this);
             return true;
+
         }
+
         return super.onMenuItemSelected(featureId, item);
     }
 
@@ -167,6 +162,93 @@ public class SettingsActivity extends PreferenceActivity {
 
             getPreferenceManager().setSharedPreferencesName("default");
             getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
+
+            Preference button_util_conn_default = getPreferenceManager().findPreference("util_conn_default");
+            if (button_util_conn_default != null) {
+                button_util_conn_default.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference arg0) {
+
+                        SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
+
+                        editor.putString("connection_address", getString(R.string.pref_default_connection_address));
+                        editor.putString("connection_username", getString(R.string.pref_default_connection_username));
+                        editor.putString("connection_password", getString(R.string.pref_default_connection_password));
+                        editor.putString("connection_mountpoint", getString(R.string.pref_default_connection_mountpoint));
+
+                        editor.apply();
+
+                        refreshSummaryForConnectionSettings();
+
+                        return true;
+                    }
+                });
+            }
+
+            Preference button_util_qr_scan = getPreferenceManager().findPreference("util_qr_scan");
+            if (button_util_qr_scan != null) {
+                button_util_qr_scan.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference arg0) {
+
+                        IntentIntegrator integrator = new IntentIntegrator(PrefsFragment.this);
+                        integrator.setTitle("Please scan a fully qualified URI");
+                        integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
+
+                        return true;
+                    }
+                });
+            }
+        }
+
+        public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+            if (scanResult != null) {
+                Uri u;
+                try {
+                    u = Uri.parse(scanResult.getContents());
+                } catch (Exception e1) {
+                    Toast.makeText(getActivity(), "Please scan a valid URI!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences("default", Context.MODE_PRIVATE).edit();
+
+                String authority[] = u.getUserInfo().split(":");
+
+                String host = u.getHost();
+
+                if(u.getPort() != 8000)
+                {
+                    host = host+":"+u.getPort();
+                }
+
+
+
+                editor.putString("connection_address", host);
+                editor.putString("connection_username", authority[0]);
+                editor.putString("connection_password", authority[1]);
+                editor.putString("connection_mountpoint", u.getPath().replaceAll("^/", ""));
+
+                editor.apply();
+
+                refreshSummaryForConnectionSettings();
+
+                Toast.makeText(getActivity(), "Loaded settings from QR code!", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        private void refreshSummaryForConnectionSettings()
+        {
+            List<Preference> preferencesToUpdate = new ArrayList<>();
+            preferencesToUpdate.add(findPreference("connection_address"));
+            preferencesToUpdate.add(findPreference("connection_username"));
+            preferencesToUpdate.add(findPreference("connection_mountpoint"));
+
+            for(Preference preference: preferencesToUpdate) {
+                sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences("default", Context.MODE_PRIVATE).getString(preference.getKey(), ""));
+            }
         }
     }
 }

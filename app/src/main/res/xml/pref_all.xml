@@ -21,7 +21,6 @@
 
     <PreferenceCategory android:title="@string/pref_header_connection">
         <EditTextPreference
-            android:defaultValue="@string/pref_default_connection_address"
             android:inputType="text"
             android:key="connection_address"
             android:maxLines="1"
@@ -30,7 +29,6 @@
             android:title="@string/pref_title_connection_address" />
 
         <EditTextPreference
-            android:defaultValue="@string/pref_default_connection_username"
             android:inputType="text"
             android:key="connection_username"
             android:maxLines="1"
@@ -39,7 +37,6 @@
             android:title="@string/pref_title_connection_username" />
 
         <EditTextPreference
-            android:defaultValue="@string/pref_default_connection_password"
             android:inputType="textPassword"
             android:key="connection_password"
             android:maxLines="1"
@@ -48,7 +45,6 @@
             android:title="@string/pref_title_connection_password" />
 
         <EditTextPreference
-            android:defaultValue="@string/pref_default_connection_mountpoint"
             android:inputType="text"
             android:key="connection_mountpoint"
             android:maxLines="1"
@@ -80,5 +76,10 @@
             android:entryValues="@array/pref_values_audio_quality"
             android:key="audio_quality"
             android:title="@string/pref_title_audio_quality" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prefs_header_utilities">
+        <Preference android:title="@string/pref_title_utility_connection_default" android:key="util_conn_default"/>
+        <Preference android:title="@string/pref_title_utility_qr_scan" android:key="util_qr_scan"/>
     </PreferenceCategory>
 </PreferenceScreen>
