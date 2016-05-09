@@ -1,15 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/menu_action_settings"
-        android:orderInCategory="2"
-        android:title="Settings"></item>
+        android:orderInCategory="10"
+        android:title="@string/menu_action_settings" />
     <item
-        android:id="@+id/quit_app"
-        android:orderInCategory="6"
-        android:title="Quit"></item>
+        android:id="@+id/menu_action_help"
+        android:orderInCategory="20"
+        android:title="@string/menu_action_help" />
     <item
-        android:id="@+id/help"
-        android:orderInCategory="5"
-        android:title="Help"></item>
+        android:id="@+id/menu_action_quit"
+        android:orderInCategory="30"
+        android:title="@string/menu_action_quit" />
+    <!-- goto 10 -->
 </menu> 

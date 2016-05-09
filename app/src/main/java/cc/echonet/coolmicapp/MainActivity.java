@@ -157,15 +157,15 @@ public class MainActivity extends Activity {
             case R.id.menu_action_settings:
                 goSettings();
                 return true;
-            case R.id.help:
+            case R.id.menu_action_help:
                 Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://coolmic.net/help"));
                 startActivity(helpIntent);
                 return true;
-            case R.id.quit_app:
+            case R.id.menu_action_quit:
                 exitApp();
                 return true;
             default:
-                Toast.makeText(getApplicationContext(), "Default Pressed !", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.menu_action_default, Toast.LENGTH_LONG).show();
                 break;
         }
         return true;
