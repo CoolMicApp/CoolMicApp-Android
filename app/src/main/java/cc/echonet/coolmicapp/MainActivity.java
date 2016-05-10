@@ -403,7 +403,7 @@ public class MainActivity extends Activity {
 
         if(!checkPermission())
         {
-            Toast.makeText(getApplicationContext(), "Missing Permissions.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Missing Permissions. Please request them in the Settings.", Toast.LENGTH_LONG).show();
             return;
         }
 

@@ -1,11 +1,13 @@
 package cc.echonet.coolmicapp;
 
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +15,9 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -119,6 +123,31 @@ public class SettingsActivity extends PreferenceActivity {
         super.onBackPressed();
     }
 
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case Constants.PERMISSION_CHECK_REQUEST_CODE:
+                boolean permissions_ok = true;
+
+                for(int i = 0; i < grantResults.length; i++)
+                {
+                    if(grantResults[i] != PackageManager.PERMISSION_GRANTED)
+                    {
+                        permissions_ok = false;
+                        Toast.makeText(this, String.format("Permission %s was not granted!", permissions[i]), Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                if(permissions_ok)
+                {
+                    Toast.makeText(this, "All permissions granted! Thank you!", Toast.LENGTH_LONG).show();
+                }
+
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     /**
      * This method stops fragment injection in malicious applications.
      * Make sure to deny any unknown fragments here.
@@ -194,6 +223,34 @@ public class SettingsActivity extends PreferenceActivity {
                         IntentIntegrator integrator = new IntentIntegrator(PrefsFragment.this);
                         integrator.setTitle("Please scan a fully qualified URI");
                         integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
+
+                        return true;
+                    }
+                });
+            }
+
+            Preference util_permission_check = getPreferenceManager().findPreference("util_permission_check");
+            if (util_permission_check != null) {
+                util_permission_check.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference arg0) {
+                        if(!(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED))
+                        {
+                            if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                    Manifest.permission.RECORD_AUDIO) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                    Manifest.permission.INTERNET) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                    Manifest.permission.ACCESS_NETWORK_STATE) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                    Manifest.permission.READ_PHONE_STATE))) {
+                                Toast.makeText(getActivity(), "CoolMic needs the requested permissions for recording and streaming. Without them it is quite useless!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE}, Constants.PERMISSION_CHECK_REQUEST_CODE);
+                            }
+
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity(), "All required Permissions granted!", Toast.LENGTH_LONG).show();
+                        }
 
                         return true;
                     }

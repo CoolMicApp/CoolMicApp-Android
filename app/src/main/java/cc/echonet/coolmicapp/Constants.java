@@ -12,4 +12,6 @@ public class Constants {
     public static final String EXTRA_DATA_STATS_OBJ = "cc.echonet.coolmicapp.extra_STREAM_STATS_OBJ";
 
     public static final int NOTIFICATION_ID_LED = 0;
+
+    public static final int PERMISSION_CHECK_REQUEST_CODE = 1;
 }
