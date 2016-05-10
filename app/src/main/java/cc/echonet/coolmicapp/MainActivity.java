@@ -51,6 +51,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -60,7 +62,9 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -160,6 +164,9 @@ public class MainActivity extends Activity {
             case R.id.menu_action_settings:
                 goSettings();
                 return true;
+            case R.id.menu_action_about:
+                goAbout();
+                return true;
             case R.id.menu_action_help:
                 Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://coolmic.net/help"));
                 startActivity(helpIntent);
@@ -186,6 +193,32 @@ public class MainActivity extends Activity {
         Intent i = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(i);
         finish();
+    }
+
+    private void goAbout() {
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View popUpView = inflater.inflate(R.layout.popup_about, null, false);
+
+        final PopupWindow popUp = new PopupWindow(this);
+
+        Button close = (Button) popUpView.findViewById(R.id.cmdPopUpDismiss);
+        close.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View popupView) {
+                popUp.dismiss();
+            }
+        });
+
+        ((TextView) popUpView.findViewById(R.id.txtVersion)).setText(BuildConfig.VERSION_NAME);
+        ((TextView) popUpView.findViewById(R.id.txtBuildType)).setText(BuildConfig.BUILD_TYPE);
+        ((TextView) popUpView.findViewById(R.id.txtGITBranch)).setText(BuildConfig.GIT_BRANCH);
+        ((TextView) popUpView.findViewById(R.id.txtGITRevision)).setText(BuildConfig.GIT_REVISION);
+        ((TextView) popUpView.findViewById(R.id.txtGITAuthor)).setText(BuildConfig.GIT_AUTHOR);
+        ((TextView) popUpView.findViewById(R.id.txtGITDirty)).setText(BuildConfig.GIT_DIRTY);
+
+        popUp.setContentView(popUpView);
+
+        popUp.showAtLocation(popUpView, Gravity.CENTER, 0, 0);
     }
 
     public boolean isOnline() {

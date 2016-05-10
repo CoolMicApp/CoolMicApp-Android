@@ -77,6 +77,13 @@
     <string name="menu_action_quit">Quit</string>
     <string name="menu_action_about">About</string>
     <string name="menu_action_default">No appropriate menu action!</string>
+    <string name="popup_about_cmd_dismiss">Dismiss!</string>
+    <string name="popup_about_lbl_version">Version:</string>
+    <string name="popup_about_lbl_buildtype">Build Type:</string>
+    <string name="popup_about_lbl_git_branch">GIT Branch:</string>
+    <string name="popup_about_lbl_git_revision">GIT Commit:</string>
+    <string name="popup_about_lbl_git_author">GIT Author:</string>
+    <string name="popup_about_lbl_git_dirty">GIT Dirty:</string>
 
     <string-array name="pref_titles_audio_channels">
         <item>Mono (1 Channel)</item>
