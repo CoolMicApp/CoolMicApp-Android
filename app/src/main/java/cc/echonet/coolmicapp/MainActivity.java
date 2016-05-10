@@ -419,6 +419,7 @@ public class MainActivity extends Activity {
 
         if (!coolmic.isConnectionSet()) {
             Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
+            return;
         }
 
         invalidateOptionsMenu();
