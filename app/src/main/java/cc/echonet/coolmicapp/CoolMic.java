@@ -49,18 +49,18 @@ public class CoolMic {
         return prefs.getString("general_artist", context.getString(R.string.pref_default_general_artist));
     }
 
-    public String getServerName() { return prefs.getString("connection_address", context.getString(R.string.pref_default_connection_address)); }
+    public String getServerName() { return prefs.getString("connection_address", ""); }
 
     public String getMountpoint() {
-        return prefs.getString("connection_mountpoint", context.getString(R.string.pref_default_connection_mountpoint));
+        return prefs.getString("connection_mountpoint", "");
     }
 
     public String getUsername() {
-        return prefs.getString("connection_username", context.getString(R.string.pref_default_connection_username));
+        return prefs.getString("connection_username", "");
     }
 
     public String getPassword() {
-        return prefs.getString("connection_password", context.getString(R.string.pref_default_connection_password));
+        return prefs.getString("connection_password", "");
     }
 
     public String getSampleRate() { return prefs.getString("audio_samplerate", context.getString(R.string.pref_default_audio_samplerate)); }
