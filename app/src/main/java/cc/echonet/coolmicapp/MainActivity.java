@@ -197,6 +197,8 @@ public class MainActivity extends Activity {
 
     private void goAbout() {
 
+        Log.d("MainActivity", "goAbout() ");
+
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popUpView = inflater.inflate(R.layout.popup_about, null, false);
 
@@ -216,9 +218,18 @@ public class MainActivity extends Activity {
         ((TextView) popUpView.findViewById(R.id.txtGITAuthor)).setText(BuildConfig.GIT_AUTHOR);
         ((TextView) popUpView.findViewById(R.id.txtGITDirty)).setText(BuildConfig.GIT_DIRTY);
 
+        popUpView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
         popUp.setContentView(popUpView);
 
+        Log.d("MainActivity", String.format("h: %s w: %s h: %s w: %s", popUp.getHeight(), popUp.getWidth(), popUpView.getMeasuredHeight(), popUpView.getMeasuredWidth() ));
+
+        popUp.setHeight(popUpView.getMeasuredHeight());
+        popUp.setWidth(popUpView.getMeasuredWidth());
+
         popUp.showAtLocation(popUpView, Gravity.CENTER, 0, 0);
+
+        Log.d("MainActivity", "goAbout() end ");
     }
 
     public boolean isOnline() {
