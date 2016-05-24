@@ -194,7 +194,7 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
         coolmic_vumeter_result_t * result = (coolmic_vumeter_result_t*) arg0;
 
         LOGI("VUM: PRE CALL");
-       // javaCallbackVUMeter(result);
+        javaCallbackVUMeter(result);
         LOGI("VUM: POST CALL ");
 
         LOGI("VUM: c%d c0 %f c1 %f c2 %f g %f", result->channels, result->channel_power[0], result->channel_power[1], result->channel_power[2], result->global_power);
