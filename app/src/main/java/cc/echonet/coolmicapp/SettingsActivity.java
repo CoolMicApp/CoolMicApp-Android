@@ -106,7 +106,10 @@ public class SettingsActivity extends PreferenceActivity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
+
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+
             return true;
 
         }
