@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:fillViewport="false">
-
-    <LinearLayout
+    <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/main_linear_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -22,26 +17,58 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <ProgressBar
-                android:id="@+id/vertical_progressbar"
-                android:layout_width="20dip"
-                android:layout_height="fill_parent"
-                style="@style/Widget.ProgressBar.Vertical"
-                />
 
-                <ImageView
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <ProgressBar
+                    android:id="@+id/pbVuMeterLeft"
+                    android:layout_width="30dip"
+                    android:layout_height="fill_parent"
+                    style="@style/Widget.ProgressBar.Vertical"
+                    android:max="100"
+                    android:progress="0"
+                    android:layout_weight="2" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:id="@+id/rbPeakLeft" />
+            </LinearLayout>
+
+            <ImageView
                     android:id="@+id/imageView1"
                     android:layout_width="fill_parent"
                     android:layout_height="270dp"
                     android:onClick="onImageClick"
                     android:src="@drawable/mic"
                     android:contentDescription="@string/img_content"
-                    android:layout_weight="2" />
-            <ProgressBar
-                android:id="@+id/vertical_progressbar2"
-                android:layout_width="20dip"
-                android:layout_height="match_parent"
-                style="@style/Widget.ProgressBar.Vertical" />
+                    android:layout_weight="1" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <ProgressBar
+                    android:id="@+id/pbVuMeterRight"
+                    android:layout_width="30dip"
+                    android:layout_height="match_parent"
+                    style="@style/Widget.ProgressBar.Vertical"
+                    android:layout_weight="2"
+                    android:max="100" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:id="@+id/rbPeakRight"
+                    android:checked="true" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <GridLayout
@@ -116,4 +143,3 @@
 
     </LinearLayout>
     </LinearLayout>
-</ScrollView>
