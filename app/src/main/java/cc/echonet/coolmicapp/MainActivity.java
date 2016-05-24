@@ -65,9 +65,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 
 /**
@@ -578,7 +580,7 @@ public class MainActivity extends Activity {
     @SuppressWarnings("unused")
     private void callbackHandler(int what)
     {
-        Log.d("Handler", String.valueOf(what));
+        Log.d("Handler CB:", String.valueOf(what));
 
         final int what_final = what;
         MainActivity.this.runOnUiThread(new Runnable(){
@@ -622,6 +624,33 @@ public class MainActivity extends Activity {
 
                         break;
                 }
+            }
+        });
+    }
+
+
+    @SuppressWarnings("unused")
+    private void callbackVUMeterHandler(VUMeterResult result)
+    {
+        Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
+
+        final VUMeterResult result_final = result;
+        MainActivity.this.runOnUiThread(new Runnable(){
+            public void run(){
+                int g_p = (int)((60.+result_final.global_power) * (100. / 60.));
+
+                if(g_p > 100)
+                {
+                    g_p = 100;
+                }
+
+                if(g_p < 0)
+                {
+                    g_p = 0;
+                }
+
+                ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(g_p);
+                ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(g_p);
             }
         });
     }
