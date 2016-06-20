@@ -16,6 +16,12 @@ android {
             // use the jni .so compiled from the manual ndk-build command
             jni.srcDirs = [] //disable automatic ndk-build call
         }
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "GIT_REVISION", "\"${gitRevision()}\""
+        buildConfigField "String", "GIT_BRANCH", "\"${gitBranch()}\""
+        buildConfigField "String", "GIT_AUTHOR", "\"${gitAuthor()}\""
+        buildConfigField "String", "GIT_DIRTY", "\"${gitDirty()}\""
     }
 
     buildTypes {
@@ -51,6 +57,51 @@ clean.dependsOn 'ndkClean'
 tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn ndkBuild
 }
+
+def gitRevision() {
+    try {
+        return "git rev-parse HEAD".execute().text.trim()
+    }
+    catch(Exception ex)
+    {
+        return "N/A"
+    }
+}
+
+def gitBranch() {
+    try {
+        return "git rev-parse --symbolic-full-name HEAD".execute().text.trim()
+    }
+    catch(Exception ex)
+    {
+        return "N/A"
+    }
+}
+
+def gitAuthor() {
+    try {
+        return "git --no-pager show -s --format=\"%aN <%aE>\" HEAD".execute().text.trim()
+    }
+    catch(Exception ex)
+    {
+        return "N/A"
+    }
+}
+
+def gitDirty() {
+    try {
+        if ("git status --porcelain".execute().text.trim().isEmpty()) {
+            return "false"
+        } else {
+            return "true"
+        }
+    }
+    catch(Exception ex)
+    {
+        return "N/A"
+    }
+}
+
 dependencies {
     compile 'com.android.support:support-v4:23.+'
     compile 'com.google.zxing:android-integration:3.2.1'
