@@ -638,7 +638,7 @@ public class MainActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             StreamStats obj = intent.getParcelableExtra(Constants.EXTRA_DATA_STATS_OBJ);
 
-            txtListeners.setText(String.format("%s(Max: %s)", obj.getListenersCurrent(), obj.getListenersPeak()));
+            txtListeners.setText(String.format("%s ( Max: %s )", obj.getListenersCurrent(), obj.getListenersPeak()));
         }
     }
 }
