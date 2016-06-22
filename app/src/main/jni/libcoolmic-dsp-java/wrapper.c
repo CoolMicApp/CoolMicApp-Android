@@ -97,6 +97,7 @@ static void javaCallback(int val) {
 }
 
 static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
+    int i;
     JNIEnv * env;
     // double check it's all ok
     int getEnvStat = (*g_vm)->GetEnv(g_vm,  (void **) &env, JNI_VERSION_1_6);
@@ -143,6 +144,15 @@ static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
     LOGI("VUM: PRE OBJ FILLING GLOBAL_POWER ");
     fid = (*env)->GetFieldID(env, vumeter_result_class, "global_power","D");
     (*env)->SetDoubleField(env, obj, fid, result->global_power);
+
+    LOGI("VUM: PRE OBJ FILLING CHANNEL VALUES ");
+
+    jmethodID vumeterResultChannelValues = (*env)->GetMethodID(env, vumeter_result_class, "setChannelPeakPower", "(IID)V");
+
+    for(i = 0;i < result->channels; i++)
+    {
+        (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, i, result->channel_peak[i], result->channel_power[i]);
+    }
 
     LOGI("VUM: POST OBJ GEN & FILLING ");
 
