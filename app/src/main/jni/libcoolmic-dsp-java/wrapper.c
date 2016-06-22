@@ -104,12 +104,12 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
     else if(event == COOLMIC_SIMPLE_EVENT_THREAD_PRE_STOP)
     {
         LOGI("THREAD PRE STOP");
+
+        javaCallback(2);
     }
     else if(event == COOLMIC_SIMPLE_EVENT_THREAD_STOP)
     {
         LOGI("THREAD STOP");
-
-        javaCallback(2);
     }
     else if(event == COOLMIC_SIMPLE_EVENT_ERROR)
     {
