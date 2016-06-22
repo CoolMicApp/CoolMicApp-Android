@@ -560,6 +560,8 @@ public class MainActivity extends Activity {
         Wrapper.unref();
 
         isThreadOn = false;
+
+        Toast.makeText(MainActivity.this, "Recording stopped!", Toast.LENGTH_LONG).show();
     }
 
     @SuppressWarnings("unused")
