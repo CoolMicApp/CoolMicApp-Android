@@ -200,7 +200,6 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 
     else if(event == COOLMIC_SIMPLE_EVENT_VUMETER_RESULT)
     {
-        return;
         coolmic_vumeter_result_t * result = (coolmic_vumeter_result_t*) arg0;
 
         LOGI("VUM: PRE CALL");
