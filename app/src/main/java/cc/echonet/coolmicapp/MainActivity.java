@@ -564,6 +564,11 @@ public class MainActivity extends Activity {
         isThreadOn = false;
 
         Toast.makeText(MainActivity.this, "Recording stopped!", Toast.LENGTH_LONG).show();
+
+        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
+        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
+        ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
+        ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
     }
 
     @SuppressWarnings("unused")
@@ -620,6 +625,11 @@ public class MainActivity extends Activity {
 
                         isThreadOn = false;
 
+                        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
+                        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
+                        ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
+                        ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
+
                         Toast.makeText(MainActivity.this, "there was an error!", Toast.LENGTH_LONG).show();
 
                         break;
@@ -628,6 +638,42 @@ public class MainActivity extends Activity {
         });
     }
 
+    static int normalizeVUMeterPower(double power)
+    {
+        int g_p = (int)((60.+power) * (100. / 60.));
+
+        if(g_p > 100)
+        {
+            g_p = 100;
+        }
+
+        if(g_p < 0)
+        {
+            g_p = 0;
+        }
+
+        return g_p;
+    }
+
+    static String normalizeVUMeterPeak(int peak)
+    {
+        if(peak == -32768 || peak == 32767)
+        {
+            return "P";
+        }
+        else if(peak < -30000 || peak > 30000)
+        {
+            return "p";
+        }
+        else if(peak < -8000 || peak > 8000)
+        {
+            return "g";
+        }
+        else
+        {
+            return "";
+        }
+    }
 
     @SuppressWarnings("unused")
     private void callbackVUMeterHandler(VUMeterResult result)
@@ -637,20 +683,19 @@ public class MainActivity extends Activity {
         final VUMeterResult result_final = result;
         MainActivity.this.runOnUiThread(new Runnable(){
             public void run(){
-                int g_p = (int)((60.+result_final.global_power) * (100. / 60.));
-
-                if(g_p > 100)
-                {
-                    g_p = 100;
+                if(result_final.channels < 2) {
+                    ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(normalizeVUMeterPower(result_final.global_power));
+                    ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(normalizeVUMeterPower(result_final.global_power));
+                    ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText(normalizeVUMeterPeak(result_final.global_peak));
+                    ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText(normalizeVUMeterPeak(result_final.global_peak));
                 }
-
-                if(g_p < 0)
+                else
                 {
-                    g_p = 0;
+                    ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(normalizeVUMeterPower(result_final.channels_power[0]));
+                    ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(normalizeVUMeterPower(result_final.channels_power[1]));
+                    ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText(normalizeVUMeterPeak(result_final.channels_peak[0]));
+                    ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText(normalizeVUMeterPeak(result_final.channels_peak[1]));
                 }
-
-                ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(g_p);
-                ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(g_p);
             }
         });
     }
