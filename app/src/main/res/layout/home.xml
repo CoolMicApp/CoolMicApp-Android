@@ -29,8 +29,8 @@
                     android:layout_height="fill_parent"
                     style="@style/Widget.ProgressBar.Vertical"
                     android:max="100"
-                    android:progress="0"
-                    android:layout_weight="2" />
+                    android:layout_weight="2"
+                    android:progressTint="@android:color/secondary_text_dark" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -61,7 +61,8 @@
                     android:layout_height="match_parent"
                     style="@style/Widget.ProgressBar.Vertical"
                     android:layout_weight="2"
-                    android:max="100" />
+                    android:max="100"
+                    android:progressTint="@android:color/secondary_text_dark" />
 
                 <TextView
                     android:layout_width="match_parent"
