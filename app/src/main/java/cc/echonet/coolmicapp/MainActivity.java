@@ -572,6 +572,8 @@ public class MainActivity extends Activity {
 
         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
+        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
+        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
         ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
         ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
     }
@@ -632,6 +634,8 @@ public class MainActivity extends Activity {
 
                         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
                         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
+                        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
+                        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
                         ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
                         ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
 
