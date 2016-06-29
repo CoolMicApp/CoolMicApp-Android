@@ -192,6 +192,8 @@ public class SettingsActivity extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("audio_samplerate"));
             bindPreferenceSummaryToValue(findPreference("audio_quality"));
 
+            bindPreferenceSummaryToValue(findPreference("vumeter_interval"));
+
             getPreferenceManager().setSharedPreferencesName("default");
             getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
 

@@ -521,6 +521,10 @@ public class MainActivity extends Activity {
                         {
                             throw new Exception("Failed to start Recording: "+String.valueOf(status));
                         }
+                        else
+                        {
+                            Wrapper.setVuMeterInterval(Integer.parseInt(coolmic.getVuMeterInterval()));
+                        }
 
                         strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
                     } catch (Exception e) {

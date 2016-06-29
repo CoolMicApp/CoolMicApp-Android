@@ -148,11 +148,11 @@ static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
 
     LOGI("VUM: PRE OBJ FILLING GLOBAL_PEAK COLOR");
     fid = (*env)->GetFieldID(env, vumeter_result_class, "global_peak_color","I");
-    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->global_peak, COOLMIC_UTIL_PROFILE_DEFAULT), 1, 1));
+    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->global_peak, COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
 
     LOGI("VUM: PRE OBJ FILLING GLOBAL_POWER COLOR");
     fid = (*env)->GetFieldID(env, vumeter_result_class, "global_power_color","I");
-    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->global_power, COOLMIC_UTIL_PROFILE_DEFAULT), 1, 1));
+    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->global_power, COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
 
     LOGI("VUM: PRE OBJ FILLING CHANNEL VALUES ");
 
@@ -160,7 +160,7 @@ static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
 
     for(i = 0;i < result->channels; i++)
     {
-        (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, i, result->channel_peak[i], result->channel_power[i],  coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->channel_peak[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1, 1), coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->channel_power[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1, 1));
+        (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, i, result->channel_peak[i], result->channel_power[i],  coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->channel_peak[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75), coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->channel_power[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
     }
 
     LOGI("VUM: POST OBJ GEN & FILLING ");
@@ -288,6 +288,11 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env,
     (*env)->ReleaseStringUTFChars(env, codec, mountNative);
 
     LOGI("end init");
+}
+
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(JNIEnv * env, jobject obj, jint interval)
+{
+    return coolmic_simple_set_vumeter_interval(coolmic_simple_obj, interval);
 }
 
 JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_initNative(JNIEnv * env, jobject obj)

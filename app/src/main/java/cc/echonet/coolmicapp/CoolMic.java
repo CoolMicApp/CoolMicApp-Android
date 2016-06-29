@@ -73,6 +73,10 @@ public class CoolMic {
         return prefs.getString("audio_quality", context.getString(R.string.pref_default_audio_quality));
     }
 
+    public String getVuMeterInterval() {
+        return prefs.getString("vumeter_interval", context.getString(R.string.pref_default_vumeter_interval));
+    }
+
     public boolean isConnectionSet() {
         if (!this.getServerName().isEmpty() && !this.getMountpoint().isEmpty() && !this.getUsername().isEmpty() && !this.getPassword().isEmpty()) {
             return true;
