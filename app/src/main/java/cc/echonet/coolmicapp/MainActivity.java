@@ -35,6 +35,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -675,6 +676,22 @@ public class MainActivity extends Activity {
         }
     }
 
+    static String normalizeVUMeterPowerString(double power)
+    {
+        if(power < -100)
+        {
+            return "-100";
+        }
+        else if(power > 0)
+        {
+            return "0";
+        }
+        else
+        {
+            return String.format("%.2f", power);
+        }
+    }
+
     @SuppressWarnings("unused")
     private void callbackVUMeterHandler(VUMeterResult result)
     {
@@ -683,19 +700,38 @@ public class MainActivity extends Activity {
         final VUMeterResult result_final = result;
         MainActivity.this.runOnUiThread(new Runnable(){
             public void run(){
+                TextProgressBar pbVuMeterLeft = (TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft);
+                TextProgressBar pbVuMeterRight = (TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight);
+
+                TextView rbPeakLeft = (TextView) MainActivity.this.findViewById(R.id.rbPeakLeft);
+                TextView rbPeakRight = (TextView) MainActivity.this.findViewById(R.id.rbPeakRight);
+
                 if(result_final.channels < 2) {
-                    ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(normalizeVUMeterPower(result_final.global_power));
-                    ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(normalizeVUMeterPower(result_final.global_power));
-                    ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText(normalizeVUMeterPeak(result_final.global_peak));
-                    ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText(normalizeVUMeterPeak(result_final.global_peak));
+                    pbVuMeterLeft.setProgress(normalizeVUMeterPower(result_final.global_power));
+                    pbVuMeterLeft.setTextColor(result_final.global_power_color);
+                    pbVuMeterLeft.setText(normalizeVUMeterPowerString(result_final.global_power));
+                    pbVuMeterRight.setProgress(normalizeVUMeterPower(result_final.global_power));
+                    pbVuMeterRight.setTextColor(result_final.global_power_color);
+                    pbVuMeterRight.setText(normalizeVUMeterPowerString(result_final.global_power));
+                    rbPeakLeft.setText(normalizeVUMeterPeak(result_final.global_peak));
+                    rbPeakLeft.setTextColor(result_final.global_peak_color);
+                    rbPeakRight.setText(normalizeVUMeterPeak(result_final.global_peak));
+                    rbPeakRight.setTextColor(result_final.global_peak_color);
                 }
                 else
                 {
-                    ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(normalizeVUMeterPower(result_final.channels_power[0]));
-                    ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(normalizeVUMeterPower(result_final.channels_power[1]));
-                    ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText(normalizeVUMeterPeak(result_final.channels_peak[0]));
-                    ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText(normalizeVUMeterPeak(result_final.channels_peak[1]));
+                    pbVuMeterLeft.setProgress(normalizeVUMeterPower(result_final.channels_power[0]));
+                    pbVuMeterLeft.setTextColor(result_final.channels_power_color[0]);
+                    pbVuMeterLeft.setText(normalizeVUMeterPowerString(result_final.channels_power[0]));
+                    pbVuMeterRight.setProgress(normalizeVUMeterPower(result_final.channels_power[1]));
+                    pbVuMeterRight.setTextColor(result_final.channels_power_color[1]);
+                    pbVuMeterRight.setText(normalizeVUMeterPowerString(result_final.channels_power[1]));
+                    rbPeakLeft.setText(normalizeVUMeterPeak(result_final.channels_peak[0]));
+                    rbPeakLeft.setTextColor(result_final.channels_peak_color[0]);
+                    rbPeakRight.setText(normalizeVUMeterPeak(result_final.channels_peak[1]));
+                    rbPeakRight.setTextColor(result_final.channels_peak_color[1]);
                 }
+
             }
         });
     }

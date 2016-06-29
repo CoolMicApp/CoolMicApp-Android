@@ -24,6 +24,7 @@
 #include "coolmic-dsp/simple.h"
 #include "coolmic-dsp/shout.h"
 #include "coolmic-dsp/vumeter.h"
+#include "coolmic-dsp/util.h"
 #include <android/log.h>
 
 
@@ -145,13 +146,21 @@ static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
     fid = (*env)->GetFieldID(env, vumeter_result_class, "global_power","D");
     (*env)->SetDoubleField(env, obj, fid, result->global_power);
 
+    LOGI("VUM: PRE OBJ FILLING GLOBAL_PEAK COLOR");
+    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_peak_color","I");
+    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->global_peak, COOLMIC_UTIL_PROFILE_DEFAULT), 1, 1));
+
+    LOGI("VUM: PRE OBJ FILLING GLOBAL_POWER COLOR");
+    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_power_color","I");
+    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->global_power, COOLMIC_UTIL_PROFILE_DEFAULT), 1, 1));
+
     LOGI("VUM: PRE OBJ FILLING CHANNEL VALUES ");
 
-    jmethodID vumeterResultChannelValues = (*env)->GetMethodID(env, vumeter_result_class, "setChannelPeakPower", "(IID)V");
+    jmethodID vumeterResultChannelValues = (*env)->GetMethodID(env, vumeter_result_class, "setChannelPeakPower", "(IIDII)V");
 
     for(i = 0;i < result->channels; i++)
     {
-        (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, i, result->channel_peak[i], result->channel_power[i]);
+        (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, i, result->channel_peak[i], result->channel_power[i],  coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->channel_peak[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1, 1), coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->channel_power[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1, 1));
     }
 
     LOGI("VUM: POST OBJ GEN & FILLING ");
