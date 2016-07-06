@@ -10,8 +10,8 @@
     <string name="timer_format">%1$02d:%2$02d:%3$02d</string>
     <string name="timerValue">00:00:00</string>
     <string name="timer">Timer:</string>
-    <string name="start_broadcast">Start Broadcast</string>
-    <string name="stop_broadcast">Stop Broadcast</string>
+    <string name="start_broadcast">Start Livestream</string>
+    <string name="stop_broadcast">Stop Livestream</string>
     <string name="broadcasting">Broadcasting</string>
     <string name="img_content">CoolMic Logo</string>
 
@@ -33,7 +33,8 @@
     <string name="settings_mountpoint">Mountpoint</string>
     <string name="settings_mountpoints">mountpoints</string>
     <string name="lblListeners">Listeners:</string>
-    <string name="txtListeners">N/A(N/A)</string>
+    <string name="txtListeners">N/A ( Max: N/A )</string>
+    <string name="formatListeners">%1$s ( Max: %2$s )</string>
     <string name="cmd_connection_qrcode">Scan QRCode</string>
     <string name="title_activity_settings">Settings</string>
 

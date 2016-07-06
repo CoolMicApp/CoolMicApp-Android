@@ -560,6 +560,8 @@ public class MainActivity extends Activity {
         Wrapper.unref();
 
         isThreadOn = false;
+
+        Toast.makeText(MainActivity.this, "Recording stopped!", Toast.LENGTH_LONG).show();
     }
 
     @SuppressWarnings("unused")
@@ -636,7 +638,7 @@ public class MainActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             StreamStats obj = intent.getParcelableExtra(Constants.EXTRA_DATA_STATS_OBJ);
 
-            txtListeners.setText(String.format("%s(%s)", obj.getListenersCurrent(), obj.getListenersPeak()));
+            txtListeners.setText(context.getString(R.string.formatListeners, obj.getListenersCurrent(), obj.getListenersPeak()));
         }
     }
 }
