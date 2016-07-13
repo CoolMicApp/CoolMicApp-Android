@@ -360,6 +360,20 @@ public class MainActivity extends Activity {
         txtListeners = (TextView) findViewById(R.id.txtListeners);
         IntentFilter mStatusIntentFilter = new IntentFilter( Constants.BROADCAST_STREAM_STATS_SERVICE );
         LocalBroadcastManager.getInstance(this).registerReceiver(mStreamStatsReceiver, mStatusIntentFilter);
+
+
+        if(Integer.parseInt(coolmic.getVuMeterInterval()) == 0)
+        {
+            MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
+            MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
+        }
+        else
+        {
+            MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
+            MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
+        }
+
+
     }
 
     public void onImageClick(View view) {
