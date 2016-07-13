@@ -21,7 +21,8 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:id="@+id/llVuMeterLeft">
 
                 <cc.echonet.coolmicapp.TextProgressBar
                     android:id="@+id/pbVuMeterLeft"
@@ -53,7 +54,8 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:id="@+id/llVuMeterRight">
 
                 <cc.echonet.coolmicapp.TextProgressBar
                     android:id="@+id/pbVuMeterRight"

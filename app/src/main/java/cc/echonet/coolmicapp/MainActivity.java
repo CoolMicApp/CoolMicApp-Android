@@ -523,7 +523,28 @@ public class MainActivity extends Activity {
                         }
                         else
                         {
-                            Wrapper.setVuMeterInterval(Integer.parseInt(coolmic.getVuMeterInterval()));
+                            int interval = Integer.parseInt(coolmic.getVuMeterInterval());
+
+                            if(interval == 0)
+                            {
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
+                                        MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
+                                        MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            }
+
+                            Wrapper.setVuMeterInterval(interval);
                         }
 
                         strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
