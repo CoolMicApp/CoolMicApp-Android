@@ -53,6 +53,8 @@ public class Wrapper {
             System.loadLibrary("coolmic-dsp");
             System.loadLibrary("coolmic-dsp-java");
 
+            initNative();
+
             state = WrapperInitializationStatus.WRAPPER_INTITIALIZED;
         }
         catch (Throwable ex)
@@ -68,5 +70,9 @@ public class Wrapper {
     public static native int stop();
     public static native int ref();
     public static native int unref();
+
+    public static native int setVuMeterInterval(int interval);
+
+    public static native void initNative();
     public static native void init(Activity handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
 }

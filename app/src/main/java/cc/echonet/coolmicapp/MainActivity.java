@@ -35,6 +35,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -65,9 +66,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 
 /**
@@ -357,6 +360,20 @@ public class MainActivity extends Activity {
         txtListeners = (TextView) findViewById(R.id.txtListeners);
         IntentFilter mStatusIntentFilter = new IntentFilter( Constants.BROADCAST_STREAM_STATS_SERVICE );
         LocalBroadcastManager.getInstance(this).registerReceiver(mStreamStatsReceiver, mStatusIntentFilter);
+
+
+        if(Integer.parseInt(coolmic.getVuMeterInterval()) == 0)
+        {
+            MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
+            MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
+        }
+        else
+        {
+            MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
+            MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
+        }
+
+
     }
 
     public void onImageClick(View view) {
@@ -518,6 +535,31 @@ public class MainActivity extends Activity {
                         {
                             throw new Exception("Failed to start Recording: "+String.valueOf(status));
                         }
+                        else
+                        {
+                            int interval = Integer.parseInt(coolmic.getVuMeterInterval());
+
+                            if(interval == 0)
+                            {
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
+                                        MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
+                                        MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            }
+
+                            Wrapper.setVuMeterInterval(interval);
+                        }
 
                         strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
                     } catch (Exception e) {
@@ -562,6 +604,13 @@ public class MainActivity extends Activity {
         isThreadOn = false;
 
         Toast.makeText(MainActivity.this, "Recording stopped!", Toast.LENGTH_LONG).show();
+
+        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
+        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
+        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
+        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
+        ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
+        ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
     }
 
     @SuppressWarnings("unused")
@@ -578,7 +627,7 @@ public class MainActivity extends Activity {
     @SuppressWarnings("unused")
     private void callbackHandler(int what)
     {
-        Log.d("Handler", String.valueOf(what));
+        Log.d("Handler CB:", String.valueOf(what));
 
         final int what_final = what;
         MainActivity.this.runOnUiThread(new Runnable(){
@@ -618,10 +667,114 @@ public class MainActivity extends Activity {
 
                         isThreadOn = false;
 
+                        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
+                        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
+                        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
+                        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
+                        ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
+                        ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
+
                         Toast.makeText(MainActivity.this, "there was an error!", Toast.LENGTH_LONG).show();
 
                         break;
                 }
+            }
+        });
+    }
+
+    static int normalizeVUMeterPower(double power)
+    {
+        int g_p = (int)((60.+power) * (100. / 60.));
+
+        if(g_p > 100)
+        {
+            g_p = 100;
+        }
+
+        if(g_p < 0)
+        {
+            g_p = 0;
+        }
+
+        return g_p;
+    }
+
+    static String normalizeVUMeterPeak(int peak)
+    {
+        if(peak == -32768 || peak == 32767)
+        {
+            return "P";
+        }
+        else if(peak < -30000 || peak > 30000)
+        {
+            return "p";
+        }
+        else if(peak < -8000 || peak > 8000)
+        {
+            return "g";
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    static String normalizeVUMeterPowerString(double power)
+    {
+        if(power < -100)
+        {
+            return "-100";
+        }
+        else if(power > 0)
+        {
+            return "0";
+        }
+        else
+        {
+            return String.format("%.2f", power);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void callbackVUMeterHandler(VUMeterResult result)
+    {
+        Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
+
+        final VUMeterResult result_final = result;
+        MainActivity.this.runOnUiThread(new Runnable(){
+            public void run(){
+                TextProgressBar pbVuMeterLeft = (TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft);
+                TextProgressBar pbVuMeterRight = (TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight);
+
+                TextView rbPeakLeft = (TextView) MainActivity.this.findViewById(R.id.rbPeakLeft);
+                TextView rbPeakRight = (TextView) MainActivity.this.findViewById(R.id.rbPeakRight);
+
+                if(result_final.channels < 2) {
+                    pbVuMeterLeft.setProgress(normalizeVUMeterPower(result_final.global_power));
+                    pbVuMeterLeft.setTextColor(result_final.global_power_color);
+                    pbVuMeterLeft.setText(normalizeVUMeterPowerString(result_final.global_power));
+                    pbVuMeterRight.setProgress(normalizeVUMeterPower(result_final.global_power));
+                    pbVuMeterRight.setTextColor(result_final.global_power_color);
+                    pbVuMeterRight.setText(normalizeVUMeterPowerString(result_final.global_power));
+                    rbPeakLeft.setText(normalizeVUMeterPeak(result_final.global_peak));
+                    rbPeakLeft.setTextColor(result_final.global_peak_color);
+                    rbPeakRight.setText(normalizeVUMeterPeak(result_final.global_peak));
+                    rbPeakRight.setTextColor(result_final.global_peak_color);
+                }
+                else
+                {
+                    pbVuMeterLeft.setProgress(normalizeVUMeterPower(result_final.channels_power[0]));
+                    pbVuMeterLeft.setTextColor(result_final.channels_power_color[0]);
+                    pbVuMeterLeft.setText(normalizeVUMeterPowerString(result_final.channels_power[0]));
+                    pbVuMeterRight.setProgress(normalizeVUMeterPower(result_final.channels_power[1]));
+                    pbVuMeterRight.setTextColor(result_final.channels_power_color[1]);
+                    pbVuMeterRight.setText(normalizeVUMeterPowerString(result_final.channels_power[1]));
+                    rbPeakLeft.setText(normalizeVUMeterPeak(result_final.channels_peak[0]));
+                    rbPeakLeft.setTextColor(result_final.channels_peak_color[0]);
+                    rbPeakRight.setText(normalizeVUMeterPeak(result_final.channels_peak[1]));
+                    rbPeakRight.setTextColor(result_final.channels_peak_color[1]);
+                }
+
             }
         });
     }

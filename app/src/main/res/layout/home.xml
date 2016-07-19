@@ -1,31 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
+    <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/main_linear_view"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/available_qualities_layout"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical">
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:gravity="fill_vertical">
 
-                <ImageView
-                    android:id="@+id/imageView1"
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/llVuMeterLeft">
+
+                <cc.echonet.coolmicapp.TextProgressBar
+                    android:id="@+id/pbVuMeterLeft"
+                    android:layout_width="30dip"
+                    android:layout_height="fill_parent"
+                    style="@style/Widget.ProgressBar.Vertical"
+                    android:max="100"
+                    android:layout_weight="2"
+                    android:progressTint="@android:color/secondary_text_dark" />
+
+                <TextView
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:id="@+id/rbPeakLeft"
+                    android:text=""
+                    android:gravity="center_vertical|center_horizontal" />
+            </LinearLayout>
+
+            <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="fill_parent"
                     android:layout_height="270dp"
                     android:onClick="onImageClick"
                     android:src="@drawable/mic"
-                    android:contentDescription="@string/img_content"/>
+                    android:contentDescription="@string/img_content"
+                    android:layout_weight="1" />
 
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/llVuMeterRight">
+
+                <cc.echonet.coolmicapp.TextProgressBar
+                    android:id="@+id/pbVuMeterRight"
+                    android:layout_width="30dip"
+                    android:layout_height="match_parent"
+                    style="@style/Widget.ProgressBar.Vertical"
+                    android:layout_weight="2"
+                    android:max="100"
+                    android:progressTint="@android:color/secondary_text_dark" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:id="@+id/rbPeakRight"
+                    android:checked="true"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="" />
             </LinearLayout>
 
+        </LinearLayout>
 
         <GridLayout
             android:layout_width="wrap_content"
@@ -96,5 +147,6 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical" />
+
     </LinearLayout>
-</ScrollView>
+    </LinearLayout>

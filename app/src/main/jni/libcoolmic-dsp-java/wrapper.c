@@ -23,6 +23,8 @@
 #include <jni.h>
 #include "coolmic-dsp/simple.h"
 #include "coolmic-dsp/shout.h"
+#include "coolmic-dsp/vumeter.h"
+#include "coolmic-dsp/util.h"
 #include <android/log.h>
 
 
@@ -35,9 +37,11 @@ extern "C" {
 
 coolmic_simple_t * coolmic_simple_obj;
 static JavaVM *g_vm = NULL;
+jclass vumeter_result_class;
 jobject callbackHandlerObject;
 jmethodID callbackHandlerMethod;
-
+jmethodID callbackHandlerVUMeterMethod;
+jmethodID callbackHandlerConnectionStateMethod;
 
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env, jobject obj)
 {
@@ -64,27 +68,113 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
 }
 
 static void javaCallback(int val) {
-	JNIEnv * env;
+    JNIEnv * env;
 	// double check it's all ok
-	int getEnvStat = (*g_vm)->GetEnv(g_vm,  (void **) &env, JNI_VERSION_1_6);
-	if (getEnvStat == JNI_EDETACHED) {
-		LOGI("GetEnv: not attached");
-		if ((*g_vm)->AttachCurrentThread(g_vm, &env, NULL) != 0) {
-			LOGI("Failed to attach");
-		}
-	} else if (getEnvStat == JNI_OK) {
-		//
-	} else if (getEnvStat == JNI_EVERSION) {
-		LOGI("GetEnv: version not supported");
-	}
+    int getEnvStat = (*g_vm)->GetEnv(g_vm,  (void **) &env, JNI_VERSION_1_6);
 
-	(*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, val);
+    if (getEnvStat == JNI_EDETACHED) {
+        LOGI("GetEnv: not attached");
+        if ((*g_vm)->AttachCurrentThread(g_vm, &env, NULL) != 0) {
+            LOGI("Failed to attach");
+            return;
+        }
+    } else if (getEnvStat == JNI_OK) {
+        //
+    } else if (getEnvStat == JNI_EVERSION) {
+	    LOGI("GetEnv: version not supported");
+
+	    return;
+    }
+
+    LOGI("callback(%d)", val);
+
+    (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, val);
 
 	if ((*env)->ExceptionCheck(env)) {
 		(*env)->ExceptionDescribe(env);
 	}
 
 	(*g_vm)->DetachCurrentThread(g_vm);
+}
+
+static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
+    int i;
+    JNIEnv * env;
+    // double check it's all ok
+    int getEnvStat = (*g_vm)->GetEnv(g_vm,  (void **) &env, JNI_VERSION_1_6);
+
+    if (getEnvStat == JNI_EDETACHED) {
+        LOGI("GetEnv: not attached");
+        if ((*g_vm)->AttachCurrentThread(g_vm, &env, NULL) != 0) {
+            LOGI("Failed to attach");
+            return;
+        }
+    } else if (getEnvStat == JNI_OK) {
+        //
+    } else if (getEnvStat == JNI_EVERSION) {
+        LOGI("GetEnv: version not supported");
+        return;
+    }
+
+    LOGI("VUM: PRE OBJ CONSTRUCTOR RESOLVING ");
+
+    jmethodID methodId = (*env)->GetMethodID(env, vumeter_result_class, "<init>", "()V");
+
+    LOGI("VUM: PRE OBJ GEN");
+
+    jobject obj = (*env)->NewObject(env, vumeter_result_class, methodId);
+
+    LOGI("VUM: PRE OBJ FILLING ");
+
+    LOGI("VUM: PRE OBJ FILLING RATE");
+    jfieldID fid = (*env)->GetFieldID(env, vumeter_result_class, "rate","I");
+    (*env)->SetIntField(env, obj, fid, result->rate);
+
+    LOGI("VUM: PRE OBJ FILLING CHANNELS");
+    fid = (*env)->GetFieldID(env, vumeter_result_class, "channels","I");
+    (*env)->SetIntField(env, obj, fid, result->channels);
+
+    LOGI("VUM: PRE OBJ FILLING FRAMES");
+    fid = (*env)->GetFieldID(env, vumeter_result_class, "frames","J");
+    (*env)->SetLongField(env, obj, fid, result->frames);
+
+    LOGI("VUM: PRE OBJ FILLING GLOBAL_PEAK");
+    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_peak","I");
+    (*env)->SetIntField(env, obj, fid, result->global_peak);
+
+    LOGI("VUM: PRE OBJ FILLING GLOBAL_POWER ");
+    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_power","D");
+    (*env)->SetDoubleField(env, obj, fid, result->global_power);
+
+    LOGI("VUM: PRE OBJ FILLING GLOBAL_PEAK COLOR");
+    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_peak_color","I");
+    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->global_peak, COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
+
+    LOGI("VUM: PRE OBJ FILLING GLOBAL_POWER COLOR");
+    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_power_color","I");
+    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->global_power, COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
+
+    LOGI("VUM: PRE OBJ FILLING CHANNEL VALUES ");
+
+    jmethodID vumeterResultChannelValues = (*env)->GetMethodID(env, vumeter_result_class, "setChannelPeakPower", "(IIDII)V");
+
+    for(i = 0;i < result->channels; i++)
+    {
+        (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, i, result->channel_peak[i], result->channel_power[i],  coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->channel_peak[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75), coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->channel_power[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
+    }
+
+    LOGI("VUM: POST OBJ GEN & FILLING ");
+
+    (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerVUMeterMethod, (*env)->NewGlobalRef(env, obj));
+
+
+    LOGI("VUM: POST CALLBACK DISPATCH");
+
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionDescribe(env);
+    }
+
+    (*g_vm)->DetachCurrentThread(g_vm);
 }
 
 static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event_t event, void *thread, void *arg0, void *arg1)
@@ -116,6 +206,31 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
         javaCallback(3);
         LOGI("ERROR: %p", arg0);
     }
+
+    else if(event == COOLMIC_SIMPLE_EVENT_VUMETER_RESULT)
+    {
+        coolmic_vumeter_result_t * result = (coolmic_vumeter_result_t*) arg0;
+
+        LOGI("VUM: PRE CALL");
+        javaCallbackVUMeter(result);
+        LOGI("VUM: POST CALL ");
+
+        LOGI("VUM: c%d c0 %f c1 %f c2 %f g %f", result->channels, result->channel_power[0], result->channel_power[1], result->channel_power[2], result->global_power);
+    }
+    else if(event == COOLMIC_SIMPLE_EVENT_STREAMSTATE)
+    {
+        coolmic_simple_connectionstate_t * state = (coolmic_simple_connectionstate_t *) arg0;
+        const int * error_code = (const int*) arg1;
+
+        if(error_code == NULL)
+        {
+            LOGI("SS: state: %d code: NULL", (int)*state);
+        }
+        else
+        {
+            LOGI("SS: state: %d code: %d", (int)*state, *error_code);
+        }
+    }
     else
     {
         LOGI("UNKNOWN EVENT: %d %p %p", event, arg0, arg1);
@@ -138,6 +253,7 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env,
 
     jclass cls = (*env)->GetObjectClass(env, callbackHandlerObject);
     callbackHandlerMethod = (*env)->GetMethodID(env, cls, "callbackHandler", "(I)V");
+    callbackHandlerVUMeterMethod = (*env)->GetMethodID(env, cls, "callbackVUMeterHandler", "(Lcc/echonet/coolmicdspjava/VUMeterResult;)V");
 
     if (callbackHandlerMethod == 0)
         return;
@@ -172,6 +288,16 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env,
     (*env)->ReleaseStringUTFChars(env, codec, mountNative);
 
     LOGI("end init");
+}
+
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(JNIEnv * env, jobject obj, jint interval)
+{
+    return coolmic_simple_set_vumeter_interval(coolmic_simple_obj, interval);
+}
+
+JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_initNative(JNIEnv * env, jobject obj)
+{
+    vumeter_result_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/VUMeterResult"));
 }
 
 #ifdef __cplusplus

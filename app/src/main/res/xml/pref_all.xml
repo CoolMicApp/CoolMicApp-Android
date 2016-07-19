@@ -78,6 +78,17 @@
             android:title="@string/pref_title_audio_quality" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/pref_header_vumeter">
+        <ListPreference
+            android:defaultValue="@string/pref_default_vumeter_interval"
+            android:entries="@array/pref_titles_vumeter_interval"
+            android:entryValues="@array/pref_values_vumeter_interval"
+            android:key="vumeter_interval"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_vumeter_interval" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/prefs_header_utilities">
         <Preference android:title="@string/pref_title_utility_connection_default" android:key="util_conn_default"/>
         <Preference android:title="@string/pref_title_utility_qr_scan" android:key="util_qr_scan"/>
