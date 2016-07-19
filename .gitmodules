@@ -4,3 +4,6 @@
 [submodule "app/src/main/jni/libcoolmic-dsp/libcoolmic-dsp"]
 	path = app/src/main/jni/libcoolmic-dsp/libcoolmic-dsp
 	url = ../libcoolmic-dsp.git
+[submodule "app/src/main/jni/opus/opus"]
+	path = app/src/main/jni/opus/opus
+	url = https://git.xiph.org/opus.git
