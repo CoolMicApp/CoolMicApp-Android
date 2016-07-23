@@ -320,10 +320,10 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
 
 
     (*env)->ReleaseStringUTFChars(env, codec, codecNative);
-    (*env)->ReleaseStringUTFChars(env, codec, hostnameNative);
-    (*env)->ReleaseStringUTFChars(env, codec, usernameNative);
-    (*env)->ReleaseStringUTFChars(env, codec, passwordNative);
-    (*env)->ReleaseStringUTFChars(env, codec, mountNative);
+    (*env)->ReleaseStringUTFChars(env, hostname, hostnameNative);
+    (*env)->ReleaseStringUTFChars(env, username, usernameNative);
+    (*env)->ReleaseStringUTFChars(env, password, passwordNative);
+    (*env)->ReleaseStringUTFChars(env, mount, mountNative);
 
     LOGI("end init");
 
