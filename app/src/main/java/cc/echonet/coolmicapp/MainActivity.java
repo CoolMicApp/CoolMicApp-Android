@@ -532,6 +532,12 @@ public class MainActivity extends Activity {
                             throw new Exception("Failed to init Core: "+String.valueOf(status));
                         }
 
+                        status = Wrapper.performMetaDataQualityUpdate(title, artist, Double.parseDouble(quality_string), 0);
+
+                        if(status != 0)
+                        {
+                            throw new Exception("Failed to set Metadata or Quality: "+String.valueOf(status));
+                        }
 
                         status = Wrapper.start();
 

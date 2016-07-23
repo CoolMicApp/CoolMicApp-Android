@@ -248,7 +248,31 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
     }
 }
 
-JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jstring title, jstring artist, jdouble quality, jint restart)
+{
+    LOGI("start init");
+    const char *titleNative  = (*env)->GetStringUTFChars(env, title,    0);
+    const char *artistNative = (*env)->GetStringUTFChars(env, artist, 0);
+    int result = 0;
+
+    LOGI("performMetaDataQualityUpdate(%s, %s, %g)", titleNative, artistNative, quality);
+
+    coolmic_simple_set_meta(coolmic_simple_obj, "TITLE", titleNative, 0);
+    coolmic_simple_set_meta(coolmic_simple_obj, "ARTIST", artistNative, 0);
+    coolmic_simple_set_quality(coolmic_simple_obj, quality);
+
+    if(restart)
+    {
+        result = coolmic_simple_restart_encoder(coolmic_simple_obj);
+    }
+
+    (*env)->ReleaseStringUTFChars(env, title, titleNative);
+    (*env)->ReleaseStringUTFChars(env, artist, artistNative);
+
+    return result;
+}
+
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
 {
     LOGI("start init");
     const char *codecNative    = (*env)->GetStringUTFChars(env, codec,    0);
