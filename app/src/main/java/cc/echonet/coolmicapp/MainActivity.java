@@ -525,9 +525,15 @@ public class MainActivity extends Activity {
 
                         Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
                         Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-                        Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
+                        int status = Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, "audio/ogg; codec=vorbis", Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
 
-                        int status = Wrapper.start();
+                        if(status != 0)
+                        {
+                            throw new Exception("Failed to init Core: "+String.valueOf(status));
+                        }
+
+
+                        status = Wrapper.start();
 
                         Log.d("VS", "Status:" + status);
 
@@ -535,31 +541,29 @@ public class MainActivity extends Activity {
                         {
                             throw new Exception("Failed to start Recording: "+String.valueOf(status));
                         }
+
+                        int interval = Integer.parseInt(coolmic.getVuMeterInterval());
+
+                        if(interval == 0)
+                        {
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
+                                    MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
+                                }
+                            });
+                        }
                         else
                         {
-                            int interval = Integer.parseInt(coolmic.getVuMeterInterval());
-
-                            if(interval == 0)
-                            {
-                                MainActivity.this.runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
-                                        MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
-                                    }
-                                });
-                            }
-                            else
-                            {
-                                MainActivity.this.runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
-                                        MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
-                                    }
-                                });
-                            }
-
-                            Wrapper.setVuMeterInterval(interval);
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
+                                    MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
+                                }
+                            });
                         }
+
+                        Wrapper.setVuMeterInterval(interval);
 
                         strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
                     } catch (Exception e) {
@@ -625,11 +629,13 @@ public class MainActivity extends Activity {
     }
 
     @SuppressWarnings("unused")
-    private void callbackHandler(int what)
+    private void callbackHandler(int what, int arg0, int arg1)
     {
-        Log.d("Handler CB:", String.valueOf(what));
+        Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
 
         final int what_final = what;
+        final int arg0_final = arg0;
+        final int arg1_final = arg1;
         MainActivity.this.runOnUiThread(new Runnable(){
             public void run(){
                 switch(what_final) {
@@ -674,7 +680,11 @@ public class MainActivity extends Activity {
                         ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
                         ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
 
-                        Toast.makeText(MainActivity.this, "there was an error!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, String.format("there was an error! CODE: %d", arg0_final), Toast.LENGTH_LONG).show();
+
+                        break;
+                    case 4:
+                        Toast.makeText(MainActivity.this, String.format("Stream State: State: %d Error: %d", arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
 
                         break;
                 }

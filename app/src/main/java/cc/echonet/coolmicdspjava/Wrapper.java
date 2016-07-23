@@ -74,5 +74,5 @@ public class Wrapper {
     public static native int setVuMeterInterval(int interval);
 
     public static native void initNative();
-    public static native void init(Activity handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
+    public static native int init(Activity handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
 }
