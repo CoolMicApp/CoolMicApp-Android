@@ -215,6 +215,9 @@ public class SettingsActivity extends PreferenceActivity {
 
                         refreshSummaryForConnectionSettings();
 
+                        Toast.makeText(getActivity(), R.string.settings_conn_defaults_loaded, Toast.LENGTH_LONG).show();
+
+
                         return true;
                     }
                 });

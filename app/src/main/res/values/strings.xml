@@ -144,6 +144,7 @@
     <string name="exception_start_failed">Failed to start Broadcast: %1$d</string>
     <string name="exception_failed_metadata_quality">Failed to set Metadata or Quality: %1$d</string>
     <string name="exception_failed_start_general">"Failed to start Livestream. "</string>
+    <string name="settings_conn_defaults_loaded">CoolMic default server data loaded!</string>
 
     <string-array name="pref_titles_vumeter_interval">
         <item>Disabled</item>
