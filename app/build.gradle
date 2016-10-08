@@ -35,6 +35,11 @@ android {
 }
 
 task ndkBuild(type: Exec) {
+    if(!android.ndkDirectory)
+    {
+        throw new GradleException('please specify a ndk.dir in local.properties/studio settings')
+    }
+
     def ndkDir = android.ndkDirectory.getAbsolutePath()
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine ndkDir + '\\ndk-build.cmd', '-C', file('src/main').absolutePath
