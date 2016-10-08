@@ -55,6 +55,15 @@
 
     <PreferenceCategory android:title="@string/pref_header_audio">
         <ListPreference
+            android:defaultValue="@string/pref_default_audio_codec"
+            android:entries="@array/pref_titles_audio_codec"
+            android:entryValues="@array/pref_values_audio_codec"
+            android:key="audio_codec"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_audio_codec" />
+
+        <ListPreference
             android:defaultValue="@string/pref_default_audio_samplerate"
             android:entries="@array/pref_values_audio_samplerate"
             android:entryValues="@array/pref_values_audio_samplerate"

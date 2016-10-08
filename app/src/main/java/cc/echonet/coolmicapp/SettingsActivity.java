@@ -188,6 +188,7 @@ public class SettingsActivity extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("connection_mountpoint"));
 
 
+            bindPreferenceSummaryToValue(findPreference("audio_codec"));
             bindPreferenceSummaryToValue(findPreference("audio_channels"));
             bindPreferenceSummaryToValue(findPreference("audio_samplerate"));
             bindPreferenceSummaryToValue(findPreference("audio_quality"));

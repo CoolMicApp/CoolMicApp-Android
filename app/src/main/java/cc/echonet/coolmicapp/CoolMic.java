@@ -65,6 +65,8 @@ public class CoolMic {
 
     public String getSampleRate() { return prefs.getString("audio_samplerate", context.getString(R.string.pref_default_audio_samplerate)); }
 
+    public String getCodec() { return prefs.getString("audio_codec", context.getString(R.string.pref_default_audio_codec)); }
+
     public String getChannels() {
         return prefs.getString("audio_channels", context.getString(R.string.pref_default_audio_channels));
     }

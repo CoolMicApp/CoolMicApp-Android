@@ -62,10 +62,12 @@
     <!-- Audio -->
     <string name="pref_header_audio">Audio</string>
 
+    <string name="pref_title_audio_codec">Codec</string>
     <string name="pref_title_audio_samplerate">Samplerate</string>
     <string name="pref_title_audio_channels">Channel Configuration</string>
     <string name="pref_title_audio_quality">Quality Level</string>
 
+    <string name="pref_default_audio_codec">audio/ogg; codec=opus</string>
     <string name="pref_default_audio_samplerate">44100</string>
     <string name="pref_default_audio_channels">1</string>
     <string name="pref_default_audio_quality">-0.1</string>
@@ -91,6 +93,11 @@
         <item>Stereo (2 Channels)</item>
     </string-array>
 
+    <string-array name="pref_titles_audio_codec">
+        <item>Ogg/Opus</item>
+        <item>Ogg/Vorbis</item>
+    </string-array>
+
     <string-array name="pref_values_audio_samplerate">
         <item>8000</item>
         <item>11025</item>
@@ -98,6 +105,11 @@
         <item>22050</item>
         <item>44100</item>
         <item>48000</item>
+    </string-array>
+
+    <string-array name="pref_values_audio_codec">
+        <item>audio/ogg; codec=opus</item>
+        <item>audio/ogg; codec=vorbis</item>
     </string-array>
 
     <string-array name="pref_values_audio_channels">
