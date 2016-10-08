@@ -339,10 +339,6 @@ public class MainActivity extends Activity {
                 Log.d("WrapperInit", Wrapper.getInitException().toString());
                 Toast.makeText(getApplicationContext(), "Could not initialize native components :( Blocking controls!", Toast.LENGTH_SHORT).show();
             }
-            else
-            {
-                Toast.makeText(getApplicationContext(), "Native components initialized!", Toast.LENGTH_SHORT).show();
-            }
         }
         else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
         {
