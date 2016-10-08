@@ -12,7 +12,7 @@
     <string name="timer">Timer:</string>
     <string name="start_broadcast">Start Livestream</string>
     <string name="stop_broadcast">Stop Livestream</string>
-    <string name="broadcasting">Broadcasting</string>
+    <string name="broadcasting">Livestream</string>
     <string name="img_content">CoolMic Logo</string>
 
     <!-- main.xml -->
@@ -33,8 +33,8 @@
     <string name="settings_mountpoint">Mountpoint</string>
     <string name="settings_mountpoints">mountpoints</string>
     <string name="lblListeners">Listeners:</string>
-    <string name="txtListeners">N/A ( Max: N/A )</string>
-    <string name="formatListeners">%1$s ( Max: %2$s )</string>
+    <string name="txtListeners">0 ( Max: 0 )</string>
+    <string name="formatListeners">%1$d ( Max: %2$d )</string>
     <string name="cmd_connection_qrcode">Scan QRCode</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -124,6 +124,14 @@
     <string name="pref_header_vumeter">VuMeter</string>
     <string name="pref_title_vumeter_interval">Interval</string>
     <string name="pref_default_vumeter_interval">40</string>
+    <string name="mainactivity_broadcast_url_copied">Livestream URL copied to clipboard!</string>
+    <string name="mainactivity_connectiondetails_unset">Set the connection details</string>
+    <string name="mainactivity_callback_error">there was an error! CODE: %1$d</string>
+    <string name="mainactivity_callback_streamstate">Stream State: State: %1$d Error: %2$d</string>
+    <string name="question_stop_broadcasting">Stop Livestream?</string>
+    <string name="exception_start_failed">Failed to start Broadcast: %1$d</string>
+    <string name="exception_failed_metadata_quality">Failed to set Metadata or Quality: %1$d</string>
+    <string name="exception_failed_start_general">"Failed to start Livestream. "</string>
 
     <string-array name="pref_titles_vumeter_interval">
         <item>Disabled</item>

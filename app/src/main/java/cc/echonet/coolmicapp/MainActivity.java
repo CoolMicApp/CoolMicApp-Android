@@ -412,9 +412,9 @@ public class MainActivity extends Activity {
                 String text = server + ":" + port_num.toString() + "/" + coolmic.getMountpoint();
                 ClipData myClip = ClipData.newPlainText("text", text);
                 myClipboard.setPrimaryClip(myClip);
-                Toast.makeText(getApplicationContext(), "Broadcast URL copied to clipboard!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), "Set the connection details", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Log.e("VS", "Exception", e);
@@ -427,7 +427,7 @@ public class MainActivity extends Activity {
         // Write your code here
         if (isThreadOn) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-            alertDialog.setTitle("Stop Broadcasting?");
+            alertDialog.setTitle(R.string.question_stop_broadcasting);
             alertDialog.setMessage("Tap [ Ok ] to stop broadcasting.");
             alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -536,7 +536,7 @@ public class MainActivity extends Activity {
 
                         if(status != 0)
                         {
-                            throw new Exception("Failed to set Metadata or Quality: "+String.valueOf(status));
+                            throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
                         }
 
                         status = Wrapper.start();
@@ -545,7 +545,7 @@ public class MainActivity extends Activity {
 
                         if(status != 0)
                         {
-                            throw new Exception("Failed to start Recording: "+String.valueOf(status));
+                            throw new Exception(getString(R.string.exception_start_failed, status));
                         }
 
                         int interval = Integer.parseInt(coolmic.getVuMeterInterval());
@@ -570,17 +570,15 @@ public class MainActivity extends Activity {
                         }
 
                         Wrapper.setVuMeterInterval(interval);
-
-                        strStreamFetchStatsURL = String.format("http://%s:%s@%s:%s/admin/stats.xml?mount=/%s", username, password, server, port_num, mountpoint);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Log.e("VS", "Recording Start: Exception: ", e);
+                        Log.e("VS", "Livestream Start: Exception: ", e);
 
                         MainActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
                                 stopRecording(null);
 
-                                Toast.makeText(MainActivity.this, "Failed to start Recording. ", Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -613,7 +611,7 @@ public class MainActivity extends Activity {
 
         isThreadOn = false;
 
-        Toast.makeText(MainActivity.this, "Recording stopped!", Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, "Broadcast stopped!", Toast.LENGTH_LONG).show();
 
         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
@@ -686,11 +684,11 @@ public class MainActivity extends Activity {
                         ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
                         ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
 
-                        Toast.makeText(MainActivity.this, String.format("there was an error! CODE: %d", arg0_final), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_error, arg0_final), Toast.LENGTH_LONG).show();
 
                         break;
                     case 4:
-                        Toast.makeText(MainActivity.this, String.format("Stream State: State: %d Error: %d", arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
 
                         break;
                 }
