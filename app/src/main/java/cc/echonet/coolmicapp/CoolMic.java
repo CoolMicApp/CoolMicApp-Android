@@ -77,6 +77,10 @@ public class CoolMic {
         return prefs.getString("vumeter_interval", context.getString(R.string.pref_default_vumeter_interval));
     }
 
+    public String getStreamStatsURL() {
+        return String.format("http://%s:%s@%s/admin/stats.xml?mount=/%s", this.getUsername(), this.getPassword(), this.getServerName(), this.getMountpoint());
+    }
+
     public boolean isConnectionSet() {
         if (!this.getServerName().isEmpty() && !this.getMountpoint().isEmpty() && !this.getUsername().isEmpty() && !this.getPassword().isEmpty()) {
             return true;
