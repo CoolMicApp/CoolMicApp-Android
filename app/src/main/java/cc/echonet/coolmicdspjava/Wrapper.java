@@ -71,6 +71,8 @@ public class Wrapper {
     public static native int ref();
     public static native int unref();
 
+    public static native int hasCore();
+
     public static native int setVuMeterInterval(int interval);
     public static native int performMetaDataQualityUpdate(String title, String artist, double quality, int restart);
 

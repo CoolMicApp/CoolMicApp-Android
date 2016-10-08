@@ -37,7 +37,7 @@
 extern "C" {
 #endif
 
-coolmic_simple_t * coolmic_simple_obj;
+coolmic_simple_t * coolmic_simple_obj = NULL;
 static JavaVM *g_vm = NULL;
 jclass vumeter_result_class;
 jobject callbackHandlerObject;
@@ -48,25 +48,68 @@ jmethodID callbackHandlerConnectionStateMethod;
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env, jobject obj)
 {
     LOGI("start start");
+
+    if(coolmic_simple_obj == NULL)
+    {
+        LOGI("start bailing - no core obj");
+        return -999666;
+    }
+
     return coolmic_simple_start(coolmic_simple_obj);
 }
 
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env, jobject obj)
 {
     LOGI("start stop");
+
+    if(coolmic_simple_obj == NULL)
+    {
+        LOGI("stop bailing - no core obj");
+        return -999666;
+    }
+
+
     return coolmic_simple_stop(coolmic_simple_obj);
 }
 
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_ref(JNIEnv * env, jobject obj)
 {
     LOGI("start ref");
+
+    if(coolmic_simple_obj == NULL)
+    {
+        LOGI("ref bailing - no core obj");
+        return -999666;
+    }
+
     return coolmic_simple_ref(coolmic_simple_obj);
 }
 
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env, jobject obj)
 {
     LOGI("start unref");
-    return coolmic_simple_unref(coolmic_simple_obj);
+
+    if(coolmic_simple_obj == NULL)
+    {
+        LOGI("unref bailing - no core obj");
+        return -999666;
+    }
+
+    int error =  coolmic_simple_unref(coolmic_simple_obj);
+
+    if(error == COOLMIC_ERROR_NONE)
+    {
+        coolmic_simple_obj = NULL;
+    }
+
+    return error;
+}
+
+JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_hasCore(JNIEnv * env, jobject obj)
+{
+    LOGI("hasCore");
+
+    return (coolmic_simple_obj == NULL ? 1 : 0);
 }
 
 static void javaCallback(int code, int arg0, int arg1) {
@@ -251,7 +294,14 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jstring title, jstring artist, jdouble quality, jint restart)
 {
-    LOGI("start init");
+    LOGI("performMetaDataQualityUpdate start");
+
+    if(coolmic_simple_obj == NULL)
+    {
+        LOGI("performMetaDataQualityUpdate bailing - no core obj");
+        return -999666;
+    }
+
     const char *titleNative  = (*env)->GetStringUTFChars(env, title,    0);
     const char *artistNative = (*env)->GetStringUTFChars(env, artist, 0);
     int result = 0;
@@ -282,14 +332,21 @@ static int logging_callback(coolmic_logging_level_t level, const char *msg)
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
 {
     LOGI("start init");
+
+    if(coolmic_simple_obj != NULL)
+    {
+        LOGI("init bailing - previous core obj - %p", coolmic_simple_obj);
+        return -666666;
+    }
+
     const char *codecNative    = (*env)->GetStringUTFChars(env, codec,    0);
     const char *hostnameNative = (*env)->GetStringUTFChars(env, hostname, 0);
     const char *usernameNative = (*env)->GetStringUTFChars(env, username, 0);
     const char *passwordNative = (*env)->GetStringUTFChars(env, password, 0);
     const char *mountNative    = (*env)->GetStringUTFChars(env, mount,    0);
 
-    if (!(*env)->GetJavaVM(env, &g_vm) < 0)
-        return;
+    if ((*env)->GetJavaVM(env, &g_vm) != 0)
+        return -1;
 
     callbackHandlerObject = (*env)->NewGlobalRef(env, objHandler);
 
@@ -298,7 +355,7 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
     callbackHandlerVUMeterMethod = (*env)->GetMethodID(env, cls, "callbackVUMeterHandler", "(Lcc/echonet/coolmicdspjava/VUMeterResult;)V");
 
     if (callbackHandlerMethod == 0)
-        return;
+        return -2;
 
     coolmic_logging_set_cb_simple(logging_callback);
 
@@ -325,9 +382,6 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
         coolmic_simple_set_callback(coolmic_simple_obj, callback, 0);
     }
 
-
-
-
     (*env)->ReleaseStringUTFChars(env, codec, codecNative);
     (*env)->ReleaseStringUTFChars(env, hostname, hostnameNative);
     (*env)->ReleaseStringUTFChars(env, username, usernameNative);
@@ -341,6 +395,14 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
 
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(JNIEnv * env, jobject obj, jint interval)
 {
+    LOGI("setVuMeterInterval start");
+
+    if(coolmic_simple_obj == NULL)
+    {
+        LOGI("setVuMeterInterval bailing - no core obj");
+        return -999666;
+    }
+
     return coolmic_simple_set_vumeter_interval(coolmic_simple_obj, interval);
 }
 
