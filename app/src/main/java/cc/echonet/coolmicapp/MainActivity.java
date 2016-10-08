@@ -125,6 +125,7 @@ public class MainActivity extends Activity {
                     timerValue.setText(MainActivity.this.getString(R.string.timer_format, hours, mins, secs));
 
                     if(lastStatsFetch+15*1000 < timeInMilliseconds) {
+                        Log.d("CM-MainActivity",  "CM-StreamStatsService startActionStatsFetch call");
                         StreamStatsService.startActionStatsFetch(MainActivity.this, coolmic.getStreamStatsURL());
                         lastStatsFetch = timeInMilliseconds;
                     }

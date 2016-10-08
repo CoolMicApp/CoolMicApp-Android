@@ -1,23 +1,25 @@
 package cc.echonet.coolmicapp;
 
 import android.app.IntentService;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Base64;
 import android.util.Log;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -65,32 +67,35 @@ public class StreamStatsService extends IntentService {
                 try {
                     Uri u = Uri.parse(url);
 
-                    Log.e("CM-StreamStatsServe", "URL:" + url);
+                    Log.e("CM-StreamStatsService", "URL:" + url);
 
-                    String authority[] = u.getUserInfo().split(":");
+                    HttpURLConnection conn = (HttpURLConnection) new URL(u.toString()).openConnection();
+                    conn.setUseCaches(false);
 
-                    DefaultHttpClient httpClient = new DefaultHttpClient();
+                    conn.setDoOutput(false);
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("Accept-Charset", "utf-8");
+                    conn.setRequestProperty("Accept-Encoding", "text/xml");
+                    conn.setRequestProperty("Accept-Language", "en-US");
+                    conn.setRequestProperty("Authorization","Basic " + Base64.encodeToString(u.getUserInfo().getBytes(),Base64.NO_WRAP));
+                    conn.connect();
 
-                    httpClient.getCredentialsProvider().setCredentials(
-                            new AuthScope(u.getHost(),u.getPort()),
-                            new UsernamePasswordCredentials(authority[0], authority[1]));
-
-                    HttpGet httpGet = new HttpGet(url);
-
-                    // Set up the header types needed to properly transfer JSON
-                    httpGet.setHeader("Accept-Encoding", "text/xml");
-                    httpGet.setHeader("Accept-Language", "en-US");
-
-                    // Execute POST
-                    HttpResponse httpResponse = httpClient.execute(httpGet);
-                    StatusLine status = httpResponse.getStatusLine();
-                    if (status.getStatusCode() != 200) {
-                        Log.e("CM-StreamStatsService", "HTTP error, invalid server status code: " + httpResponse.getStatusLine());
+                    if (conn.getResponseCode() != 200) {
+                        Log.e("CM-StreamStatsService", "HTTP error, invalid server status code: " + conn.getResponseMessage());
                     }
                     else {
+
+                        InputStream in = new BufferedInputStream(conn.getInputStream());
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                        StringBuilder result = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+
                         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                         DocumentBuilder builder = factory.newDocumentBuilder();
-                        Document doc = builder.parse(httpResponse.getEntity().getContent());
+                        Document doc = builder.parse(result.toString());
 
                         XPathFactory xpathFactory = XPathFactory.newInstance();
                         XPath xpath = xpathFactory.newXPath();
@@ -101,29 +106,34 @@ public class StreamStatsService extends IntentService {
                         String listeners = (String) expr_listeners.evaluate(doc, XPathConstants.STRING);
                         String listeners_peak = (String) expr_listeners_peak.evaluate(doc, XPathConstants.STRING);
 
-                        if(listeners != "") {
+                        if(listeners.isEmpty()) {
                             obj.setListenersCurrent(Integer.valueOf(listeners));
                         }
 
-                        if(listeners_peak != "") {
+                        if(listeners_peak.isEmpty()) {
                             obj.setListenersPeak(Integer.valueOf(listeners_peak));
                         }
                     }
                 } catch (XPathExpressionException e) {
-                    Log.e("CM-StreamStatsService", "XPException while fetching Stats: " + e);
+                    Log.e("CM-StreamStatsService", "XPException while fetching Stats: " + exToString(e));
                 } catch (SAXException e) {
-                    Log.e("CM-StreamStatsService", "SAXException while fetching Stats: " + e);
+                    Log.e("CM-StreamStatsService", "SAXException while fetching Stats: " + exToString(e));
                 } catch (ParserConfigurationException e) {
-                    Log.e("CM-StreamStatsService", "PCException while fetching Stats: " + e);
-                } catch (ClientProtocolException e) {
-                    Log.e("CM-StreamStatsService", "CPException while fetching Stats: " + e);
+                    Log.e("CM-StreamStatsService", "PCException while fetching Stats: " + exToString(e));
                 } catch (IOException e) {
-                    Log.e("CM-StreamStatsService", "UOException while fetching Stats: " + e);
+                    Log.e("CM-StreamStatsService", "UOException while fetching Stats: " + exToString(e));
                 }
 
                 sendResponseIntent(obj);
             }
         }
+    }
+
+    String exToString(Exception ex)
+    {
+        StringWriter sw = new StringWriter();
+        ex.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
     }
 
     void sendResponseIntent(StreamStats obj)
