@@ -604,7 +604,7 @@ public class MainActivity extends Activity {
 
         isThreadOn = false;
 
-        Toast.makeText(MainActivity.this, "Broadcast stopped!", Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, R.string.broadcast_stop_message, Toast.LENGTH_LONG).show();
 
         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);

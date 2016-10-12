@@ -12,7 +12,7 @@
     <string name="timer">Timer:</string>
     <string name="start_broadcast">Start Livestream</string>
     <string name="stop_broadcast">Stop Livestream</string>
-    <string name="broadcasting">Livestream</string>
+    <string name="broadcasting">You Are Live</string>
     <string name="img_content">CoolMic Logo</string>
 
     <!-- main.xml -->
@@ -133,18 +133,18 @@
     </string-array>
 
     <!-- VuMeter -->
-    <string name="pref_header_vumeter">VuMeter</string>
+    <string name="pref_header_vumeter">Vu-Meter</string>
     <string name="pref_title_vumeter_interval">Interval</string>
     <string name="pref_default_vumeter_interval">40</string>
-    <string name="mainactivity_broadcast_url_copied">Livestream URL copied to clipboard!</string>
+    <string name="mainactivity_broadcast_url_copied">Livestream URL copied to clipboard</string>
     <string name="mainactivity_connectiondetails_unset">Set the connection details</string>
     <string name="mainactivity_callback_error">there was an error! CODE: %1$d</string>
     <string name="mainactivity_callback_streamstate">Stream State: State: %1$d Error: %2$d</string>
     <string name="question_stop_broadcasting">Stop Livestream?</string>
-    <string name="exception_start_failed">Failed to start Broadcast: %1$d</string>
+    <string name="exception_start_failed">Failed to start Livestream: %1$d</string>
     <string name="exception_failed_metadata_quality">Failed to set Metadata or Quality: %1$d</string>
     <string name="exception_failed_start_general">"Failed to start Livestream. "</string>
-    <string name="settings_conn_defaults_loaded">CoolMic default server data loaded!</string>
+    <string name="settings_conn_defaults_loaded">CoolMic Test Server Data Loaded!</string>
 
     <string-array name="pref_titles_vumeter_interval">
         <item>Disabled</item>
@@ -163,4 +163,5 @@
         <item>60</item>
         <item>80</item>
     </string-array>
+    <string name="broadcast_stop_message">Broadcast stopped!</string>
 </resources>
