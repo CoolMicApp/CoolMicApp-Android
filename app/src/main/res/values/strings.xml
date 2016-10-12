@@ -35,6 +35,7 @@
     <string name="lblListeners">Listeners:</string>
     <string name="txtListeners">0 ( Max: 0 )</string>
     <string name="formatListeners">%1$d ( Max: %2$d )</string>
+    <string name="txtStateFormat">%1$d ( Error: %2$d )</string>
     <string name="cmd_connection_qrcode">Scan QRCode</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -145,6 +146,8 @@
     <string name="exception_failed_metadata_quality">Failed to set Metadata or Quality: %1$d</string>
     <string name="exception_failed_start_general">"Failed to start Livestream. "</string>
     <string name="settings_conn_defaults_loaded">CoolMic Test Server Data Loaded!</string>
+    <string name="lblState">State:</string>
+    <string name="txtState">N/A</string>
 
     <string-array name="pref_titles_vumeter_interval">
         <item>Disabled</item>

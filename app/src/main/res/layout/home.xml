@@ -78,6 +78,7 @@
 
         </LinearLayout>
 
+
         <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -123,6 +124,25 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/txtListeners"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/lblState"
+                android:layout_width="100dp"
+
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:text="@string/lblState"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/txtState"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/txtState"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
         </GridLayout>

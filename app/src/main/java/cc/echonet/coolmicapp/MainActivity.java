@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
 
     final Context context = this;
     Thread streamThread;
-    boolean isThreadOn = false;
+    boolean isThreadStarting = false;
     CoolMic coolmic = null;
     Button start_button;
     Button stop_button;
@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (isThreadOn) {
+        if (Wrapper.hasCore()) {
             menu.findItem(R.id.menu_action_settings).setVisible(false);
         } else {
             menu.findItem(R.id.menu_action_settings).setVisible(true);
@@ -266,7 +266,7 @@ public class MainActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (isThreadOn) {
+        if (Wrapper.hasCore()) {
             RedFlashLight();
         }
     }
@@ -289,7 +289,7 @@ public class MainActivity extends Activity {
             public void onReceive(Context context, Intent intent) {
                 String strAction = intent.getAction();
                 if (strAction.equals(Intent.ACTION_SCREEN_OFF) || strAction.equals(Intent.ACTION_SCREEN_ON) || strAction.equals(Intent.ACTION_USER_PRESENT)) {
-                    if (isThreadOn) {
+                    if (Wrapper.hasCore()) {
                         RedFlashLight();
                     }
                 }
@@ -417,7 +417,7 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         // Write your code here
-        if (isThreadOn) {
+        if (Wrapper.hasCore()) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
             alertDialog.setTitle(R.string.question_stop_broadcasting);
             alertDialog.setMessage("Tap [ Ok ] to stop broadcasting.");
@@ -448,7 +448,7 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
-        if(isThreadOn) {
+        if(Wrapper.hasCore()) {
             stopRecording(view);
 
             return;
@@ -476,107 +476,116 @@ public class MainActivity extends Activity {
         }
 
         invalidateOptionsMenu();
-        isThreadOn = true;
-        //screenreceiver.setThreadStatus(true);
-        startService(new Intent(getBaseContext(), MyService.class));
-        RedFlashLight();
-        timeInMilliseconds = 0L;
-        timeSwapBuff = 0L;
-        start_button.startAnimation(animation);
-        start_button.setBackground(trans);
-        trans.startTransition(5000);
-        start_button.setText(R.string.broadcasting);
+
+        isThreadStarting = true;
+
         streamThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                if (isThreadOn) {
-                    try {
-                        String portnum;
-                        String server = coolmic.getServerName();
-                        Integer port_num = 8000;
+                try {
+                    String portnum;
+                    String server = coolmic.getServerName();
+                    Integer port_num = 8000;
 
-                        if (server.indexOf(":") > 0) {
-                            String[] split = server.split(":");
-                            server = split[0];
-                            portnum = split[1];
-                            port_num = Integer.parseInt(portnum);
-                        }
+                    if (server.indexOf(":") > 0) {
+                        String[] split = server.split(":");
+                        server = split[0];
+                        portnum = split[1];
+                        port_num = Integer.parseInt(portnum);
+                    }
 
-                        Log.d("VS", server);
-                        Log.d("VS", port_num.toString());
-                        String username = coolmic.getUsername();
-                        String password = coolmic.getPassword();
-                        String mountpoint = coolmic.getMountpoint();
-                        String sampleRate_string = coolmic.getSampleRate();
-                        String channel_string = coolmic.getChannels();
-                        String quality_string = coolmic.getQuality();
-                        String title = coolmic.getTitle();
-                        String artist = coolmic.getArtist();
-                        String codec_string = coolmic.getCodec();
+                    Log.d("VS", server);
+                    Log.d("VS", port_num.toString());
+                    String username = coolmic.getUsername();
+                    String password = coolmic.getPassword();
+                    String mountpoint = coolmic.getMountpoint();
+                    String sampleRate_string = coolmic.getSampleRate();
+                    String channel_string = coolmic.getChannels();
+                    String quality_string = coolmic.getQuality();
+                    String title = coolmic.getTitle();
+                    String artist = coolmic.getArtist();
+                    String codec_string = coolmic.getCodec();
 
-                        Log.d("VS", String.format("Server: %s Port: %d Username: %s Password: %s Mountpoint: %s Samplerate: %s Channels: %s Quality: %s Title: %s Artist: %s", server, port_num, username, password, mountpoint, sampleRate_string, channel_string, quality_string, title, artist));
+                    Log.d("VS", String.format("Server: %s Port: %d Username: %s Password: %s Mountpoint: %s Samplerate: %s Channels: %s Quality: %s Title: %s Artist: %s", server, port_num, username, password, mountpoint, sampleRate_string, channel_string, quality_string, title, artist));
 
-                        Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-                        Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-                        int status = Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, codec_string, Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
+                    Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+                    Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
+                    int status = Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, codec_string, Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
 
-                        if(status != 0)
-                        {
-                            throw new Exception("Failed to init Core: "+String.valueOf(status));
-                        }
+                    if(status != 0)
+                    {
+                        throw new Exception("Failed to init Core: "+String.valueOf(status));
+                    }
 
-                        status = Wrapper.performMetaDataQualityUpdate(title, artist, Double.parseDouble(quality_string), 0);
+                    status = Wrapper.performMetaDataQualityUpdate(title, artist, Double.parseDouble(quality_string), 0);
 
-                        if(status != 0)
-                        {
-                            throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
-                        }
+                    if(status != 0)
+                    {
+                        throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
+                    }
 
-                        status = Wrapper.start();
+                    status = Wrapper.start();
 
-                        Log.d("VS", "Status:" + status);
+                    Log.d("VS", "Status:" + status);
 
-                        if(status != 0)
-                        {
-                            throw new Exception(getString(R.string.exception_start_failed, status));
-                        }
+                    if(status != 0)
+                    {
+                        throw new Exception(getString(R.string.exception_start_failed, status));
+                    }
 
-                        int interval = Integer.parseInt(coolmic.getVuMeterInterval());
+                    int interval = Integer.parseInt(coolmic.getVuMeterInterval());
 
-                        if(interval == 0)
-                        {
-                            MainActivity.this.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
-                                    MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
-                                }
-                            });
-                        }
-                        else
-                        {
-                            MainActivity.this.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
-                                    MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
-                                }
-                            });
-                        }
-
-                        Wrapper.setVuMeterInterval(interval);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("VS", "Livestream Start: Exception: ", e);
-
+                    if(interval == 0)
+                    {
                         MainActivity.this.runOnUiThread(new Runnable() {
                             public void run() {
-                                stopRecording(null);
-
-                                Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_LONG).show();
+                                MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
+                                MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
                             }
                         });
                     }
-                }
+                    else
+                    {
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
+                                MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
+                            }
+                        });
+                    }
 
+                    Wrapper.setVuMeterInterval(interval);
+
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                        startService(new Intent(getBaseContext(), MyService.class));
+                        RedFlashLight();
+                        timeInMilliseconds = 0L;
+                        timeSwapBuff = 0L;
+                        start_button.startAnimation(animation);
+                        start_button.setBackground(trans);
+                        trans.startTransition(5000);
+                        start_button.setText(R.string.broadcasting);
+                        isThreadStarting = false;
+                        }
+                    });
+
+                    //screenreceiver.setThreadStatus(true);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("VS", "Livestream Start: Exception: ", e);
+
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            stopRecording(null);
+
+                            isThreadStarting = false;
+
+                            Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
 
         });
@@ -586,6 +595,11 @@ public class MainActivity extends Activity {
     public void stopRecording(@SuppressWarnings("unused") View view) {
         if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
+        }
+
+        if(!Wrapper.hasCore())
+        {
+            return;
         }
 
         timeSwapBuff += timeInMilliseconds;
@@ -598,11 +612,10 @@ public class MainActivity extends Activity {
         start_button.setText(R.string.start_broadcast);
         stopService(new Intent(getBaseContext(), MyService.class));
 
+        isThreadStarting = true;
 
         Wrapper.stop();
         Wrapper.unref();
-
-        isThreadOn = false;
 
         Toast.makeText(MainActivity.this, R.string.broadcast_stop_message, Toast.LENGTH_LONG).show();
 
@@ -668,8 +681,6 @@ public class MainActivity extends Activity {
 
                         ClearLED();
 
-                        isThreadOn = false;
-
                         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
                         ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
                         ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
@@ -679,9 +690,16 @@ public class MainActivity extends Activity {
 
                         Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_error, arg0_final), Toast.LENGTH_LONG).show();
 
+                        if(Wrapper.hasCore())
+                        {
+                            Wrapper.unref();
+                        }
+
                         break;
                     case 4:
-                        Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
+
+                        ((TextView) MainActivity.this.findViewById(R.id.txtState)).setText(getString(R.string.txtStateFormat, arg0_final, arg1_final));
+                        //Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
 
                         break;
                 }
