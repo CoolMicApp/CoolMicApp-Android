@@ -206,6 +206,14 @@ public class SettingsActivity extends PreferenceActivity {
 
                         SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
 
+                        //TODO: Use a Propper solution here!
+                        String mountpoint = getString(R.string.pref_default_connection_mountpoint);
+
+                        if(getPreferenceManager().getSharedPreferences().getString("audio_codec", getString(R.string.pref_default_connection_mountpoint)).equals("audio/ogg; codec=opus"))
+                        {
+                            mountpoint = mountpoint.replace("ogg", "opus");
+                        }
+
                         editor.putString("connection_address", getString(R.string.pref_default_connection_address));
                         editor.putString("connection_username", getString(R.string.pref_default_connection_username));
                         editor.putString("connection_password", getString(R.string.pref_default_connection_password));
