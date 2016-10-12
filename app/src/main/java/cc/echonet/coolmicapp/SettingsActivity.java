@@ -217,7 +217,7 @@ public class SettingsActivity extends PreferenceActivity {
                         editor.putString("connection_address", getString(R.string.pref_default_connection_address));
                         editor.putString("connection_username", getString(R.string.pref_default_connection_username));
                         editor.putString("connection_password", getString(R.string.pref_default_connection_password));
-                        editor.putString("connection_mountpoint", getString(R.string.pref_default_connection_mountpoint));
+                        editor.putString("connection_mountpoint", mountpoint);
 
                         editor.apply();
 
