@@ -105,11 +105,11 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
     return error;
 }
 
-JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_hasCore(JNIEnv * env, jobject obj)
+JNIEXPORT jboolean JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_hasCore(JNIEnv * env, jobject obj)
 {
-    LOGI("hasCore");
+    LOGI("hasCore %p %d", coolmic_simple_obj,  (coolmic_simple_obj == NULL ? 0 : 1));
 
-    return (coolmic_simple_obj == NULL ? 1 : 0);
+    return (coolmic_simple_obj == NULL ? 0 : 1);
 }
 
 static void javaCallback(int code, int arg0, int arg1) {
