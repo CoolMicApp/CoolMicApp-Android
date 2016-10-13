@@ -702,8 +702,14 @@ public class MainActivity extends Activity {
 
                         break;
                     case 4:
+                        String error = "";
 
-                        ((TextView) MainActivity.this.findViewById(R.id.txtState)).setText(getString(R.string.txtStateFormat, arg0_final, arg1_final));
+                        if(arg1_final != 0)
+                        {
+                            error = getString(R.string.txtStateFormatError, arg1_final);
+                        }
+
+                        ((TextView) MainActivity.this.findViewById(R.id.txtState)).setText(getString(R.string.txtStateFormat, Utils.getStringByName(MainActivity.this, "coolmic_cs", arg0_final), error));
                         //Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
 
                         break;

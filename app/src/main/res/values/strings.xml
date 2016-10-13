@@ -35,7 +35,8 @@
     <string name="lblListeners">Listeners:</string>
     <string name="txtListeners">0 ( Max: 0 )</string>
     <string name="formatListeners">%1$d ( Max: %2$d )</string>
-    <string name="txtStateFormat">%1$d ( Error: %2$d )</string>
+    <string name="txtStateFormat">%1$s%2$s</string>
+    <string name="txtStateFormatError"> ( Error: %1$d )</string>
     <string name="cmd_connection_qrcode">Scan QRCode</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -166,5 +167,12 @@
         <item>60</item>
         <item>80</item>
     </string-array>
+
+    <string name="coolmic_cs_n1">Invalid</string>
+    <string name="coolmic_cs_p1">Connecting</string>
+    <string name="coolmic_cs_p2">Connected</string>
+    <string name="coolmic_cs_p3">Disconnecting</string>
+    <string name="coolmic_cs_p4">Disconnected</string>
+    <string name="coolmic_cs_p5">Con. Error</string>
     <string name="broadcast_stop_message">Broadcast stopped!</string>
 </resources>
