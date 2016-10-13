@@ -276,6 +276,11 @@ public class MainActivity extends Activity {
         super.onDestroy();
         Log.v("$$$$$$", "In Method: onDestroy()");
         ClearLED();
+
+        if(Wrapper.hasCore())
+        {
+            stopRecording(null);
+        }
     }
 
     @Override
