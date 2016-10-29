@@ -26,6 +26,7 @@
 #include "coolmic-dsp/shout.h"
 #include "coolmic-dsp/vumeter.h"
 #include "coolmic-dsp/util.h"
+#include "coolmic-dsp/logging.h"
 #include <android/log.h>
 
 
@@ -272,6 +273,12 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
     return result;
 }
 
+static int logging_callback(coolmic_logging_level_t level, const char *msg)
+{
+    LOGI("libcoolmic: [%s] %s", coolmic_logging_level2string(level), msg);
+}
+
+
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
 {
     LOGI("start init");
@@ -292,6 +299,8 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
 
     if (callbackHandlerMethod == 0)
         return;
+
+    coolmic_logging_set_cb_simple(logging_callback);
 
     coolmic_shout_config_t shout_config;
 
