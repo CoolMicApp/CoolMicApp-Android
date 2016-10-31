@@ -254,7 +254,7 @@ public class MainActivity extends Activity {
 
     private void RedFlashLight() {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Notification notif = new Notification.Builder(context).setLights(0xFFff0000, 100, 100).setSmallIcon(R.drawable.icon).setContentTitle("Streaming").setContentText("Streaming...").build();
+        Notification notif = new Notification.Builder(context).setLights(0xFFff0000, 100, 100).setOngoing(true).setSmallIcon(R.drawable.icon).setContentTitle("Streaming").setContentText("Streaming...").build();
         nm.notify(Constants.NOTIFICATION_ID_LED, notif);
     }
 
