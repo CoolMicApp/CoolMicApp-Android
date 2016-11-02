@@ -103,26 +103,19 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-
-            Intent i = new Intent(this, MainActivity.class);
-            startActivity(i);
-
-            return true;
-
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
         }
 
-        return super.onMenuItemSelected(featureId, item);
+        return super.onOptionsItemSelected(item);
     }
 
-    //TODO: Workaround until I grasp why the android navigation won't work
     @Override
     public void onBackPressed() {
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
-
         super.onBackPressed();
     }
 

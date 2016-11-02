@@ -190,7 +190,6 @@ public class MainActivity extends Activity {
     private void goSettings() {
         Intent i = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(i);
-        finish();
     }
 
     private void goAbout() {
