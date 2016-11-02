@@ -63,8 +63,6 @@ public class StreamStatsService extends IntentService {
                 try {
                     Uri u = Uri.parse(url);
 
-                    Log.e("CM-StreamStatsService", "URL:" + url);
-
                     HttpURLConnection conn = (HttpURLConnection) new URL(u.toString()).openConnection();
                     conn.setUseCaches(false);
 
