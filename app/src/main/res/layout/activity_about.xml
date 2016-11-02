@@ -60,7 +60,7 @@
             <TextView
                 android:id="@+id/txtGITBranch"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
+                android:layout_height="fill_parent" android:layout_weight="1"  />
         </TableRow>
 
         <TableRow
@@ -76,7 +76,7 @@
             <TextView
                 android:id="@+id/txtGITRevision"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
+                android:layout_height="fill_parent" android:layout_weight="1"   />
         </TableRow>
 
         <TableRow
