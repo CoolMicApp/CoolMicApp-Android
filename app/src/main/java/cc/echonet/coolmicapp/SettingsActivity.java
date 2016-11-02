@@ -191,6 +191,34 @@ public class SettingsActivity extends PreferenceActivity {
             getPreferenceManager().setSharedPreferencesName("default");
             getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
 
+            //Hardcode some required values for Opus
+            findPreference("audio_codec").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    String stringValue = value.toString();
+                    SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
+
+                    //Opus Codec name is supposed to be static
+                    if (stringValue.equals("audio/ogg; codec=opus")) {
+                        String mountpoint = getString(R.string.pref_default_connection_mountpoint);
+                        mountpoint = mountpoint.replace("ogg", "opus");
+                        editor.putString("connection_mountpoint", mountpoint);
+                        editor.putString("audio_samplerate", "48000");
+                    } else {
+                        String mountpoint = getString(R.string.pref_default_connection_mountpoint);
+                        mountpoint = mountpoint.replace("opus", "ogg");
+                        editor.putString("connection_mountpoint", mountpoint);
+                    }
+
+                    editor.apply();
+
+                    refreshSummaryForConnectionSettings();
+
+                    return true;
+                }
+            });
+
+
             Preference button_util_conn_default = getPreferenceManager().findPreference("util_conn_default");
             if (button_util_conn_default != null) {
                 button_util_conn_default.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -202,6 +230,7 @@ public class SettingsActivity extends PreferenceActivity {
                         //TODO: Use a Propper solution here!
                         String mountpoint = getString(R.string.pref_default_connection_mountpoint);
 
+                        //Opus Codec name is supposed to be static
                         if(getPreferenceManager().getSharedPreferences().getString("audio_codec", getString(R.string.pref_default_connection_mountpoint)).equals("audio/ogg; codec=opus"))
                         {
                             mountpoint = mountpoint.replace("ogg", "opus");
@@ -310,6 +339,8 @@ public class SettingsActivity extends PreferenceActivity {
             preferencesToUpdate.add(findPreference("connection_address"));
             preferencesToUpdate.add(findPreference("connection_username"));
             preferencesToUpdate.add(findPreference("connection_mountpoint"));
+            preferencesToUpdate.add(findPreference("audio_codec"));
+            preferencesToUpdate.add(findPreference("audio_samplerate"));
 
             for(Preference preference: preferencesToUpdate) {
                 sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences("default", Context.MODE_PRIVATE).getString(preference.getKey(), ""));
