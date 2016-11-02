@@ -168,7 +168,7 @@ public class MainActivity extends Activity {
                 goAbout();
                 return true;
             case R.id.menu_action_help:
-                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://coolmic.net/help"));
+                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.coolmic_help_url)));
                 startActivity(helpIntent);
                 return true;
             case R.id.menu_action_quit:
@@ -393,7 +393,7 @@ public class MainActivity extends Activity {
         if (Wrapper.hasCore()) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
             alertDialog.setTitle(R.string.question_stop_broadcasting);
-            alertDialog.setMessage("Tap [ Ok ] to stop broadcasting.");
+            alertDialog.setMessage(R.string.coolmic_back_message);
             alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     backyes = false;

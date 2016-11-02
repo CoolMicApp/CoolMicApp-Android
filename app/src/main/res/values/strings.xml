@@ -176,6 +176,8 @@
     <string name="coolmic_cs_p3">Disconnecting</string>
     <string name="coolmic_cs_p4">Disconnected</string>
     <string name="coolmic_cs_p5">Con. Error</string>
-    <string name="broadcast_stop_message">Broadcast stopped!</string>
+    <string name="broadcast_stop_message">Livestream stopped!</string>
+    <string name="coolmic_help_url">http://coolmic.net/help</string>
+    <string name="coolmic_back_message">Tap [ Ok ] to stop Livestream.</string>
     <string name="aboutactivity_cmd_about_copy">Copy to Clipboard</string>
 </resources>
