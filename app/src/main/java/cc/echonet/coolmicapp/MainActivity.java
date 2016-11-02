@@ -65,6 +65,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 
@@ -733,7 +735,7 @@ public class MainActivity extends Activity {
         }
         else
         {
-            return String.format("%.2f", power);
+            return String.format(Locale.ENGLISH, "%.2f", power);
         }
     }
 
