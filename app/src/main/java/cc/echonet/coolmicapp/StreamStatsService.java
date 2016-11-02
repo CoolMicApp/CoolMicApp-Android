@@ -11,11 +11,7 @@ import android.util.Log;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
@@ -84,34 +80,41 @@ public class StreamStatsService extends IntentService {
                         Log.e("CM-StreamStatsService", "HTTP error, invalid server status code: " + conn.getResponseMessage());
                     }
                     else {
-
-                        InputStream in = new BufferedInputStream(conn.getInputStream());
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                        StringBuilder result = new StringBuilder();
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            result.append(line);
-                        }
-
                         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                         DocumentBuilder builder = factory.newDocumentBuilder();
-                        Document doc = builder.parse(result.toString());
+                        Document doc = builder.parse(conn.getInputStream());
+
+                        Log.d("CM-StreamStatsService", "Parsed Document "+doc.toString());
 
                         XPathFactory xpathFactory = XPathFactory.newInstance();
                         XPath xpath = xpathFactory.newXPath();
 
+                        Log.d("CM-StreamStatsService", "post xpath");
+
                         XPathExpression expr_listeners = xpath.compile("/icestats/source/listeners/text()");
                         XPathExpression expr_listeners_peak = xpath.compile("/icestats/source/listener_peak/text()");
+
+                        Log.d("CM-StreamStatsService", "post xpath compile");
 
                         String listeners = (String) expr_listeners.evaluate(doc, XPathConstants.STRING);
                         String listeners_peak = (String) expr_listeners_peak.evaluate(doc, XPathConstants.STRING);
 
-                        if(listeners.isEmpty()) {
+                        Log.d("CM-StreamStatsService", "post xpath eval "+listeners+ " "+listeners_peak);
+
+                        if(!listeners.isEmpty()) {
                             obj.setListenersCurrent(Integer.valueOf(listeners));
                         }
+                        else
+                        {
+                            Log.d("CM-StreamStatsService", "found no listeners");
+                        }
 
-                        if(listeners_peak.isEmpty()) {
+                        if(!listeners_peak.isEmpty()) {
                             obj.setListenersPeak(Integer.valueOf(listeners_peak));
+                        }
+                        else
+                        {
+                            Log.d("CM-StreamStatsService", "found no listeners peak");
                         }
                     }
                 } catch (XPathExpressionException e) {
@@ -121,7 +124,9 @@ public class StreamStatsService extends IntentService {
                 } catch (ParserConfigurationException e) {
                     Log.e("CM-StreamStatsService", "PCException while fetching Stats: " + exToString(e));
                 } catch (IOException e) {
-                    Log.e("CM-StreamStatsService", "UOException while fetching Stats: " + exToString(e));
+                    Log.e("CM-StreamStatsService", "IOException while fetching Stats: " + exToString(e));
+                } catch (Exception e) {
+                    Log.e("CM-StreamStatsService", "Exception while fetching Stats: " + exToString(e));
                 }
 
                 sendResponseIntent(obj);
