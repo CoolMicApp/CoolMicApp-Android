@@ -81,8 +81,8 @@
     <string name="menu_action_help">Help</string>
     <string name="menu_action_quit">Quit</string>
     <string name="menu_action_about">About</string>
-    <string name="menu_action_default">No appropriate menu action!</string>
-    <string name="popup_about_cmd_dismiss">Dismiss!</string>
+    <string name="menu_action_default">No appropriate menu action</string>
+    <string name="popup_about_cmd_dismiss">Dismiss</string>
     <string name="popup_about_lbl_version">Version:</string>
     <string name="popup_about_lbl_buildtype">Build Type:</string>
     <string name="popup_about_lbl_git_branch">GIT Branch:</string>
@@ -148,7 +148,7 @@
     <string name="exception_start_failed">Failed to start Livestream: %1$d</string>
     <string name="exception_failed_metadata_quality">Failed to set Metadata or Quality: %1$d</string>
     <string name="exception_failed_start_general">"Failed to start Livestream. "</string>
-    <string name="settings_conn_defaults_loaded">CoolMic Test Server Data Loaded!</string>
+    <string name="settings_conn_defaults_loaded">CoolMic Test Server Data Loaded</string>
     <string name="lblState">State:</string>
     <string name="txtState">N/A</string>
 
@@ -176,8 +176,23 @@
     <string name="coolmic_cs_p3">Disconnecting</string>
     <string name="coolmic_cs_p4">Disconnected</string>
     <string name="coolmic_cs_p5">Con. Error</string>
-    <string name="broadcast_stop_message">Livestream stopped!</string>
+    <string name="broadcast_stop_message">Livestream stopped</string>
     <string name="coolmic_help_url">http://coolmic.net/help</string>
     <string name="coolmic_back_message">Tap [ Ok ] to stop Livestream.</string>
     <string name="aboutactivity_cmd_about_copy">Copy to Clipboard</string>
+    <string name="settingsactivity_toast_permission_denied">CoolMic needs the requested permissions for recording and streaming. Without them it is quite useless</string>
+    <string name="settingsactivity_url_invalid">Please scan a valid URI</string>
+    <string name="settingsactivity_qrcode_loaded">Loaded settings from QR code</string>
+    <string name="settingsactivity_toast_permissions_granted">All required Permissions granted</string>
+    <string name="settingsactivity_permissions_all_granted">All permissions granted! Thank you</string>
+    <string name="settingsactivity_permission_not_granted">Permission %1$s was not granted</string>
+    <string name="mainactivity_native_components_init_error">Could not initialize native components :( Blocking controls</string>
+    <string name="mainactivity_native_components_previnit_error">Previous problem detected with native components :( Blocking controls</string>
+    <string name="mainactivity_native_components_unknown_state">Native components in unknown state</string>
+    <string name="mainactivity_quit_cancel">Cancel</string>
+    <string name="mainactivity_quit_ok">Ok</string>
+    <string name="mainactivity_toast_permissions_missing">Missing Permissions. Please request them in the Settings.</string>
+    <string name="mainactivity_toast_native_components_not_ready">Native components not ready.</string>
+    <string name="mainactivity_toast_check_connection">Check Internet Connection</string>
+    <string name="mainactivity_toast_check_connection_details">Set the connection details</string>
 </resources>

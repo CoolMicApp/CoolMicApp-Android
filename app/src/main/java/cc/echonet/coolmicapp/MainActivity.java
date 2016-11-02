@@ -310,16 +310,16 @@ public class MainActivity extends Activity {
             if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
             {
                 Log.d("WrapperInit", Wrapper.getInitException().toString());
-                Toast.makeText(getApplicationContext(), "Could not initialize native components :( Blocking controls!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
             }
         }
         else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
         {
-            Toast.makeText(getApplicationContext(), "Previous problem detected with native components :( Blocking controls!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_previnit_error, Toast.LENGTH_SHORT).show();
         }
         else if(Wrapper.init() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
         {
-            Toast.makeText(getApplicationContext(), "Native components in unknown state!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_unknown_state, Toast.LENGTH_SHORT).show();
         }
 
         txtListeners = (TextView) findViewById(R.id.txtListeners);
@@ -394,13 +394,13 @@ public class MainActivity extends Activity {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
             alertDialog.setTitle(R.string.question_stop_broadcasting);
             alertDialog.setMessage(R.string.coolmic_back_message);
-            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            alertDialog.setNegativeButton(R.string.mainactivity_quit_cancel, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     backyes = false;
                     dialog.cancel();
                 }
             });
-            alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            alertDialog.setPositiveButton(R.string.mainactivity_quit_ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     backyes = true;
                     dialog.cancel();
@@ -429,22 +429,22 @@ public class MainActivity extends Activity {
 
         if(!checkPermission())
         {
-            Toast.makeText(getApplicationContext(), "Missing Permissions. Please request them in the Settings.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_permissions_missing, Toast.LENGTH_LONG).show();
             return;
         }
 
         if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_LONG).show();
             return;
         }
 
         if (!isOnline()) {
-            Toast.makeText(getApplicationContext(), "Check Internet Connection !", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_LONG).show();
             return;
         }
 
         if (!coolmic.isConnectionSet()) {
-            Toast.makeText(getApplicationContext(), "Set the connection details !", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection_details, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -567,7 +567,7 @@ public class MainActivity extends Activity {
 
     public void stopRecording(@SuppressWarnings("unused") View view) {
         if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            Toast.makeText(getApplicationContext(), "Native components not ready.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_LONG).show();
         }
 
         if(!Wrapper.hasCore())

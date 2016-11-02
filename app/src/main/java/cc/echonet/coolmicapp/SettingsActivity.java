@@ -129,13 +129,13 @@ public class SettingsActivity extends PreferenceActivity {
                     if(grantResults[i] != PackageManager.PERMISSION_GRANTED)
                     {
                         permissions_ok = false;
-                        Toast.makeText(this, String.format("Permission %s was not granted!", permissions[i]), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, getString(R.string.settingsactivity_permission_not_granted, permissions[i]), Toast.LENGTH_LONG).show();
                     }
                 }
 
                 if(permissions_ok)
                 {
-                    Toast.makeText(this, "All permissions granted! Thank you!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.settingsactivity_permissions_all_granted, Toast.LENGTH_LONG).show();
                 }
 
                 break;
@@ -282,7 +282,7 @@ public class SettingsActivity extends PreferenceActivity {
                                     Manifest.permission.INTERNET) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                                     Manifest.permission.ACCESS_NETWORK_STATE) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                                     Manifest.permission.READ_PHONE_STATE))) {
-                                Toast.makeText(getActivity(), "CoolMic needs the requested permissions for recording and streaming. Without them it is quite useless!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
                             } else {
                                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE}, Constants.PERMISSION_CHECK_REQUEST_CODE);
                             }
@@ -290,7 +290,7 @@ public class SettingsActivity extends PreferenceActivity {
                         }
                         else
                         {
-                            Toast.makeText(getActivity(), "All required Permissions granted!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), R.string.settingsactivity_toast_permissions_granted, Toast.LENGTH_LONG).show();
                         }
 
                         return true;
@@ -307,7 +307,7 @@ public class SettingsActivity extends PreferenceActivity {
                 try {
                     u = Uri.parse(scanResult.getContents());
                 } catch (Exception e1) {
-                    Toast.makeText(getActivity(), "Please scan a valid URI!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), R.string.settingsactivity_url_invalid, Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -340,7 +340,7 @@ public class SettingsActivity extends PreferenceActivity {
 
                 refreshSummaryForConnectionSettings();
 
-                Toast.makeText(getActivity(), "Loaded settings from QR code!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), R.string.settingsactivity_qrcode_loaded, Toast.LENGTH_LONG).show();
             }
         }
 
