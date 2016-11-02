@@ -51,8 +51,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,7 +61,6 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -143,8 +140,10 @@ public class MainActivity extends Activity {
         super.onPrepareOptionsMenu(menu);
         if (Wrapper.hasCore()) {
             menu.findItem(R.id.menu_action_settings).setVisible(false);
+            menu.findItem(R.id.menu_action_about).setVisible(false);
         } else {
             menu.findItem(R.id.menu_action_settings).setVisible(true);
+            menu.findItem(R.id.menu_action_about).setVisible(true);
         }
         return true;
     }
@@ -195,40 +194,8 @@ public class MainActivity extends Activity {
     }
 
     private void goAbout() {
-
-        Log.d("MainActivity", "goAbout() ");
-
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View popUpView = inflater.inflate(R.layout.popup_about, null, false);
-
-        final PopupWindow popUp = new PopupWindow(this);
-
-        Button close = (Button) popUpView.findViewById(R.id.cmdPopUpDismiss);
-        close.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View popupView) {
-                popUp.dismiss();
-            }
-        });
-
-        ((TextView) popUpView.findViewById(R.id.txtVersion)).setText(BuildConfig.VERSION_NAME);
-        ((TextView) popUpView.findViewById(R.id.txtBuildType)).setText(BuildConfig.BUILD_TYPE);
-        ((TextView) popUpView.findViewById(R.id.txtGITBranch)).setText(BuildConfig.GIT_BRANCH);
-        ((TextView) popUpView.findViewById(R.id.txtGITRevision)).setText(BuildConfig.GIT_REVISION);
-        ((TextView) popUpView.findViewById(R.id.txtGITAuthor)).setText(BuildConfig.GIT_AUTHOR);
-        ((TextView) popUpView.findViewById(R.id.txtGITDirty)).setText(BuildConfig.GIT_DIRTY);
-
-        popUpView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-
-        popUp.setContentView(popUpView);
-
-        Log.d("MainActivity", String.format("h: %s w: %s h: %s w: %s", popUp.getHeight(), popUp.getWidth(), popUpView.getMeasuredHeight(), popUpView.getMeasuredWidth() ));
-
-        popUp.setHeight(popUpView.getMeasuredHeight());
-        popUp.setWidth(popUpView.getMeasuredWidth());
-
-        popUp.showAtLocation(popUpView, Gravity.CENTER, 0, 0);
-
-        Log.d("MainActivity", "goAbout() end ");
+        Intent i = new Intent(MainActivity.this, AboutActivity.class);
+        startActivity(i);
     }
 
     public boolean isOnline() {
