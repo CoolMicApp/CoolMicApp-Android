@@ -203,7 +203,7 @@ public class SettingsActivity extends PreferenceActivity {
                         String mountpoint = getString(R.string.pref_default_connection_mountpoint);
                         mountpoint = mountpoint.replace("ogg", "opus");
                         editor.putString("connection_mountpoint", mountpoint);
-                        editor.putString("audio_samplerate", "48000");
+                        editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
                     } else {
                         String mountpoint = getString(R.string.pref_default_connection_mountpoint);
                         mountpoint = mountpoint.replace("opus", "ogg");
@@ -240,6 +240,8 @@ public class SettingsActivity extends PreferenceActivity {
                         editor.putString("connection_username", getString(R.string.pref_default_connection_username));
                         editor.putString("connection_password", getString(R.string.pref_default_connection_password));
                         editor.putString("connection_mountpoint", mountpoint);
+                        editor.putString("audio_codec", getString(R.string.pref_default_audio_codec));
+                        editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
 
                         editor.apply();
 
@@ -320,10 +322,19 @@ public class SettingsActivity extends PreferenceActivity {
                     host = host+":"+u.getPort();
                 }
 
+                String mountpoint = u.getPath().replaceAll("^/", "");
+
+                if(mountpoint.endsWith(".opus"))
+                {
+                    editor.putString("audio_codec", getString(R.string.pref_default_audio_codec));
+                    editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
+
+                }
+
                 editor.putString("connection_address", host);
                 editor.putString("connection_username", authority[0]);
                 editor.putString("connection_password", authority[1]);
-                editor.putString("connection_mountpoint", u.getPath().replaceAll("^/", ""));
+                editor.putString("connection_mountpoint", mountpoint);
 
                 editor.apply();
 
