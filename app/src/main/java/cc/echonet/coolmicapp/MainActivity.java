@@ -615,7 +615,6 @@ public class MainActivity extends Activity {
 
         timeSwapBuff += timeInMilliseconds;
         customHandler.removeCallbacks(updateTimerThread);
-        //code to stop timer starts here
 
         controlRecordingUI(false);
 
@@ -647,7 +646,6 @@ public class MainActivity extends Activity {
                     case 2:
                         controlRecordingUI(false);
 
-                        //logMessage("Stopping the broadcasting");
                         break;
                     case 3:
                         controlRecordingUI(false);
