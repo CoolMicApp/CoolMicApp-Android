@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -222,7 +223,17 @@ public class MainActivity extends Activity {
 
     private void RedFlashLight() {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Notification notif = new Notification.Builder(context).setLights(0xFFff0000, 100, 100).setOngoing(true).setSmallIcon(R.drawable.icon).setContentTitle("Streaming").setContentText("Streaming...").build();
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        Notification notif = new Notification.Builder(context).setLights(0xFFff0000, 100, 100).setOngoing(true).setSmallIcon(R.drawable.icon).setContentIntent(resultPendingIntent).setContentTitle("Streaming").setContentText("Streaming...").build();
+
         nm.notify(Constants.NOTIFICATION_ID_LED, notif);
     }
 
