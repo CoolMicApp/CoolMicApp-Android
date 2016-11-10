@@ -252,10 +252,10 @@ public class MainActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         Log.v("$$$$$$", "In Method: onDestroy()");
-        ClearLED();
 
         if(Wrapper.hasCore())
         {
+            ClearLED();
             stopRecording(null);
         }
     }
