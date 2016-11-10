@@ -518,89 +518,73 @@ public class MainActivity extends Activity {
 
         invalidateOptionsMenu();
 
-        streamThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String portnum;
-                    String server = coolmic.getServerName();
-                    Integer port_num = 8000;
+        try {
+            String portnum;
+            String server = coolmic.getServerName();
+            Integer port_num = 8000;
 
-                    if (server.indexOf(":") > 0) {
-                        String[] split = server.split(":");
-                        server = split[0];
-                        portnum = split[1];
-                        port_num = Integer.parseInt(portnum);
-                    }
-
-                    Log.d("VS", server);
-                    Log.d("VS", port_num.toString());
-                    String username = coolmic.getUsername();
-                    String password = coolmic.getPassword();
-                    String mountpoint = coolmic.getMountpoint();
-                    String sampleRate_string = coolmic.getSampleRate();
-                    String channel_string = coolmic.getChannels();
-                    String quality_string = coolmic.getQuality();
-                    String title = coolmic.getTitle();
-                    String artist = coolmic.getArtist();
-                    String codec_string = coolmic.getCodec();
-
-                    Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-                    Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-                    int status = Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, codec_string, Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
-
-                    if(status != 0)
-                    {
-                        throw new Exception("Failed to init Core: "+String.valueOf(status));
-                    }
-
-                    status = Wrapper.performMetaDataQualityUpdate(title, artist, Double.parseDouble(quality_string), 0);
-
-                    if(status != 0)
-                    {
-                        throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
-                    }
-
-                    status = Wrapper.start();
-
-                    Log.d("VS", "Status:" + status);
-
-                    if(status != 0)
-                    {
-                        throw new Exception(getString(R.string.exception_start_failed, status));
-                    }
-
-                    final int interval = Integer.parseInt(coolmic.getVuMeterInterval());
-
-                    Wrapper.setVuMeterInterval(interval);
-
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-
-                            controlVuMeterUI(interval != 0);
-
-                            controlRecordingUI(true);
-
-                            startLock.unlock();
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e("VS", "Livestream Start: Exception: ", e);
-
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            stopRecording(null);
-
-
-                            Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
+            if (server.indexOf(":") > 0) {
+                String[] split = server.split(":");
+                server = split[0];
+                portnum = split[1];
+                port_num = Integer.parseInt(portnum);
             }
 
-        });
-        streamThread.start();
+            Log.d("VS", server);
+            Log.d("VS", port_num.toString());
+            String username = coolmic.getUsername();
+            String password = coolmic.getPassword();
+            String mountpoint = coolmic.getMountpoint();
+            String sampleRate_string = coolmic.getSampleRate();
+            String channel_string = coolmic.getChannels();
+            String quality_string = coolmic.getQuality();
+            String title = coolmic.getTitle();
+            String artist = coolmic.getArtist();
+            String codec_string = coolmic.getCodec();
+
+            Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+            Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
+            int status = Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, codec_string, Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
+
+            if(status != 0)
+            {
+                throw new Exception("Failed to init Core: "+String.valueOf(status));
+            }
+
+            status = Wrapper.performMetaDataQualityUpdate(title, artist, Double.parseDouble(quality_string), 0);
+
+            if(status != 0)
+            {
+                throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
+            }
+
+            status = Wrapper.start();
+
+            Log.d("VS", "Status:" + status);
+
+            if(status != 0)
+            {
+                throw new Exception(getString(R.string.exception_start_failed, status));
+            }
+
+            int interval = Integer.parseInt(coolmic.getVuMeterInterval());
+
+            Wrapper.setVuMeterInterval(interval);
+
+            controlVuMeterUI(interval != 0);
+
+            controlRecordingUI(true);
+
+            startLock.unlock();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Log.e("VS", "Livestream Start: Exception: ", e);
+
+            stopRecording(null);
+
+            Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_LONG).show();
+        }
     }
 
     public void stopRecording(@SuppressWarnings("unused") View view) {
