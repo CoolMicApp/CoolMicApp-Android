@@ -178,8 +178,12 @@ public class MainActivity extends Activity {
 
     private void exitApp() {
         ClearLED();
-        Wrapper.stop();
-        Wrapper.unref();
+
+        if(Wrapper.hasCore()) {
+            Wrapper.stop();
+            Wrapper.unref();
+        }
+
         finish();
         System.exit(0);
     }
