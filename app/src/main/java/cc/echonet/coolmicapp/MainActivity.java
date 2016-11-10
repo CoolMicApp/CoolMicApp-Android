@@ -285,16 +285,6 @@ public class MainActivity extends Activity {
 
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
 
-        android.view.ViewGroup.LayoutParams layoutParams = imageView1.getLayoutParams();
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            layoutParams.height = 400;
-        } else {
-            layoutParams.height = 180;
-        }
-
-        imageView1.setLayoutParams(layoutParams);
-
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
