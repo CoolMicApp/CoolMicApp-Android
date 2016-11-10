@@ -323,15 +323,11 @@ public class MainActivity extends Activity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mStreamStatsReceiver, mStatusIntentFilter);
 
 
-        if(Integer.parseInt(coolmic.getVuMeterInterval()) == 0)
+        controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
+
+        if(Wrapper.hasCore())
         {
-            MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
-            MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
-        }
-        else
-        {
-            MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
-            MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
+            controlRecordingUI(true);
         }
     }
 
@@ -398,12 +394,8 @@ public class MainActivity extends Activity {
                 public void onClick(DialogInterface dialog, int which) {
                     backyes = true;
                     dialog.cancel();
-                    invalidateOptionsMenu();
-                    start_button.clearAnimation();
-                    start_button.setBackground(buttonColor);
-                    start_button.setText(R.string.start_broadcast);
 
-                    ClearLED();
+                    controlRecordingUI(false);
 
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
@@ -412,6 +404,81 @@ public class MainActivity extends Activity {
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
+    }
+
+    public void controlRecordingUI(boolean running) {
+
+        if(running)
+        {
+            startService(new Intent(getBaseContext(), MyService.class));
+            RedFlashLight();
+
+            start_button.startAnimation(animation);
+            start_button.setBackground(trans);
+            trans.startTransition(5000);
+            start_button.setText(R.string.broadcasting);
+        }
+        else
+        {
+            invalidateOptionsMenu();
+
+            start_button.clearAnimation();
+            start_button.setBackground(buttonColor);
+            start_button.setText(R.string.start_broadcast);
+
+            ClearLED();
+
+            ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
+            ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
+            ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
+            ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
+            ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
+            ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
+
+            controlTimerThread(false);
+
+            stopService(new Intent(getBaseContext(), MyService.class));
+        }
+    }
+
+    public void controlTimerThread(boolean running)
+    {
+        controlTimerThread(running, -1);
+    }
+
+    public void controlTimerThread(boolean running, long timerStartTime)
+    {
+        if(running) {
+            timeInMilliseconds = timerStartTime;
+            timeSwapBuff = timerStartTime;
+            updatedTime = timerStartTime;
+            timeSwapBuff += timeInMilliseconds;
+            customHandler.removeCallbacks(updateTimerThread);
+            startTime = SystemClock.uptimeMillis();
+            customHandler.postDelayed(updateTimerThread, 0);
+        }
+        else {
+            timeSwapBuff += timeInMilliseconds;
+            customHandler.removeCallbacks(updateTimerThread);
+        }
+    }
+
+    public void controlVuMeterUI(boolean visible)
+    {
+        if(findViewById(R.id.llVuMeterLeft) != null)
+        {
+            findViewById(R.id.llVuMeterLeft).setVisibility((visible ? View.VISIBLE : View.GONE));
+        }
+
+        if(findViewById(R.id.llVuMeterRight) != null)
+        {
+            findViewById(R.id.llVuMeterRight).setVisibility((visible ? View.VISIBLE : View.GONE));
+        }
+
+        findViewById(R.id.pbVuMeterLeft).setVisibility((visible ? View.VISIBLE : View.GONE));
+        findViewById(R.id.pbVuMeterRight).setVisibility((visible ? View.VISIBLE : View.GONE));
+        findViewById(R.id.rbPeakLeft).setVisibility((visible ? View.VISIBLE : View.GONE));
+        findViewById(R.id.rbPeakRight).setVisibility((visible ? View.VISIBLE : View.GONE));
     }
 
     public void startRecording(View view) {
@@ -503,45 +570,20 @@ public class MainActivity extends Activity {
                         throw new Exception(getString(R.string.exception_start_failed, status));
                     }
 
-                    int interval = Integer.parseInt(coolmic.getVuMeterInterval());
-
-                    if(interval == 0)
-                    {
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.GONE);
-                                MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.GONE);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
-                                MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
-                            }
-                        });
-                    }
+                    final int interval = Integer.parseInt(coolmic.getVuMeterInterval());
 
                     Wrapper.setVuMeterInterval(interval);
 
                     MainActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
-                        startService(new Intent(getBaseContext(), MyService.class));
-                        RedFlashLight();
-                        timeInMilliseconds = 0L;
-                        timeSwapBuff = 0L;
-                        start_button.startAnimation(animation);
-                        start_button.setBackground(trans);
-                        trans.startTransition(5000);
-                        start_button.setText(R.string.broadcasting);
-                        isThreadStarting = false;
+
+                            controlVuMeterUI(interval != 0);
+
+                            controlRecordingUI(true);
+
+                            startLock.unlock();
                         }
                     });
-
-
-                    startLock.unlock();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e("VS", "Livestream Start: Exception: ", e);
@@ -574,12 +616,8 @@ public class MainActivity extends Activity {
         timeSwapBuff += timeInMilliseconds;
         customHandler.removeCallbacks(updateTimerThread);
         //code to stop timer starts here
-        ClearLED();
-        invalidateOptionsMenu();
-        start_button.clearAnimation();
-        start_button.setBackground(buttonColor);
-        start_button.setText(R.string.start_broadcast);
-        stopService(new Intent(getBaseContext(), MyService.class));
+
+        controlRecordingUI(false);
 
         if(startLock.isHeldByCurrentThread()) {
             startLock.unlock();
@@ -589,14 +627,6 @@ public class MainActivity extends Activity {
         Wrapper.unref();
 
         Toast.makeText(MainActivity.this, R.string.broadcast_stop_message, Toast.LENGTH_LONG).show();
-
-        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
-        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
-        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
-        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
-        ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
-        ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
-    }
     }
 
     @SuppressWarnings("unused")
@@ -611,43 +641,16 @@ public class MainActivity extends Activity {
             public void run(){
                 switch(what_final) {
                     case 1:
-                        timeInMilliseconds = 0L;
-                        timeSwapBuff = 0L;
-                        updatedTime = 0L;
-                        timeSwapBuff += timeInMilliseconds;
-                        customHandler.removeCallbacks(updateTimerThread);
-                        startTime = SystemClock.uptimeMillis();
-                        customHandler.postDelayed(updateTimerThread, 0);
+                        controlTimerThread(true, 0);
+
                         break;
                     case 2:
-                        //code to stop timer starts here
-                        timeSwapBuff += timeInMilliseconds;
-                        customHandler.removeCallbacks(updateTimerThread);
-                        //code to stop timer starts here
-                        start_button.clearAnimation();
-                        start_button.setBackground(buttonColor);
-                        start_button.setText(R.string.start_broadcast);
+                        controlRecordingUI(false);
 
-                        ClearLED();
                         //logMessage("Stopping the broadcasting");
                         break;
                     case 3:
-                        //code to stop timer starts here
-                        timeSwapBuff += timeInMilliseconds;
-                        customHandler.removeCallbacks(updateTimerThread);
-                        //code to stop timer starts here
-                        start_button.clearAnimation();
-                        start_button.setBackground(buttonColor);
-                        start_button.setText(R.string.start_broadcast);
-
-                        ClearLED();
-
-                        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
-                        ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
-                        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
-                        ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
-                        ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
-                        ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
+                        controlRecordingUI(false);
 
                         Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_error, arg0_final), Toast.LENGTH_LONG).show();
 
