@@ -333,8 +333,6 @@ public class MainActivity extends Activity {
             MainActivity.this.findViewById(R.id.llVuMeterLeft).setVisibility(View.VISIBLE);
             MainActivity.this.findViewById(R.id.llVuMeterRight).setVisibility(View.VISIBLE);
         }
-
-
     }
 
     public void onImageClick(View view) {
@@ -423,7 +421,6 @@ public class MainActivity extends Activity {
 
         if(Wrapper.hasCore()) {
             stopRecording(view);
-
             return;
         }
 
@@ -543,7 +540,6 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    //screenreceiver.setThreadStatus(true);
 
                     startLock.unlock();
                 } catch (Exception e) {
