@@ -162,11 +162,5 @@
             android:onClick="stopRecording"
             android:text="@string/stop_broadcast" />
 
-        <TextView
-            android:id="@+id/log_area"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical" />
-
     </LinearLayout>
     </LinearLayout>

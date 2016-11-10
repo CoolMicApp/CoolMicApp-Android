@@ -50,7 +50,6 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -100,10 +99,6 @@ public class MainActivity extends Activity {
 
     StreamStatsReceiver mStreamStatsReceiver = new StreamStatsReceiver();
 
-    /**
-     * Text view to show logged messages
-     */
-    private TextView logArea;
     //variable declaration for timer starts here
     private long startTime = 0L;
     private long lastStatsFetch = 0L;
@@ -311,8 +306,6 @@ public class MainActivity extends Activity {
         start_button = (Button) findViewById(R.id.start_recording_button);
         stop_button = (Button) findViewById(R.id.stop_recording_button);
         buttonColor = start_button.getBackground();
-        logArea = (TextView) findViewById(R.id.log_area);
-        logArea.setMovementMethod(new ScrollingMovementMethod());
 
         coolmic = new CoolMic(this, "default");
 
@@ -610,16 +603,6 @@ public class MainActivity extends Activity {
         ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
         ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
     }
-
-    @SuppressWarnings("unused")
-    private void logMessage(String msg) {
-        logArea.append(msg + "\n");
-        final int scrollAmount = logArea.getLayout().getLineTop(logArea.getLineCount())
-                - logArea.getHeight();
-        if (scrollAmount > 0)
-            logArea.scrollTo(0, scrollAmount);
-        else
-            logArea.scrollTo(0, 0);
     }
 
     @SuppressWarnings("unused")
