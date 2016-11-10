@@ -305,11 +305,11 @@ public class MainActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
             }
         }
-        else if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
+        else if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
         {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_previnit_error, Toast.LENGTH_SHORT).show();
         }
-        else if(Wrapper.init() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
+        else if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
         {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_unknown_state, Toast.LENGTH_SHORT).show();
         }
