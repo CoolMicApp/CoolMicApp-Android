@@ -66,6 +66,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Locale;
+import java.util.concurrent.locks.ReentrantLock;
 
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
@@ -77,8 +78,6 @@ public class MainActivity extends Activity {
 
 
     final Context context = this;
-    Thread streamThread;
-    boolean isThreadStarting = false;
     CoolMic coolmic = null;
     Button start_button;
     Animation animation = new AlphaAnimation(1, 0);
@@ -93,6 +92,7 @@ public class MainActivity extends Activity {
     long timeInMilliseconds = 0L;
     long timeSwapBuff = 0L;
     long updatedTime = 0L;
+    ReentrantLock startLock = new ReentrantLock();
 
     TextView txtListeners;
 
@@ -417,6 +417,10 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
+        if(!startLock.tryLock()) {
+            return;
+        }
+
         if(Wrapper.hasCore()) {
             stopRecording(view);
 
@@ -426,27 +430,29 @@ public class MainActivity extends Activity {
         if(!checkPermission())
         {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_permissions_missing, Toast.LENGTH_LONG).show();
+            startLock.unlock();
             return;
         }
 
         if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_LONG).show();
+            startLock.unlock();
             return;
         }
 
         if (!isOnline()) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_LONG).show();
+            startLock.unlock();
             return;
         }
 
         if (!coolmic.isConnectionSet()) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection_details, Toast.LENGTH_LONG).show();
+            startLock.unlock();
             return;
         }
 
         invalidateOptionsMenu();
-
-        isThreadStarting = true;
 
         streamThread = new Thread(new Runnable() {
             @Override
@@ -539,6 +545,7 @@ public class MainActivity extends Activity {
 
                     //screenreceiver.setThreadStatus(true);
 
+                    startLock.unlock();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e("VS", "Livestream Start: Exception: ", e);
@@ -547,7 +554,6 @@ public class MainActivity extends Activity {
                         public void run() {
                             stopRecording(null);
 
-                            isThreadStarting = false;
 
                             Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_LONG).show();
                         }
@@ -579,7 +585,9 @@ public class MainActivity extends Activity {
         start_button.setText(R.string.start_broadcast);
         stopService(new Intent(getBaseContext(), MyService.class));
 
-        isThreadStarting = true;
+        if(startLock.isHeldByCurrentThread()) {
+            startLock.unlock();
+        }
 
         Wrapper.stop();
         Wrapper.unref();
