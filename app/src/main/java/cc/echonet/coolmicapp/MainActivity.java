@@ -81,7 +81,6 @@ public class MainActivity extends Activity {
     boolean isThreadStarting = false;
     CoolMic coolmic = null;
     Button start_button;
-    Button stop_button;
     Animation animation = new AlphaAnimation(1, 0);
     ColorDrawable gray_color = new ColorDrawable(Color.parseColor("#66999999"));
     ColorDrawable[] color = {gray_color, new ColorDrawable(Color.RED)};
@@ -304,7 +303,6 @@ public class MainActivity extends Activity {
         animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
         animation.setRepeatMode(Animation.REVERSE);
         start_button = (Button) findViewById(R.id.start_recording_button);
-        stop_button = (Button) findViewById(R.id.stop_recording_button);
         buttonColor = start_button.getBackground();
 
         coolmic = new CoolMic(this, "default");
