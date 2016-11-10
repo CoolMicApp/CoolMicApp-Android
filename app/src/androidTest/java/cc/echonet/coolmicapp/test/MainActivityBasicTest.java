@@ -33,9 +33,8 @@ public class MainActivityBasicTest {
     public void basicFields_Test() {
         onView(withId(R.id.txtListeners)).check(matches(withText(STRING_LISTENER)));
         onView(withId(R.id.timerValue)).check(matches(withText(STRING_TIMER)));
-        onView(withId(R.id.start_recording_button)).check(matches(withText("Start Broadcast")));
-        onView(withId(R.id.stop_recording_button)).check(matches(withText("Stop Broadcast")));
+        onView(withId(R.id.start_recording_button)).check(matches(withText("START LIVESTREAM")));
         onView(withId(R.id.start_recording_button)).perform(click());
-        onView(withId(R.id.start_recording_button)).check(matches(withText("Start Broadcast")));
+        onView(withId(R.id.start_recording_button)).check(matches(withText("START LIVESTREAM")));
     }
 }
