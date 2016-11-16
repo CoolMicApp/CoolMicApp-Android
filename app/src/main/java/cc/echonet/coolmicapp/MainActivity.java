@@ -170,7 +170,7 @@ public class MainActivity extends Activity {
                 exitApp();
                 return true;
             default:
-                Toast.makeText(getApplicationContext(), R.string.menu_action_default, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.menu_action_default, Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
@@ -519,26 +519,30 @@ public class MainActivity extends Activity {
 
         if(!checkPermission())
         {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_permissions_missing, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_permissions_missing, Toast.LENGTH_SHORT).show();
             startLock.unlock();
+            controlButtonState(0);
             return;
         }
 
         if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
             startLock.unlock();
+            controlButtonState(0);
             return;
         }
 
         if (!isOnline()) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_SHORT).show();
             startLock.unlock();
+            controlButtonState(0);
             return;
         }
 
         if (!coolmic.isConnectionSet()) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection_details, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection_details, Toast.LENGTH_SHORT).show();
             startLock.unlock();
+            controlButtonState(0);
             return;
         }
 
@@ -609,13 +613,13 @@ public class MainActivity extends Activity {
 
             stopRecording(null);
 
-            Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void stopRecording(@SuppressWarnings("unused") View view) {
         if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
         }
 
         if(!Wrapper.hasCore())
@@ -635,7 +639,7 @@ public class MainActivity extends Activity {
         Wrapper.stop();
         Wrapper.unref();
 
-        Toast.makeText(MainActivity.this, R.string.broadcast_stop_message, Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressWarnings("unused")
@@ -660,7 +664,7 @@ public class MainActivity extends Activity {
                     case 3:
                         controlRecordingUI(false);
 
-                        Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_error, arg0_final), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_error, arg0_final), Toast.LENGTH_SHORT).show();
 
                         if(Wrapper.hasCore())
                         {
