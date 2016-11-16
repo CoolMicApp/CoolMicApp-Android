@@ -606,8 +606,6 @@ public class MainActivity extends Activity {
 
             controlVuMeterUI(interval != 0);
 
-            controlRecordingUI(true);
-
             startLock.unlock();
         } catch (Exception e) {
             e.printStackTrace();
@@ -681,6 +679,15 @@ public class MainActivity extends Activity {
                         if(arg1_final != 0)
                         {
                             error = getString(R.string.txtStateFormatError, arg1_final);
+                        }
+
+                        if(arg0_final == 2)
+                        {
+                            controlRecordingUI(true);
+                        }
+                        else if(arg0_final == 4 || arg0_final == 5)
+                        {
+                            stopRecording(null);
                         }
 
                         ((TextView) MainActivity.this.findViewById(R.id.txtState)).setText(getString(R.string.txtStateFormat, Utils.getStringByName(MainActivity.this, "coolmic_cs", arg0_final), error));
