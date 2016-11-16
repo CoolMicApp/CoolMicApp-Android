@@ -214,6 +214,8 @@ public class SettingsActivity extends PreferenceActivity {
 
                     refreshSummaryForConnectionSettings();
 
+                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, stringValue);
+
                     return true;
                 }
             });
