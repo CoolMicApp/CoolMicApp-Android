@@ -406,6 +406,35 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void controlButtonState(int state)
+    {
+        switch(state)
+        {
+            case 0:
+                start_button.clearAnimation();
+                start_button.setBackground(buttonColor);
+                start_button.setText(R.string.start_broadcast);
+                start_button.setEnabled(true);
+                break;
+
+            case 1:
+                start_button.startAnimation(animation);
+                start_button.setBackground(trans);
+                trans.startTransition(5000);
+                start_button.setText(R.string.cmdStartInitializing);
+                start_button.setEnabled(false);
+                break;
+
+            case 2:
+                start_button.startAnimation(animation);
+                start_button.setBackground(trans);
+                trans.startTransition(5000);
+                start_button.setText(R.string.broadcasting);
+                start_button.setEnabled(true);
+                break;
+        }
+    }
+
     public void controlRecordingUI(boolean running) {
 
         if(running)
@@ -413,18 +442,13 @@ public class MainActivity extends Activity {
             startService(new Intent(getBaseContext(), MyService.class));
             RedFlashLight();
 
-            start_button.startAnimation(animation);
-            start_button.setBackground(trans);
-            trans.startTransition(5000);
-            start_button.setText(R.string.broadcasting);
+            controlButtonState(2);
         }
         else
         {
             invalidateOptionsMenu();
 
-            start_button.clearAnimation();
-            start_button.setBackground(buttonColor);
-            start_button.setText(R.string.start_broadcast);
+            controlButtonState(0);
 
             ClearLED();
 
@@ -485,6 +509,8 @@ public class MainActivity extends Activity {
         if(!startLock.tryLock()) {
             return;
         }
+
+        controlButtonState(1);
 
         if(Wrapper.hasCore()) {
             stopRecording(view);
