@@ -80,10 +80,15 @@ public class MainActivity extends Activity {
     final Context context = this;
     CoolMic coolmic = null;
     Button start_button;
+
     Animation animation = new AlphaAnimation(1, 0);
-    ColorDrawable gray_color = new ColorDrawable(Color.parseColor("#66999999"));
-    ColorDrawable[] color = {gray_color, new ColorDrawable(Color.RED)};
-    TransitionDrawable trans = new TransitionDrawable(color);
+
+    ColorDrawable transitionColorGrey = new ColorDrawable(Color.parseColor("#66999999"));
+    ColorDrawable transitionColorRed = new ColorDrawable(Color.RED);
+    ColorDrawable[] transitionColorDefault = {transitionColorGrey, transitionColorRed};
+
+    TransitionDrawable transitionButton = new TransitionDrawable(transitionColorDefault);
+
     Drawable buttonColor;
     ImageView imageView1;
     Menu myMenu;
@@ -419,16 +424,14 @@ public class MainActivity extends Activity {
 
             case 1:
                 start_button.startAnimation(animation);
-                start_button.setBackground(trans);
-                trans.startTransition(5000);
+                start_button.setBackground(transitionButton);
+                transitionButton.startTransition(5000);
+
                 start_button.setText(R.string.cmdStartInitializing);
                 start_button.setEnabled(false);
                 break;
 
             case 2:
-                start_button.startAnimation(animation);
-                start_button.setBackground(trans);
-                trans.startTransition(5000);
                 start_button.setText(R.string.broadcasting);
                 start_button.setEnabled(true);
                 break;
