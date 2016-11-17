@@ -196,4 +196,5 @@
     <string name="mainactivity_toast_check_connection">Check Internet Connection</string>
     <string name="mainactivity_toast_check_connection_details">Set the connection details</string>
     <string name="cmdStartInitializing">CONNECTING</string>
+    <string name="popup_about_lbl_buildts">Build TS:</string>
 </resources>

@@ -1,5 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
+import java.text.SimpleDateFormat
+
 apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 
@@ -22,6 +24,7 @@ android {
         buildConfigField "String", "GIT_BRANCH", "\"${gitBranch()}\""
         buildConfigField "String", "GIT_AUTHOR", "\"${gitAuthor()}\""
         buildConfigField "String", "GIT_DIRTY", "\"${gitDirty()}\""
+        buildConfigField "String", "BUILD_TS", "\"${buildTimeStamp()}\""
     }
 
     buildTypes {
@@ -105,6 +108,18 @@ def gitDirty() {
         } else {
             return "true"
         }
+    }
+    catch(Exception ex)
+    {
+        return "N/A"
+    }
+}
+
+def buildTimeStamp() {
+    try {
+        def df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z") //you can change it
+        df.setTimeZone(TimeZone.getTimeZone("UTC"))
+        return df.format(new Date())
     }
     catch(Exception ex)
     {

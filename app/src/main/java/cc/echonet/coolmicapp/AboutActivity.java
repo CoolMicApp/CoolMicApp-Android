@@ -26,6 +26,7 @@ public class AboutActivity extends Activity {
 
         ((TextView) findViewById(R.id.txtVersion)).setText(BuildConfig.VERSION_NAME);
         ((TextView) findViewById(R.id.txtBuildType)).setText(BuildConfig.BUILD_TYPE);
+        ((TextView) findViewById(R.id.txtBuildTS)).setText(BuildConfig.BUILD_TS);
         ((TextView) findViewById(R.id.txtGITBranch)).setText(BuildConfig.GIT_BRANCH);
         ((TextView) findViewById(R.id.txtGITRevision)).setText(shortRev);
         ((TextView) findViewById(R.id.txtGITDirty)).setText(BuildConfig.GIT_DIRTY);

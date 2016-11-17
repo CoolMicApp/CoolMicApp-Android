@@ -52,6 +52,22 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/lblBuildTS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/popup_about_lbl_buildts" />
+
+            <TextView
+                android:id="@+id/txtBuildTS"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
                 android:id="@+id/lblGITBranch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
