@@ -197,4 +197,5 @@
     <string name="mainactivity_toast_check_connection_details">Set the connection details</string>
     <string name="cmdStartInitializing">CONNECTING</string>
     <string name="popup_about_lbl_buildts">Build TS:</string>
+    <string name="settings_samplerate_opus_locked">You selected the opus coded and a samplerate != 48000 Khz. This codec only works with this particular samplerate. Forcing 48000 Khz.</string>
 </resources>

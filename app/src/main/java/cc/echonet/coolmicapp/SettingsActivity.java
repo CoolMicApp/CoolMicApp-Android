@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -56,11 +57,22 @@ public class SettingsActivity extends PreferenceActivity {
 
                 // Set the summary to reflect the new value.
                 preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
-            } else {
+                preference.setDefaultValue(index >= 0 ? listPreference.getEntries()[index] : null);
+                ((ListPreference) preference).setValue(stringValue);
+            } else if(preference instanceof  EditTextPreference) {
+                EditTextPreference prefText = (EditTextPreference) preference;
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
-                preference.setSummary(stringValue);
+                prefText.setSummary(stringValue);
+                prefText.setDefaultValue(stringValue);
+                prefText.setText(stringValue);
             }
+            else
+            {
+                preference.setSummary(stringValue);
+                preference.setDefaultValue(stringValue);
+            }
+
             return true;
         }
     };
@@ -198,16 +210,43 @@ public class SettingsActivity extends PreferenceActivity {
                     String stringValue = value.toString();
                     SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
 
+                    String mountpoint = getPreferenceManager().getSharedPreferences().getString("connection_mountpoint", getString(R.string.pref_default_connection_mountpoint));
+
                     //Opus Codec name is supposed to be static
                     if (stringValue.equals("audio/ogg; codec=opus")) {
-                        String mountpoint = getString(R.string.pref_default_connection_mountpoint);
                         mountpoint = mountpoint.replace("ogg", "opus");
-                        editor.putString("connection_mountpoint", mountpoint);
                         editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
                     } else {
-                        String mountpoint = getString(R.string.pref_default_connection_mountpoint);
                         mountpoint = mountpoint.replace("opus", "ogg");
-                        editor.putString("connection_mountpoint", mountpoint);
+                    }
+
+                    editor.putString("connection_mountpoint", mountpoint);
+
+                    editor.apply();
+
+                    refreshSummaryForConnectionSettings();
+
+                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, stringValue);
+
+                    return true;
+                }
+            });
+
+            findPreference("audio_samplerate").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    String stringValue = value.toString();
+                    SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
+
+                    String codec = getPreferenceManager().getSharedPreferences().getString("audio_codec", getString(R.string.pref_default_audio_codec));
+
+                    //Opus Codec name is supposed to be static
+                    if (codec.equals("audio/ogg; codec=opus") && !value.equals(getString(R.string.pref_default_audio_samplerate))) {
+                        editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
+
+                        stringValue = getString(R.string.pref_default_audio_samplerate);
+
+                        Toast.makeText(getActivity(), R.string.settings_samplerate_opus_locked, Toast.LENGTH_LONG).show();
                     }
 
                     editor.apply();
@@ -229,25 +268,21 @@ public class SettingsActivity extends PreferenceActivity {
 
                         SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
 
-                        //TODO: Use a Propper solution here!
-                        String mountpoint = getString(R.string.pref_default_connection_mountpoint);
-
-                        //Opus Codec name is supposed to be static
-                        if(getPreferenceManager().getSharedPreferences().getString("audio_codec", getString(R.string.pref_default_connection_mountpoint)).equals("audio/ogg; codec=opus"))
-                        {
-                            mountpoint = mountpoint.replace("ogg", "opus");
-                        }
-
                         editor.putString("connection_address", getString(R.string.pref_default_connection_address));
                         editor.putString("connection_username", getString(R.string.pref_default_connection_username));
                         editor.putString("connection_password", getString(R.string.pref_default_connection_password));
-                        editor.putString("connection_mountpoint", mountpoint);
+                        editor.putString("connection_mountpoint", getString(R.string.pref_default_connection_mountpoint));
                         editor.putString("audio_codec", getString(R.string.pref_default_audio_codec));
                         editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
 
                         editor.apply();
 
                         refreshSummaryForConnectionSettings();
+
+                        EditTextPreference passwordPref = (EditTextPreference) findPreference("connection_password");
+
+                        passwordPref.setDefaultValue(getString(R.string.pref_default_connection_password));
+                        passwordPref.setText(getString(R.string.pref_default_connection_password));
 
                         Toast.makeText(getActivity(), R.string.settings_conn_defaults_loaded, Toast.LENGTH_LONG).show();
 
