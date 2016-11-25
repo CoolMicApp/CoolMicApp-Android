@@ -59,7 +59,7 @@
     <string name="pref_default_connection_address">source.coolmic.net:80</string>
     <string name="pref_default_connection_username">coolmic</string>
     <string name="pref_default_connection_password">12345</string>
-    <string name="pref_default_connection_mountpoint">coolmic.ogg</string>
+    <string name="pref_default_connection_mountpoint">coolmic.opus</string>
 
     <!-- Audio -->
     <string name="pref_header_audio">Audio</string>
