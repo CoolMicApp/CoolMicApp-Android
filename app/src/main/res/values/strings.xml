@@ -197,4 +197,7 @@
     <string name="mainactivity_toast_check_connection_details">Set the connection details</string>
     <string name="cmdStartInitializing">CONNECTING</string>
     <string name="popup_about_lbl_buildts">Build TS:</string>
+    <string name="menu_action_share">Share</string>
+    <string name="menu_action_share_default">Cool Mic unconfigured! Please set Connection Info!</string>
+    <string name="menu_action_share_title">Share Stream URL to...</string>
 </resources>

@@ -161,6 +161,9 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.menu_action_share:
+                performShare();
+                return true;
             case R.id.menu_action_settings:
                 goSettings();
                 return true;
@@ -341,6 +344,20 @@ public class MainActivity extends Activity {
             ClipData myClip = ClipData.newPlainText("text", coolmic.getStreamURL());
             myClipboard.setPrimaryClip(myClip);
             Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void performShare() {
+        if (coolmic.isConnectionSet()) {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, coolmic.getStreamURL());
+            shareIntent.setType("text/plain");
+
+            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.menu_action_share_title)));
+
         } else {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
         }
