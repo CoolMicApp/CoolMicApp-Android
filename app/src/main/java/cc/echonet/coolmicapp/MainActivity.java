@@ -337,49 +337,13 @@ public class MainActivity extends Activity {
     }
 
     public void onImageClick(View view) {
-
-        try {
-            String portnum = "";
-            String server = coolmic.getServerName();
-            Integer port_num = 8000;
-            int counter = 0;
-            for (int i = 0; i < server.length(); i++) {
-                if (server.charAt(i) == ':') {
-                    counter++;
-                }
-            }
-            if (counter == 1) {
-                if (server.indexOf("/") > 0) {
-                    String[] split = server.split(":");
-                    server = split[0].concat(":").concat(split[1]);
-                    portnum = "8000";
-                    port_num = Integer.parseInt(portnum);
-                } else {
-                    String[] split = server.split(":");
-                    server = split[0];
-                    portnum = split[1];
-                    port_num = Integer.parseInt(portnum);
-                }
-            } else if (counter == 2) {
-                String[] split = server.split(":");
-                server = split[0].concat(":").concat(split[1]);
-                portnum = split[2];
-                port_num = Integer.parseInt(portnum);
-            }
-            Log.d("VS", server);
-            Log.d("VS", portnum);
-            if (server != null && !server.isEmpty()) {
-                String text = server + ":" + port_num.toString() + "/" + coolmic.getMountpoint();
-                ClipData myClip = ClipData.newPlainText("text", text);
-                myClipboard.setPrimaryClip(myClip);
-                Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            Log.e("VS", "Exception", e);
+        if (coolmic.isConnectionSet()) {
+            ClipData myClip = ClipData.newPlainText("text", coolmic.getStreamURL());
+            myClipboard.setPrimaryClip(myClip);
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override

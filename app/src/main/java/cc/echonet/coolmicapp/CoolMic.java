@@ -83,6 +83,17 @@ public class CoolMic {
         return String.format("http://%s:%s@%s/admin/stats.xml?mount=/%s", this.getUsername(), this.getPassword(), this.getServerName(), this.getMountpoint());
     }
 
+    public String getStreamURL() {
+        String port = ":8000";
+
+        if(this.getServerName().indexOf(':') > 0)
+        {
+            port = "";
+        }
+
+        return String.format("http://%s%s/%s", this.getServerName(), port, this.getMountpoint());
+    }
+
     public boolean isConnectionSet() {
         if (!this.getServerName().isEmpty() && !this.getMountpoint().isEmpty() && !this.getUsername().isEmpty() && !this.getPassword().isEmpty()) {
             return true;
