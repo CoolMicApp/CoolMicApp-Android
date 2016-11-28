@@ -197,5 +197,4 @@
     <string name="mainactivity_toast_check_connection_details">Set the connection details</string>
     <string name="cmdStartInitializing">CONNECTING</string>
     <string name="popup_about_lbl_buildts">Build TS:</string>
-    <string name="settings_samplerate_opus_locked">You selected Opus as codec. Opus uses a fixed sample rate of 48kHz. Sample rate will be locked to this while you use Opus.</string>
 </resources>

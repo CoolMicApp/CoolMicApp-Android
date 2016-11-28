@@ -101,7 +101,6 @@ public class SettingsActivity extends PreferenceActivity {
         setupActionBar();
 
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment()).commit();
-
     }
 
     /**
@@ -214,9 +213,11 @@ public class SettingsActivity extends PreferenceActivity {
 
                     //Opus Codec name is supposed to be static
                     if (stringValue.equals("audio/ogg; codec=opus")) {
+                        handleSampleRateEnabled(false);
                         mountpoint = mountpoint.replace("ogg", "opus");
                         editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
                     } else {
+                        handleSampleRateEnabled(true);
                         mountpoint = mountpoint.replace("opus", "ogg");
                     }
 
@@ -231,34 +232,6 @@ public class SettingsActivity extends PreferenceActivity {
                     return true;
                 }
             });
-
-            findPreference("audio_samplerate").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object value) {
-                    String stringValue = value.toString();
-                    SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
-
-                    String codec = getPreferenceManager().getSharedPreferences().getString("audio_codec", getString(R.string.pref_default_audio_codec));
-
-                    //Opus Codec name is supposed to be static
-                    if (codec.equals("audio/ogg; codec=opus") && !value.equals(getString(R.string.pref_default_audio_samplerate))) {
-                        editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
-
-                        stringValue = getString(R.string.pref_default_audio_samplerate);
-
-                        Toast.makeText(getActivity(), R.string.settings_samplerate_opus_locked, Toast.LENGTH_LONG).show();
-                    }
-
-                    editor.apply();
-
-                    refreshSummaryForConnectionSettings();
-
-                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, stringValue);
-
-                    return true;
-                }
-            });
-
 
             Preference button_util_conn_default = getPreferenceManager().findPreference("util_conn_default");
             if (button_util_conn_default != null) {
@@ -278,6 +251,8 @@ public class SettingsActivity extends PreferenceActivity {
                         editor.apply();
 
                         refreshSummaryForConnectionSettings();
+
+                        handleSampleRateEnabled();
 
                         EditTextPreference passwordPref = (EditTextPreference) findPreference("connection_password");
 
@@ -333,6 +308,8 @@ public class SettingsActivity extends PreferenceActivity {
                     }
                 });
             }
+
+            handleSampleRateEnabled();
         }
 
         public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -374,10 +351,24 @@ public class SettingsActivity extends PreferenceActivity {
 
                 editor.apply();
 
+                handleSampleRateEnabled();
+
                 refreshSummaryForConnectionSettings();
 
                 Toast.makeText(getActivity(), R.string.settingsactivity_qrcode_loaded, Toast.LENGTH_LONG).show();
             }
+        }
+
+        private void handleSampleRateEnabled() {
+
+            String codec = getPreferenceManager().getSharedPreferences().getString("audio_codec", getString(R.string.pref_default_audio_codec));
+
+
+            handleSampleRateEnabled(!codec.equals("audio/ogg; codec=opus"));
+        }
+
+        private void handleSampleRateEnabled(boolean enabled) {
+            findPreference("audio_samplerate").setEnabled(enabled);
         }
 
         private void refreshSummaryForConnectionSettings()
