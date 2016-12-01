@@ -200,4 +200,6 @@
     <string name="menu_action_share">Share</string>
     <string name="menu_action_share_default">Cool Mic unconfigured! Please set Connection Info!</string>
     <string name="menu_action_share_title">Share Stream URL to...</string>
+    <string name="settings_qrcode_invalid_noauth_message">This is a Listen URL (no source credentials): %1$s. Open in external app?</string>
+    <string name="settings_qrcode_invalid_noauth_title">QRCode based configuration</string>
 </resources>

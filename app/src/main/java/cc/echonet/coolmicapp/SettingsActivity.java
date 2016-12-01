@@ -4,7 +4,9 @@ package cc.echonet.coolmicapp;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -321,6 +323,38 @@ public class SettingsActivity extends PreferenceActivity {
 
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences("default", Context.MODE_PRIVATE).edit();
 
+                if(u.getUserInfo() != null && u.getUserInfo().split(":").length < 2) {
+                    String authority[] = u.getUserInfo().split(":");
+
+                    editor.putString("connection_username", authority[0]);
+                    editor.putString("connection_password", authority[1]);
+                }
+                else
+                {
+                    final Uri uf = u;
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                    alertDialog.setTitle(R.string.settings_qrcode_invalid_noauth_title);
+                    alertDialog.setMessage(getString(R.string.settings_qrcode_invalid_noauth_message, u.toString()));
+
+                    alertDialog.setNegativeButton(R.string.mainactivity_quit_cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    alertDialog.setPositiveButton(R.string.mainactivity_quit_ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent i = new Intent(Intent.ACTION_VIEW);
+                            i.setData(uf);
+                            startActivity(i);
+                        }
+                    });
+
+                    alertDialog.show();
+
+                    return;
+                }
+
                 String host = u.getHost();
 
                 if(u.getPort() != 8000)
@@ -339,26 +373,7 @@ public class SettingsActivity extends PreferenceActivity {
 
                 editor.putString("connection_address", host);
 
-                if(u.getUserInfo() != null) {
-                    String authority[] = u.getUserInfo().split(":");
 
-                    if (authority.length >= 1) {
-                        editor.putString("connection_username", authority[0]);
-                    } else {
-                        editor.putString("connection_username", "");
-                    }
-
-                    if (authority.length >= 2) {
-                        editor.putString("connection_password", authority[1]);
-                    } else {
-                        editor.putString("connection_password", "");
-                    }
-                }
-                else
-                {
-                    editor.putString("connection_username", "");
-                    editor.putString("connection_password", "");
-                }
 
                 editor.putString("connection_mountpoint", mountpoint);
 
