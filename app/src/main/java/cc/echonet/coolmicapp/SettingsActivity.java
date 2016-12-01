@@ -254,11 +254,6 @@ public class SettingsActivity extends PreferenceActivity {
 
                         handleSampleRateEnabled();
 
-                        EditTextPreference passwordPref = (EditTextPreference) findPreference("connection_password");
-
-                        passwordPref.setDefaultValue(getString(R.string.pref_default_connection_password));
-                        passwordPref.setText(getString(R.string.pref_default_connection_password));
-
                         Toast.makeText(getActivity(), R.string.settings_conn_defaults_loaded, Toast.LENGTH_LONG).show();
 
                         return true;
@@ -326,8 +321,6 @@ public class SettingsActivity extends PreferenceActivity {
 
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences("default", Context.MODE_PRIVATE).edit();
 
-                String authority[] = u.getUserInfo().split(":");
-
                 String host = u.getHost();
 
                 if(u.getPort() != 8000)
@@ -345,8 +338,28 @@ public class SettingsActivity extends PreferenceActivity {
                 }
 
                 editor.putString("connection_address", host);
-                editor.putString("connection_username", authority[0]);
-                editor.putString("connection_password", authority[1]);
+
+                if(u.getUserInfo() != null) {
+                    String authority[] = u.getUserInfo().split(":");
+
+                    if (authority.length >= 1) {
+                        editor.putString("connection_username", authority[0]);
+                    } else {
+                        editor.putString("connection_username", "");
+                    }
+
+                    if (authority.length >= 2) {
+                        editor.putString("connection_password", authority[1]);
+                    } else {
+                        editor.putString("connection_password", "");
+                    }
+                }
+                else
+                {
+                    editor.putString("connection_username", "");
+                    editor.putString("connection_password", "");
+                }
+
                 editor.putString("connection_mountpoint", mountpoint);
 
                 editor.apply();
@@ -379,6 +392,12 @@ public class SettingsActivity extends PreferenceActivity {
             preferencesToUpdate.add(findPreference("connection_mountpoint"));
             preferencesToUpdate.add(findPreference("audio_codec"));
             preferencesToUpdate.add(findPreference("audio_samplerate"));
+
+            EditTextPreference passwordPref = (EditTextPreference) findPreference("connection_password");
+            String passwordValue = passwordPref.getContext().getSharedPreferences("default", Context.MODE_PRIVATE).getString(passwordPref.getKey(), "");
+
+            passwordPref.setDefaultValue(passwordValue);
+            passwordPref.setText(passwordValue);
 
             for(Preference preference: preferencesToUpdate) {
                 sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences("default", Context.MODE_PRIVATE).getString(preference.getKey(), ""));
