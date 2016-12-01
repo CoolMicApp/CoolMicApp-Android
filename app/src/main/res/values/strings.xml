@@ -74,7 +74,7 @@
     <string name="pref_default_audio_channels">1</string>
     <string name="pref_default_audio_quality">-0.1</string>
     <string name="prefs_header_utilities">Utilities</string>
-    <string name="pref_title_utility_connection_default">Load CoolMic Test Server Data</string>
+    <string name="pref_title_utility_connection_default">Use CoolMic Test Server</string>
     <string name="pref_title_utility_qr_scan">QR Code Scan</string>
     <string name="pref_title_utility_permission_check">Permission Check</string>
     <string name="menu_action_settings">Settings</string>
