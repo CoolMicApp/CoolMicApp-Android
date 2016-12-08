@@ -140,7 +140,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (Wrapper.hasCore()) {
+        if (hasCore()) {
             menu.findItem(R.id.menu_action_settings).setVisible(false);
             menu.findItem(R.id.menu_action_about).setVisible(false);
         } else {
@@ -187,7 +187,7 @@ public class MainActivity extends Activity {
     private void exitApp() {
         ClearLED();
 
-        if(Wrapper.hasCore()) {
+        if(hasCore()) {
             Wrapper.stop();
             Wrapper.unref();
         }
@@ -251,7 +251,7 @@ public class MainActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (Wrapper.hasCore()) {
+        if (hasCore()) {
             RedFlashLight();
         }
     }
@@ -261,7 +261,7 @@ public class MainActivity extends Activity {
         super.onDestroy();
         Log.v("$$$$$$", "In Method: onDestroy()");
 
-        if(Wrapper.hasCore())
+        if(hasCore())
         {
             ClearLED();
             stopRecording(null);
@@ -279,7 +279,7 @@ public class MainActivity extends Activity {
             public void onReceive(Context context, Intent intent) {
                 String strAction = intent.getAction();
                 if (strAction.equals(Intent.ACTION_SCREEN_OFF) || strAction.equals(Intent.ACTION_SCREEN_ON) || strAction.equals(Intent.ACTION_USER_PRESENT)) {
-                    if (Wrapper.hasCore()) {
+                    if (hasCore()) {
                         RedFlashLight();
                     }
                 }
@@ -333,7 +333,7 @@ public class MainActivity extends Activity {
 
         controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
 
-        if(Wrapper.hasCore())
+        if(hasCore())
         {
             controlRecordingUI(true);
         }
@@ -366,7 +366,7 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         // Write your code here
-        if (Wrapper.hasCore()) {
+        if (hasCore()) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
             alertDialog.setTitle(R.string.question_stop_broadcasting);
             alertDialog.setMessage(R.string.coolmic_back_message);
@@ -390,6 +390,10 @@ public class MainActivity extends Activity {
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
+    }
+
+    public boolean hasCore() {
+        return Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED && Wrapper.hasCore();
     }
 
     public void controlButtonState(int state)
@@ -496,7 +500,7 @@ public class MainActivity extends Activity {
 
         controlButtonState(1);
 
-        if(Wrapper.hasCore()) {
+        if(hasCore()) {
             stopRecording(view);
             return;
         }
@@ -604,7 +608,7 @@ public class MainActivity extends Activity {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
         }
 
-        if(!Wrapper.hasCore())
+        if(!hasCore())
         {
             return;
         }
@@ -648,7 +652,7 @@ public class MainActivity extends Activity {
 
                         Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_error, arg0_final), Toast.LENGTH_SHORT).show();
 
-                        if(Wrapper.hasCore())
+                        if(hasCore())
                         {
                             Wrapper.unref();
                         }
