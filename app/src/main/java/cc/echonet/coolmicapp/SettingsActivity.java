@@ -323,7 +323,7 @@ public class SettingsActivity extends PreferenceActivity {
 
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences("default", Context.MODE_PRIVATE).edit();
 
-                if(u.getUserInfo() != null && u.getUserInfo().split(":").length < 2) {
+                if(u.getUserInfo() != null && u.getUserInfo().split(":").length >= 2) {
                     String authority[] = u.getUserInfo().split(":");
 
                     editor.putString("connection_username", authority[0]);
