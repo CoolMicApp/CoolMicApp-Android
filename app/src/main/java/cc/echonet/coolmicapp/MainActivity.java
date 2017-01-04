@@ -534,6 +534,34 @@ public class MainActivity extends Activity {
             return;
         }
 
+        if(coolmic.isCMTSConnection()) {
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+            alertDialog.setTitle(R.string.coolmic_tos_title);
+            alertDialog.setMessage(R.string.coolmic_tos);
+            alertDialog.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    startLock.unlock();
+                    controlButtonState(0);
+                    dialog.cancel();
+                }
+            });
+            alertDialog.setPositiveButton(R.string.coolmic_tos_accept, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    startRecordingStep2();
+                }
+            });
+
+            alertDialog.show();
+        }
+        else
+        {
+            startRecordingStep2();
+        }
+    }
+
+    void startRecordingStep2()
+    {
         invalidateOptionsMenu();
 
         try {

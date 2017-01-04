@@ -202,4 +202,10 @@
     <string name="menu_action_share_title">Share Stream URL to...</string>
     <string name="settings_qrcode_invalid_noauth_message">This is a Listen URL (no source credentials): %1$s. Open in external app?</string>
     <string name="settings_qrcode_invalid_noauth_title">QRCode based configuration</string>
+
+
+    <string name="coolmic_tos">By using Cool Mic test servers, you must agree to stream only material that is your own or that which has explicit permission to be streamed under the Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0). Please see https://creativecommons.org/licenses/by-sa/4.0/legalcode for details.</string>
+    <string name="coolmic_tos_accept">Accept</string>
+    <string name="coolmic_tos_cancel">Cancel</string>
+    <string name="coolmic_tos_title">Cool Mic Test Servers Terms of Service</string>
 </resources>

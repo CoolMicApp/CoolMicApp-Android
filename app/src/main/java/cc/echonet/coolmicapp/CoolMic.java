@@ -101,4 +101,17 @@ public class CoolMic {
             return false;
         }
     }
+
+    public boolean isCMTSConnection() {
+        if(
+            this.getServerName().contains("coolmic.net") || this.getServerName().contains("echonet.cc") ||
+            this.getServerName().contains("64.142.100.248") || this.getServerName().contains("64.142.100.249") ||
+            this.getServerName().contains("46.165.219.118") ){
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
