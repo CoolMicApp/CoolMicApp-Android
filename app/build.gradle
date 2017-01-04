@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "cc.echonet.coolmicapp"
-        versionCode 5
+        versionCode 6
         versionName "1.0.2"
 
         minSdkVersion 16
