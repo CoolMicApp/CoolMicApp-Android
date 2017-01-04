@@ -120,4 +120,20 @@
         android:gravity="center"
         android:onClick="onCMDAboutCopy" />
 
+    <Button
+        android:text="@string/aboutactivity_cmd_about_open_pp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cmdOpenPrivacyPolicy"
+        android:gravity="center"
+        android:onClick="onCMDAboutOpenPP" />
+
+    <Button
+        android:text="@string/aboutactivity_cmd_about_open_licenses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cmdOpenLicenses"
+        android:gravity="center"
+        android:onClick="onCMDAboutOpenLicenses" />
+
 </LinearLayout>

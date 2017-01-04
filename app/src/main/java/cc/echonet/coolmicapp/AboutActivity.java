@@ -4,6 +4,8 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
@@ -78,5 +80,15 @@ public class AboutActivity extends Activity {
         myClipboard.setPrimaryClip(myClip);
 
         Toast.makeText(getApplicationContext(), R.string.aboutactivity_copied_string, Toast.LENGTH_SHORT).show();
+    }
+
+    public void onCMDAboutOpenPP(View view) {
+        Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_privacy_policy)));
+        startActivity(helpIntent);
+    }
+
+    public void onCMDAboutOpenLicenses(View view) {
+        Intent licensesIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_licenses)));
+        startActivity(licensesIntent);
     }
 }
