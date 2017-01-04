@@ -88,7 +88,7 @@ public class AboutActivity extends Activity {
     }
 
     public void onCMDAboutOpenLicenses(View view) {
-        Intent licensesIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_licenses)));
-        startActivity(licensesIntent);
+        Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_licenses)));
+        startActivity(helpIntent);
     }
 }
