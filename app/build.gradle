@@ -98,7 +98,7 @@ def buildTimeStamp() {
 dependencies {
     compile 'com.android.support:support-v4:24.+'
     compile 'com.google.zxing:android-integration:3.2.1'
-    androidTestCompile 'com.android.support:support-annotations:23.+'
+    androidTestCompile 'com.android.support:support-annotations:24.+'
     androidTestCompile 'com.android.support.test:runner:0.4.1'
     androidTestCompile 'com.android.support.test:rules:0.4.1'
     // Optional -- Hamcrest library
