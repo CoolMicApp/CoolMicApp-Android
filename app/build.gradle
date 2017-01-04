@@ -30,7 +30,6 @@ android {
         }
     }
 
-    useLibrary 'org.apache.http.legacy'
     externalNativeBuild {
         ndkBuild {
             path 'src/main/jni/Android.mk'
