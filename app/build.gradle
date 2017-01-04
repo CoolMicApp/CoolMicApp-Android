@@ -2,7 +2,6 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 import java.text.SimpleDateFormat
 
-apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 
 android {
