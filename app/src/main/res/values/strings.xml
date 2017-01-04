@@ -210,6 +210,6 @@
     <string name="coolmic_tos_title">Cool Mic Test Servers Terms of Service</string>
     <string name="aboutactivity_cmd_about_open_pp">Open Privacy Policy(Browser)</string>
     <string name="aboutactivity_cmd_about_open_licenses">Open (Third Party) License Declaration(Browser)</string>
-    <string name="url_privacy_policy">http://coolmic.net/privacypolicy</string>
-    <string name="url_licenses">http://coolmic.net/licenses</string>
+    <string name="url_privacy_policy">http://coolmic.net/privacypolicy/</string>
+    <string name="url_licenses">http://coolmic.net/licenses/</string>
 </resources>
