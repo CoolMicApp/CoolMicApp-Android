@@ -494,26 +494,25 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
-        if(!startLock.tryLock()) {
+        if (!startLock.tryLock()) {
             return;
         }
 
         controlButtonState(1);
 
-        if(hasCore()) {
+        if (hasCore()) {
             stopRecording(view);
             return;
         }
 
-        if(!checkPermission())
-        {
+        if (!checkPermission()) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_permissions_missing, Toast.LENGTH_SHORT).show();
             startLock.unlock();
             controlButtonState(0);
             return;
         }
 
-        if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if (Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
             startLock.unlock();
             controlButtonState(0);
