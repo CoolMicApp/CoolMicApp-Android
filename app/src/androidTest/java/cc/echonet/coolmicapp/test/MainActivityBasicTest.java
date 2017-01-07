@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import android.support.test.rule.ActivityTestRule;
-import android.test.suitebuilder.annotation.LargeTest;
+import android.support.test.filters.LargeTest;
 
 import cc.echonet.coolmicapp.MainActivity;
 import cc.echonet.coolmicapp.R;
@@ -22,8 +22,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 @LargeTest
 public class MainActivityBasicTest {
 
-    public static final String STRING_LISTENER = "N/A(N/A)";
-    public static final String STRING_TIMER = "00:00:00";
+    private static final String STRING_LISTENER = "N/A(N/A)";
+    private static final String STRING_TIMER = "00:00:00";
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
