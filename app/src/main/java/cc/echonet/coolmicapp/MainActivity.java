@@ -554,7 +554,7 @@ public class MainActivity extends Activity {
 
         if(coolmic.isCMTSConnection()) {
 
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle(R.string.coolmic_tos_title);
             alertDialog.setMessage(R.string.coolmic_tos);
             alertDialog.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
