@@ -224,7 +224,7 @@ public class MainActivity extends Activity {
     }
 
     private boolean checkPermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
+        return Utils.checkRequiredPermissions(this);
     }
 
     private void RedFlashLight() {
@@ -506,9 +506,11 @@ public class MainActivity extends Activity {
         }
 
         if (!checkPermission()) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_permissions_missing, Toast.LENGTH_SHORT).show();
             startLock.unlock();
             controlButtonState(0);
+
+            Utils.requestPermissions(this);
+
             return;
         }
 
@@ -653,6 +655,22 @@ public class MainActivity extends Activity {
         Wrapper.unref();
 
         Toast.makeText(MainActivity.this, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if(!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+        else
+        {
+            if(checkPermission())
+            {
+                startRecording(null);
+            }
+        }
+
+
     }
 
     @SuppressWarnings("unused")
