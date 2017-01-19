@@ -10,6 +10,11 @@ import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.widget.Toast;
 
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
+
 import static android.R.attr.text;
 
 /**
@@ -40,6 +45,26 @@ public class Utils {
 
         return context.getString(resid);
     }
+
+
+    //Stolen from: http://stackoverflow.com/a/23704728 & http://stackoverflow.com/a/18879453 (removed the shortening because it did not work reliably)
+    public static String generateShortUuid() {
+        UUID uuid = UUID.randomUUID();
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return uuid.toString();
+        }
+
+
+        md.update(uuid.toString().getBytes());
+        byte[] digest = md.digest();
+
+        return Base64.encodeToString(digest, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING).substring(0, 20);
+    }
+
     public static boolean checkRequiredPermissions(Activity activity) {
         int grantedCount = 0;
 
@@ -108,10 +133,12 @@ public class Utils {
     public static void loadCMTSData(Activity activity, String profileName) {
         SharedPreferences.Editor editor = new CoolMic(activity, profileName).getPrefs().edit();
 
+        String randomComponent = Utils.generateShortUuid();
+
         editor.putString("connection_address", activity.getString(R.string.pref_default_connection_address));
         editor.putString("connection_username", activity.getString(R.string.pref_default_connection_username));
         editor.putString("connection_password", activity.getString(R.string.pref_default_connection_password));
-        editor.putString("connection_mountpoint", activity.getString(R.string.pref_default_connection_mountpoint));
+        editor.putString("connection_mountpoint", activity.getString(R.string.pref_default_connection_mountpoint, randomComponent));
         editor.putString("audio_codec", activity.getString(R.string.pref_default_audio_codec));
         editor.putString("audio_samplerate", activity.getString(R.string.pref_default_audio_samplerate));
 
