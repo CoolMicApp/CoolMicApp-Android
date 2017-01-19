@@ -529,9 +529,26 @@ public class MainActivity extends Activity {
         }
 
         if (!coolmic.isConnectionSet()) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection_details, Toast.LENGTH_SHORT).show();
             startLock.unlock();
             controlButtonState(0);
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("Missing connection details");
+            alertDialog.setMessage("You seem to have no connection details set. Should we load the Test System Data? If you decline please set them in the Settings.");
+            alertDialog.setNegativeButton("No.", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Utils.loadCMTSData(MainActivity.this, "default");
+                    startRecording(null);
+                }
+            });
+
+            alertDialog.show();
+
             return;
         }
 
