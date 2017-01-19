@@ -533,14 +533,14 @@ public class MainActivity extends Activity {
             controlButtonState(0);
 
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setTitle("Missing connection details");
-            alertDialog.setMessage("You seem to have no connection details set. Should we load the Test System Data? If you decline please set them in the Settings.");
-            alertDialog.setNegativeButton("No.", new DialogInterface.OnClickListener() {
+            alertDialog.setTitle(R.string.mainactivity_missing_connection_details_title);
+            alertDialog.setMessage(R.string.mainactivity_missing_connection_details_body);
+            alertDialog.setNegativeButton(R.string.mainactivity_missing_connection_details_no, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
                 }
             });
-            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     Utils.loadCMTSData(MainActivity.this, "default");
                     startRecording(null);

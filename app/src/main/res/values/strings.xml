@@ -212,4 +212,8 @@
     <string name="aboutactivity_cmd_about_open_licenses">Open (Third Party) License Declaration(Browser)</string>
     <string name="url_privacy_policy">http://coolmic.net/privacypolicy/</string>
     <string name="url_licenses">http://coolmic.net/licenses/</string>
+    <string name="mainactivity_missing_connection_details_title">Missing connection details</string>
+    <string name="mainactivity_missing_connection_details_body">You seem to have no connection details set. Should we load the Test System Data? If you decline please set them in the Settings.</string>
+    <string name="mainactivity_missing_connection_details_no">No.</string>
+    <string name="mainactivity_missing_connection_details_yes">Yes</string>
 </resources>
