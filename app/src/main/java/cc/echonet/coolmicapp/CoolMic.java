@@ -114,4 +114,8 @@ public class CoolMic {
             return false;
         }
     }
+
+    public SharedPreferences getPrefs() {
+        return prefs;
+    }
 }

@@ -133,27 +133,9 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case Constants.PERMISSION_CHECK_REQUEST_CODE:
-                boolean permissions_ok = true;
-
-                for(int i = 0; i < grantResults.length; i++)
-                {
-                    if(grantResults[i] != PackageManager.PERMISSION_GRANTED)
-                    {
-                        permissions_ok = false;
-                        Toast.makeText(this, getString(R.string.settingsactivity_permission_not_granted, permissions[i]), Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                if(permissions_ok)
-                {
-                    Toast.makeText(this, R.string.settingsactivity_permissions_all_granted, Toast.LENGTH_LONG).show();
-                }
-
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults))
+        {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -241,22 +223,10 @@ public class SettingsActivity extends PreferenceActivity {
                     @Override
                     public boolean onPreferenceClick(Preference arg0) {
 
-                        SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
-
-                        editor.putString("connection_address", getString(R.string.pref_default_connection_address));
-                        editor.putString("connection_username", getString(R.string.pref_default_connection_username));
-                        editor.putString("connection_password", getString(R.string.pref_default_connection_password));
-                        editor.putString("connection_mountpoint", getString(R.string.pref_default_connection_mountpoint));
-                        editor.putString("audio_codec", getString(R.string.pref_default_audio_codec));
-                        editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
-
-                        editor.apply();
+                        Utils.loadCMTSData(getActivity(), "default");
 
                         refreshSummaryForConnectionSettings();
-
                         handleSampleRateEnabled();
-
-                        Toast.makeText(getActivity(), R.string.settings_conn_defaults_loaded, Toast.LENGTH_LONG).show();
 
                         return true;
                     }
@@ -283,23 +253,7 @@ public class SettingsActivity extends PreferenceActivity {
                 util_permission_check.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference arg0) {
-                        if(!(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED))
-                        {
-                            if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                                    Manifest.permission.RECORD_AUDIO) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                                    Manifest.permission.INTERNET) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                                    Manifest.permission.ACCESS_NETWORK_STATE) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                                    Manifest.permission.READ_PHONE_STATE))) {
-                                Toast.makeText(getActivity(), R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
-                            } else {
-                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE}, Constants.PERMISSION_CHECK_REQUEST_CODE);
-                            }
-
-                        }
-                        else
-                        {
-                            Toast.makeText(getActivity(), R.string.settingsactivity_toast_permissions_granted, Toast.LENGTH_LONG).show();
-                        }
+                        Utils.requestPermissions(getActivity());
 
                         return true;
                     }
