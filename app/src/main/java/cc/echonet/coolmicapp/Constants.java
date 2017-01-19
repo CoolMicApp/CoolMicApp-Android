@@ -20,8 +20,6 @@ public class Constants {
     public static final String[] REQUIRED_PERMISSIONS = {
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.INTERNET,
-        Manifest.permission.INTERNET,
-        Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.READ_PHONE_STATE
+        Manifest.permission.ACCESS_NETWORK_STATE
     };
 }
