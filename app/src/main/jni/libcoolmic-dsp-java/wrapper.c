@@ -248,10 +248,9 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
             break;
         case COOLMIC_SIMPLE_EVENT_ERROR:
             if (arg0 == NULL) {
+                javaCallback(3, COOLMIC_ERROR_GENERIC, -1);
+            } else {
                 javaCallback(3, *(const int *) arg0, -1);
-            }
-            else {
-                javaCallback(3, *(const int *) arg0, COOLMIC_ERROR_GENERIC);
             }
 
             LOGI("ERROR: %p", arg0);
