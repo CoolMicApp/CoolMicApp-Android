@@ -290,6 +290,8 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
     {
         LOGI("UNKNOWN EVENT: %d %p %p", event, arg0, arg1);
     }
+
+    return 0;
 }
 
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jstring title, jstring artist, jdouble quality, jint restart)
@@ -326,6 +328,8 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
 static int logging_callback(coolmic_logging_level_t level, const char *msg)
 {
     LOGI("libcoolmic: [%s] %s", coolmic_logging_level2string(level), msg);
+
+    return 0;
 }
 
 
