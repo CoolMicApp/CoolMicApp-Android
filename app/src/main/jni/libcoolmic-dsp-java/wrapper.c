@@ -224,72 +224,70 @@ static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
 
 static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event_t event, void *thread, void *arg0, void *arg1)
 {
+    coolmic_vumeter_result_t * vumeter_result;
+    coolmic_simple_connectionstate_t * connection_state;
+    const int * error_code;
+
     LOGI("EVENT: %d %p %p", event, arg0, arg1);
 
-    if(event == COOLMIC_SIMPLE_EVENT_THREAD_START)
-    {
-        LOGI("THREAD START!");
-    }
-    else if(event == COOLMIC_SIMPLE_EVENT_THREAD_POST_START)
-    {
-        LOGI("THREAD POST START!");
+    switch (event) {
+        case COOLMIC_SIMPLE_EVENT_THREAD_START:
+            LOGI("THREAD START!");
+            break;
+        case COOLMIC_SIMPLE_EVENT_THREAD_POST_START:
+            LOGI("THREAD POST START!");
+            javaCallback(1, -1, -1);
+            break;
+        case COOLMIC_SIMPLE_EVENT_THREAD_PRE_STOP:
+            LOGI("THREAD PRE STOP");
 
-        javaCallback(1, -1, -1);
-    }
-    else if(event == COOLMIC_SIMPLE_EVENT_THREAD_PRE_STOP)
-    {
-        LOGI("THREAD PRE STOP");
+            javaCallback(2, -1, -1);
+            break;
+        case COOLMIC_SIMPLE_EVENT_THREAD_STOP:
+            LOGI("THREAD STOP");
+            break;
+        case COOLMIC_SIMPLE_EVENT_ERROR:
+            if (arg0 == NULL) {
+                javaCallback(3, *(const int *) arg0, -1);
+            }
+            else {
+                javaCallback(3, *(const int *) arg0, COOLMIC_ERROR_GENERIC);
+            }
 
-        javaCallback(2, -1, -1);
-    }
-    else if(event == COOLMIC_SIMPLE_EVENT_THREAD_STOP)
-    {
-        LOGI("THREAD STOP");
-    }
-    else if(event == COOLMIC_SIMPLE_EVENT_ERROR)
-    {
+            LOGI("ERROR: %p", arg0);
+            break;
+        case COOLMIC_SIMPLE_EVENT_VUMETER_RESULT:
+            vumeter_result = (coolmic_vumeter_result_t *) arg0;
 
-        if(arg0 == NULL)
-        {
-            javaCallback(3, *(const int*)arg0, -1);
-        }
-        else
-        {
-            javaCallback(3, *(const int*)arg0, COOLMIC_ERROR_GENERIC);
-        }
+            LOGI("VUM: PRE CALL");
+            javaCallbackVUMeter(vumeter_result);
+            LOGI("VUM: POST CALL ");
 
-        LOGI("ERROR: %p", arg0);
-    }
-    else if(event == COOLMIC_SIMPLE_EVENT_VUMETER_RESULT)
-    {
-        coolmic_vumeter_result_t * result = (coolmic_vumeter_result_t*) arg0;
+            LOGI("VUM: c%d c0 %f c1 %f c2 %f g %f", vumeter_result->channels, vumeter_result->channel_power[0],
+                 vumeter_result->channel_power[1], vumeter_result->channel_power[2], vumeter_result->global_power);
+            break;
+        case COOLMIC_SIMPLE_EVENT_STREAMSTATE:
+            connection_state = (coolmic_simple_connectionstate_t *) arg0;
+            error_code = (const int *) arg1;
 
-        LOGI("VUM: PRE CALL");
-        javaCallbackVUMeter(result);
-        LOGI("VUM: POST CALL ");
+            if (error_code == NULL)
+            {
+                javaCallback(4, (int) *connection_state, COOLMIC_ERROR_NONE);
+                LOGI("SS: state: %d code: NULL", (int) *connection_state);
+            }
+            else
+            {
+                javaCallback(4, (int) *connection_state, *error_code);
+                LOGI("SS: state: %d code: %d", (int) *connection_state, *error_code);
+            }
+            break;
 
-        LOGI("VUM: c%d c0 %f c1 %f c2 %f g %f", result->channels, result->channel_power[0], result->channel_power[1], result->channel_power[2], result->global_power);
-    }
-    else if(event == COOLMIC_SIMPLE_EVENT_STREAMSTATE)
-    {
-        coolmic_simple_connectionstate_t * state = (coolmic_simple_connectionstate_t *) arg0;
-        const int * error_code = (const int*) arg1;
+        default:
+            LOGI("UNKNOWN EVENT: %d %p %p", event, arg0, arg1);
 
-        if(error_code == NULL)
-        {
-            javaCallback(4, (int)*state, COOLMIC_ERROR_NONE);
-            LOGI("SS: state: %d code: NULL", (int)*state);
-        }
-        else
-        {
-            javaCallback(4, (int)*state, *error_code);
-            LOGI("SS: state: %d code: %d", (int)*state, *error_code);
-        }
+            break;
     }
-    else
-    {
-        LOGI("UNKNOWN EVENT: %d %p %p", event, arg0, arg1);
-    }
+
 
     return 0;
 }
