@@ -76,6 +76,9 @@ public class Wrapper {
     public static native int setVuMeterInterval(int interval);
     public static native int performMetaDataQualityUpdate(String title, String artist, double quality, int restart);
     public static native int setReconnectionProfile(String profile);
+    public static native int setMasterGainMono(int scale, int gain);
+    public static native int setMasterGainStereo(int scale, int gain_left, int gain_right);
+    public static native int resetMasterGain();
 
     public static native void initNative();
     public static native int init(Activity handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);

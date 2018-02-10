@@ -429,6 +429,50 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setReconnectionProfile(JNIEnv *env, jclas
     (*env)->ReleaseStringUTFChars(env, profile_, profile);
 }
 
+static int __setMasterGain(unsigned int channels, uint16_t scale, const uint16_t *gain) {
+    coolmic_transform_t *transform;
+    int ret;
+
+    if (coolmic_simple_obj == NULL)
+    {
+        LOGI("setMasterGain bailing - no core obj");
+        return -999666;
+    }
+
+    transform = coolmic_simple_get_transform(coolmic_simple_obj);
+    if (transform == NULL) {
+        LOGI("setMasterGain bailing - no transform obj");
+        return -999666;
+    }
+
+    ret = coolmic_transform_set_master_gain(transform, channels, scale, gain);
+
+    coolmic_transform_unref(transform);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL
+Java_cc_echonet_coolmicdspjava_Wrapper_resetMasterGain(JNIEnv *env, jclass type) {
+    return __setMasterGain(0, 0, NULL);
+}
+
+JNIEXPORT jint JNICALL
+Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainStereo(JNIEnv *env, jclass type, jint scale,
+                                                           jint gain_left, jint gain_right) {
+    const uint16_t cgain[2] = {(uint16_t)gain_left, (uint16_t)gain_right};
+
+    return __setMasterGain(2, (uint16_t)scale, cgain);
+}
+
+JNIEXPORT jint JNICALL
+Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainMono(JNIEnv *env, jclass type, jint scale,
+                                                         jint gain) {
+    const uint16_t cgain[1] = {(uint16_t)gain};
+
+    return __setMasterGain(2, (uint16_t)scale, cgain);
+}
+
 #ifdef __cplusplus
 }
 #endif
