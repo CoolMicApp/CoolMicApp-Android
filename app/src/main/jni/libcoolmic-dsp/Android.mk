@@ -12,7 +12,7 @@ LOCAL_SHARED_LIBRARIES := libogg libvorbis libshout libopus
 
 LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lOpenSLES
 
-SOURCE_FILES = coolmic-dsp.c enc.c enc_vorbis.c enc_opus.c iohandle.c shout.c simple.c snddev.c vumeter.c tee.c snddev_null.c snddev_sine.c snddev_opensl.c snddev_stdio.c util.c metadata.c logging.c
+SOURCE_FILES = coolmic-dsp.c enc.c enc_vorbis.c enc_opus.c common_opus.c iohandle.c shout.c simple.c snddev.c vumeter.c tee.c snddev_null.c snddev_sine.c snddev_opensl.c snddev_stdio.c util.c metadata.c logging.c transform.c 
 
 LOCAL_SRC_FILES := $(foreach c,$(SOURCE_FILES),libcoolmic-dsp/src/$c)
 
