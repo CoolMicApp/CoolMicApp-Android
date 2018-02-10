@@ -20,6 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cool Mic.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <string.h>
 #include <jni.h>
 #include "coolmic-dsp/coolmic-dsp.h"
 #include "coolmic-dsp/simple.h"
