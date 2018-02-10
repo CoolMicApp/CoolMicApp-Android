@@ -413,6 +413,22 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_initNative(JNIEnv 
     vumeter_result_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/VUMeterResult"));
 }
 
+JNIEXPORT jint JNICALL
+Java_cc_echonet_coolmicdspjava_Wrapper_setReconnectionProfile(JNIEnv *env, jclass type,
+                                                              jstring profile_) {
+    const char *profile = (*env)->GetStringUTFChars(env, profile_, 0);
+
+    if (coolmic_simple_obj == NULL)
+    {
+        LOGI("setReconnectionProfile bailing - no core obj");
+        return -999666;
+    }
+
+    return coolmic_simple_set_reconnection_profile(coolmic_simple_obj, profile);
+
+    (*env)->ReleaseStringUTFChars(env, profile_, profile);
+}
+
 #ifdef __cplusplus
 }
 #endif
