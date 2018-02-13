@@ -4,7 +4,8 @@
         android:id="@+id/main_linear_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:theme="@style/AppTheme">
 
             <LinearLayout
                 android:id="@+id/available_qualities_layout"
