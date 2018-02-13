@@ -147,6 +147,7 @@
     <string name="question_stop_broadcasting">Stop Livestream?</string>
     <string name="exception_start_failed">Failed to start Livestream: %1$d</string>
     <string name="exception_failed_metadata_quality">Failed to set Metadata or Quality: %1$d</string>
+    <string name="exception_failed_reconnect">Could not set Reconnection Mode: %1$d</string>
     <string name="exception_failed_start_general">"Failed to start Livestream. "</string>
     <string name="settings_conn_defaults_loaded">CoolMic Test Server Data Loaded</string>
     <string name="lblState">State:</string>
@@ -216,4 +217,8 @@
     <string name="mainactivity_missing_connection_details_body">You seem to have no connection details set. Should we load the Test System Data? If you decline please set them in the Settings.</string>
     <string name="mainactivity_missing_connection_details_no">No.</string>
     <string name="mainactivity_missing_connection_details_yes">Yes</string>
+    <string name="pref_title_connection_reconnect">Perform Autoreconnect?</string>
+    <string name="pref_option_connection_reconnect_off">off</string>
+    <string name="pref_option_connection_reconnect_on">on</string>
+    <string name="reconnecting">... Reconnecting ...</string>
 </resources>

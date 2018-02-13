@@ -227,6 +227,7 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 {
     coolmic_vumeter_result_t * vumeter_result;
     coolmic_simple_connectionstate_t * connection_state;
+    struct timespec * timespecPtr;
     const int * error_code;
 
     LOGI("EVENT: %d %p %p", event, arg0, arg1);
@@ -281,7 +282,14 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
                 LOGI("SS: state: %d code: %d", (int) *connection_state, *error_code);
             }
             break;
+        case COOLMIC_SIMPLE_EVENT_RECONNECT:
+            timespecPtr = (struct timespec *) arg0;
 
+            LOGI("RECONNECT: in: %lli", (long long int) timespecPtr->tv_sec);
+
+            javaCallback(5, (int) timespecPtr->tv_sec, NULL);
+
+            break;
         default:
             LOGI("UNKNOWN EVENT: %d %p %p", event, arg0, arg1);
 

@@ -51,6 +51,12 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/pref_title_connection_mountpoint" />
+
+        <SwitchPreference
+            android:key="connection_reconnect"
+            android:title="@string/pref_title_connection_reconnect"
+            android:switchTextOff="@string/pref_option_connection_reconnect_off"
+            android:switchTextOn="@string/pref_option_connection_reconnect_on" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_audio">

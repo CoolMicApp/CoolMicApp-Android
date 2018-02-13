@@ -55,6 +55,10 @@ public class CoolMic {
         return prefs.getString("connection_mountpoint", "");
     }
 
+    public Boolean getReconnect() {
+        return prefs.getBoolean("connection_reconnect", false);
+    }
+
     public String getUsername() {
         return prefs.getString("connection_username", "");
     }

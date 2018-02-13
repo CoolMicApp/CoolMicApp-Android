@@ -76,6 +76,13 @@ import cc.echonet.coolmicdspjava.Wrapper;
  */
 public class MainActivity extends Activity {
 
+    enum CONTROL_UI {
+        CONTROL_UI_CONNECTING,
+        CONTROL_UI_CONNECTED,
+        CONTROL_UI_RECONNECTING,
+        CONTROL_UI_RECONNECTED,
+        CONTROL_UI_DISCONNECTED
+    }
 
     final Context context = this;
     CoolMic coolmic = null;
@@ -335,7 +342,7 @@ public class MainActivity extends Activity {
 
         if(hasCore())
         {
-            controlRecordingUI(true);
+            controlRecordingUI(CONTROL_UI.CONTROL_UI_CONNECTED);
         }
     }
 
@@ -381,7 +388,7 @@ public class MainActivity extends Activity {
                     backyes = true;
                     dialog.cancel();
 
-                    controlRecordingUI(false);
+                    controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
@@ -396,47 +403,55 @@ public class MainActivity extends Activity {
         return Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED && Wrapper.hasCore();
     }
 
-    public void controlButtonState(int state)
-    {
-        switch(state)
+    public void controlRecordingUI(CONTROL_UI state) {
+        if(state == CONTROL_UI.CONTROL_UI_CONNECTING)
         {
-            case 0:
-                start_button.clearAnimation();
-                start_button.setBackground(buttonColor);
-                start_button.setText(R.string.start_broadcast);
-                start_button.setEnabled(true);
-                break;
+            start_button.startAnimation(animation);
+            start_button.setBackground(transitionButton);
+            transitionButton.startTransition(5000);
 
-            case 1:
-                start_button.startAnimation(animation);
-                start_button.setBackground(transitionButton);
-                transitionButton.startTransition(5000);
-
-                start_button.setText(R.string.cmdStartInitializing);
-                start_button.setEnabled(false);
-                break;
-
-            case 2:
-                start_button.setText(R.string.broadcasting);
-                start_button.setEnabled(true);
-                break;
+            start_button.setText(R.string.cmdStartInitializing);
+            start_button.setEnabled(false);
         }
-    }
-
-    public void controlRecordingUI(boolean running) {
-
-        if(running)
+        else if(state == CONTROL_UI.CONTROL_UI_CONNECTED)
         {
             startService(new Intent(getBaseContext(), MyService.class));
             RedFlashLight();
 
-            controlButtonState(2);
+            controlTimerThread(true);
+
+            start_button.startAnimation(animation);
+            start_button.setBackground(transitionButton);
+
+            start_button.setText(R.string.broadcasting);
+            start_button.setEnabled(true);
+        }
+        else if(state == CONTROL_UI.CONTROL_UI_RECONNECTING)
+        {
+            controlTimerThread(false);
+
+            start_button.setText(R.string.reconnecting);
+            start_button.setEnabled(true);
+        }
+        else if(state == CONTROL_UI.CONTROL_UI_RECONNECTED)
+        {
+            controlTimerThread(true, timeSwapBuff);
+
+            start_button.clearAnimation();
+            start_button.startAnimation(animation);
+            start_button.setBackground(transitionButton);
+
+            start_button.setText(R.string.broadcasting);
+            start_button.setEnabled(true);
         }
         else
         {
             invalidateOptionsMenu();
 
-            controlButtonState(0);
+            start_button.clearAnimation();
+            start_button.setBackground(buttonColor);
+            start_button.setText(R.string.start_broadcast);
+            start_button.setEnabled(true);
 
             ClearLED();
 
@@ -498,7 +513,7 @@ public class MainActivity extends Activity {
             return;
         }
 
-        controlButtonState(1);
+        controlRecordingUI(CONTROL_UI.CONTROL_UI_CONNECTING);
 
         if (hasCore()) {
             stopRecording(view);
@@ -507,7 +522,7 @@ public class MainActivity extends Activity {
 
         if (!checkPermission()) {
             startLock.unlock();
-            controlButtonState(0);
+            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
             Utils.requestPermissions(this);
 
@@ -517,20 +532,20 @@ public class MainActivity extends Activity {
         if (Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
             startLock.unlock();
-            controlButtonState(0);
+            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
             return;
         }
 
         if (!isOnline()) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_SHORT).show();
             startLock.unlock();
-            controlButtonState(0);
+            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
             return;
         }
 
         if (!coolmic.isConnectionSet()) {
             startLock.unlock();
-            controlButtonState(0);
+            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle(R.string.mainactivity_missing_connection_details_title);
@@ -560,7 +575,7 @@ public class MainActivity extends Activity {
             alertDialog.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     startLock.unlock();
-                    controlButtonState(0);
+                    controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
                     dialog.cancel();
                 }
             });
@@ -622,6 +637,19 @@ public class MainActivity extends Activity {
                 throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
             }
 
+            if(coolmic.getReconnect()) {
+                status = Wrapper.setReconnectionProfile("enabled");
+            }
+            else
+            {
+                status = Wrapper.setReconnectionProfile("disabled");
+            }
+
+            if(status != 0)
+            {
+                throw new Exception(getString(R.string.exception_failed_reconnect, status));
+            }
+
             status = Wrapper.start();
 
             Log.d("VS", "Status:" + status);
@@ -662,7 +690,7 @@ public class MainActivity extends Activity {
         timeSwapBuff += timeInMilliseconds;
         customHandler.removeCallbacks(updateTimerThread);
 
-        controlRecordingUI(false);
+        controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
         if(startLock.isHeldByCurrentThread()) {
             startLock.unlock();
@@ -699,6 +727,8 @@ public class MainActivity extends Activity {
         final int arg0_final = arg0;
         final int arg1_final = arg1;
         MainActivity.this.runOnUiThread(new Runnable(){
+            String error = "";
+
             public void run(){
                 switch(what_final) {
                     case 1:
@@ -706,22 +736,22 @@ public class MainActivity extends Activity {
 
                         break;
                     case 2:
-                        controlRecordingUI(false);
+                        controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
                         break;
                     case 3:
-                        controlRecordingUI(false);
+                        if(coolmic.getReconnect()) {
+                            controlRecordingUI(CONTROL_UI.CONTROL_UI_RECONNECTING);
+                        }
+                        else
+                        {
+                            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
+                        }
 
                         Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_error, arg0_final), Toast.LENGTH_SHORT).show();
 
-                        if(hasCore())
-                        {
-                            Wrapper.unref();
-                        }
-
                         break;
                     case 4:
-                        String error = "";
 
                         if(arg1_final != 0)
                         {
@@ -730,15 +760,31 @@ public class MainActivity extends Activity {
 
                         if(arg0_final == 2)
                         {
-                            controlRecordingUI(true);
+                            if(!coolmic.getReconnect()) {
+                                controlRecordingUI(CONTROL_UI.CONTROL_UI_CONNECTED);
+                            }
+                            else
+                            {
+                                controlRecordingUI(CONTROL_UI.CONTROL_UI_RECONNECTED);
+                            }
                         }
                         else if(arg0_final == 4 || arg0_final == 5)
                         {
-                            stopRecording(null);
+                            if(!coolmic.getReconnect()) {
+                                controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
+                            }
+                            else
+                            {
+                                controlRecordingUI(CONTROL_UI.CONTROL_UI_RECONNECTING);
+                            }
                         }
 
                         ((TextView) MainActivity.this.findViewById(R.id.txtState)).setText(getString(R.string.txtStateFormat, Utils.getStringByName(MainActivity.this, "coolmic_cs", arg0_final), error));
                         //Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
+
+                        break;
+                    case 5:
+                        ((TextView) MainActivity.this.findViewById(R.id.txtState)).setText(String.format("reconnect in %d secs", arg0_final));
 
                         break;
                 }

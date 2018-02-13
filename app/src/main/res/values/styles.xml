@@ -2,6 +2,7 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Holo">
         <!-- Customize your theme here. -->
+        <item name="android:background">#000000</item>
     </style>
     <!-- Code borrowed from this StackExchange post http://stackoverflow.com/questions/3926395/android-set-a-progressbar-to-be-a-vertical-bar-instead-of-horizontal/8277231#8277231 -->
     <style name="Widget">
