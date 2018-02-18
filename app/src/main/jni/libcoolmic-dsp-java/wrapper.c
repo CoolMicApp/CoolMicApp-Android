@@ -333,6 +333,7 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
 
 static int logging_callback(coolmic_logging_level_t level, const char *msg)
 {
+    return 0;
     LOGI("libcoolmic: [%s] %s", coolmic_logging_level2string(level), msg);
 
     return 0;

@@ -29,11 +29,10 @@ import android.app.Activity;
  */
 public class Wrapper {
 
-    public  enum WrapperInitializationStatus { WRAPPER_UNINITIALIZED, WRAPPER_INITIALIZATION_ERROR, WRAPPER_INTITIALIZED }
-    private static WrapperInitializationStatus state = WrapperInitializationStatus.WRAPPER_UNINITIALIZED;
+    private static WrapperConstants.WrapperInitializationStatus state = WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED;
     private static Throwable initException = null;
 
-    public static WrapperInitializationStatus getState()
+    public static WrapperConstants.WrapperInitializationStatus getState()
     {
         return state;
     }
@@ -43,7 +42,7 @@ public class Wrapper {
         return initException;
     }
 
-    public static WrapperInitializationStatus init()
+    public static WrapperConstants.WrapperInitializationStatus init()
     {
         try
         {
@@ -55,12 +54,12 @@ public class Wrapper {
 
             initNative();
 
-            state = WrapperInitializationStatus.WRAPPER_INTITIALIZED;
+            state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED;
         }
         catch (Throwable ex)
         {
             initException = ex;
-            state = WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR;
+            state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR;
         }
 
         return state;
@@ -81,5 +80,5 @@ public class Wrapper {
     public static native int resetMasterGain();
 
     public static native void initNative();
-    public static native int init(Activity handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
+    public static native int init(Object handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
 }

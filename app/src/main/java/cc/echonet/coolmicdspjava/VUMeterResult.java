@@ -1,9 +1,11 @@
 package cc.echonet.coolmicdspjava;
 
+import java.io.Serializable;
+
 /**
  * Created by stephanj on 23.05.2016.
  */
-public class VUMeterResult {
+public class VUMeterResult implements Serializable {
 
     public VUMeterResult() {
 

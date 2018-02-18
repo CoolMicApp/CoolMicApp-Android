@@ -22,33 +22,32 @@
  */
 package cc.echonet.coolmicapp;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.os.SystemClock;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -69,19 +68,109 @@ import java.util.Locale;
 import java.util.concurrent.locks.ReentrantLock;
 
 import cc.echonet.coolmicdspjava.VUMeterResult;
-import cc.echonet.coolmicdspjava.Wrapper;
+import cc.echonet.coolmicdspjava.WrapperConstants;
 
 /**
  * This activity demonstrates how to use JNI to encode and decode ogg/vorbis audio
  */
 public class MainActivity extends Activity {
+    Messenger mBackgroundService = null;
+    Messenger mBackgroundServiceClient = null;
+    boolean mBackgroundServiceBound = false;
 
-    enum CONTROL_UI {
-        CONTROL_UI_CONNECTING,
-        CONTROL_UI_CONNECTED,
-        CONTROL_UI_RECONNECTING,
-        CONTROL_UI_RECONNECTED,
-        CONTROL_UI_DISCONNECTED
+    boolean hasCore = true;
+    Constants.CONTROL_UI uiState;
+    WrapperConstants.WrapperInitializationStatus wrapperState;
+
+
+    private ServiceConnection mBackgroundServiceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // This is called when the connection with the service has been
+            // established, giving us the object we can use to
+            // interact with the service.  We are communicating with the
+            // service using a Messenger, so here we get a client-side
+            // representation of that from the raw IBinder object.
+            mBackgroundService = new Messenger(service);
+            mBackgroundServiceBound = true;
+
+            // Create and send a message to the service, using a supported 'what' value
+            Message msg = Message.obtain(null, Constants.C2S_MSG_STATE, 0, 0);
+
+            msg.replyTo = mBackgroundServiceClient;
+
+            try {
+                mBackgroundService.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            mBackgroundService = null;
+            mBackgroundServiceBound = false;
+        }
+    };
+
+
+    /**
+     * Handler of incoming messages from clients.
+     */
+    static class IncomingHandler extends Handler {
+        private final MainActivity activity;
+
+        IncomingHandler(MainActivity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Constants.S2C_MSG_STATE_REPLY:
+                    Bundle bundle = msg.getData();
+
+                    Constants.CONTROL_UI oldState = activity.uiState;
+
+                    activity.uiState = (Constants.CONTROL_UI) bundle.getSerializable("uiState");
+                    activity.wrapperState = (WrapperConstants.WrapperInitializationStatus) bundle.getSerializable("wrapperState");
+                    activity.hasCore = bundle.getBoolean("hasCore");
+
+                    if(oldState != activity.uiState) {
+                        activity.controlRecordingUI(activity.uiState);
+                    }
+
+                    ((TextView) activity.findViewById(R.id.txtState)).setText(bundle.getString("txtState", "unknown"));
+
+                    break;
+
+                case Constants.S2C_MSG_STREAM_START_REPLY:
+                    activity.controlVuMeterUI(Integer.parseInt(activity.coolmic.getVuMeterInterval()) != 0);
+                    activity.startLock.unlock();
+
+                    activity.controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
+
+                    break;
+
+                case Constants.S2C_MSG_STREAM_STOP_REPLY:
+                    Toast.makeText(activity, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
+
+                    activity.controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
+
+                    break;
+
+                case Constants.S2C_MSG_VUMETER:
+                    Bundle bundleVUMeter = msg.getData();
+
+                    activity.handleVUMeterResult((VUMeterResult) bundleVUMeter.getSerializable("vumeterResult"));
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    MainActivity() {
+        this.mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
     }
 
     final Context context = this;
@@ -147,6 +236,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        /*
         if (hasCore()) {
             menu.findItem(R.id.menu_action_settings).setVisible(false);
             menu.findItem(R.id.menu_action_about).setVisible(false);
@@ -154,6 +244,7 @@ public class MainActivity extends Activity {
             menu.findItem(R.id.menu_action_settings).setVisible(true);
             menu.findItem(R.id.menu_action_about).setVisible(true);
         }
+        */
         return true;
     }
 
@@ -192,15 +283,8 @@ public class MainActivity extends Activity {
     }
 
     private void exitApp() {
-        ClearLED();
-
-        if(hasCore()) {
-            Wrapper.stop();
-            Wrapper.unref();
-        }
 
         finish();
-        System.exit(0);
     }
 
     private void goSettings() {
@@ -216,8 +300,7 @@ public class MainActivity extends Activity {
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null &&
-                cm.getActiveNetworkInfo().isConnectedOrConnecting();
+        return cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
     @Override
@@ -234,53 +317,44 @@ public class MainActivity extends Activity {
         return Utils.checkRequiredPermissions(this);
     }
 
-    private void RedFlashLight() {
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
-
-        Notification notif = new Notification.Builder(context).setLights(0xFFff0000, 100, 100).setOngoing(true).setSmallIcon(R.drawable.icon).setContentIntent(resultPendingIntent).setContentTitle("Streaming").setContentText("Streaming...").build();
-
-        nm.notify(Constants.NOTIFICATION_ID_LED, notif);
-    }
-
-    private void ClearLED() {
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(Constants.NOTIFICATION_ID_LED);
-    }
-
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasCore()) {
-            RedFlashLight();
-        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.v("$$$$$$", "In Method: onDestroy()");
 
-        if(hasCore())
-        {
-            ClearLED();
-            stopRecording(null);
+        Log.v("$$$$$$", "In Method: onDestroy()");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to the service
+        bindService(new Intent(this, BackgroundService.class), mBackgroundServiceConnection,
+                Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBackgroundServiceBound) {
+            unbindService(mBackgroundServiceConnection);
+            mBackgroundServiceBound = false;
         }
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.home);
-        timerValue = (TextView) findViewById(R.id.timerValue);
+        timerValue = findViewById(R.id.timerValue);
+        /*
         BroadcastReceiver mPowerKeyReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -293,14 +367,15 @@ public class MainActivity extends Activity {
             }
         };
         final IntentFilter theFilter = new IntentFilter();
-        /** System Defined Broadcast */
+        // System Defined Broadcast
         theFilter.addAction(Intent.ACTION_SCREEN_ON);
         theFilter.addAction(Intent.ACTION_SCREEN_OFF);
         theFilter.addAction(Intent.ACTION_USER_PRESENT);
 
         getApplicationContext().registerReceiver(mPowerKeyReceiver, theFilter);
+        */
 
-        imageView1 = (ImageView) findViewById(R.id.imageView1);
+        imageView1 = findViewById(R.id.imageView1);
 
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
 
@@ -311,39 +386,35 @@ public class MainActivity extends Activity {
         animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
         animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
         animation.setRepeatMode(Animation.REVERSE);
-        start_button = (Button) findViewById(R.id.start_recording_button);
+        start_button = findViewById(R.id.start_recording_button);
         buttonColor = start_button.getBackground();
 
         coolmic = new CoolMic(this, "default");
 
-        if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_UNINITIALIZED)
-        {
-            if(Wrapper.init() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
-            {
-                Log.d("WrapperInit", Wrapper.getInitException().toString());
-                Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
-            }
-        }
-        else if(Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR)
-        {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_previnit_error, Toast.LENGTH_SHORT).show();
-        }
-        else if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED)
-        {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_unknown_state, Toast.LENGTH_SHORT).show();
-        }
-
-        txtListeners = (TextView) findViewById(R.id.txtListeners);
+        txtListeners = findViewById(R.id.txtListeners);
         IntentFilter mStatusIntentFilter = new IntentFilter( Constants.BROADCAST_STREAM_STATS_SERVICE );
         LocalBroadcastManager.getInstance(this).registerReceiver(mStreamStatsReceiver, mStatusIntentFilter);
 
 
         controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
 
+        if(mBackgroundServiceBound)
+        {
+            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STATE, 0, 0);
+            msgReply.replyTo = mBackgroundServiceClient;
+            try {
+                mBackgroundService.send(msgReply);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /*
         if(hasCore())
         {
             controlRecordingUI(CONTROL_UI.CONTROL_UI_CONNECTED);
         }
+        */
     }
 
     public void onImageClick(View view) {
@@ -373,6 +444,7 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         // Write your code here
+        /*
         if (hasCore()) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
             alertDialog.setTitle(R.string.question_stop_broadcasting);
@@ -397,14 +469,11 @@ public class MainActivity extends Activity {
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
+        */
     }
 
-    public boolean hasCore() {
-        return Wrapper.getState() == Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED && Wrapper.hasCore();
-    }
-
-    public void controlRecordingUI(CONTROL_UI state) {
-        if(state == CONTROL_UI.CONTROL_UI_CONNECTING)
+    public void controlRecordingUI(Constants.CONTROL_UI state) {
+        if(state == Constants.CONTROL_UI.CONTROL_UI_CONNECTING)
         {
             start_button.startAnimation(animation);
             start_button.setBackground(transitionButton);
@@ -412,13 +481,12 @@ public class MainActivity extends Activity {
 
             start_button.setText(R.string.cmdStartInitializing);
             start_button.setEnabled(false);
+
+            controlTimerThread(true, 0);
         }
-        else if(state == CONTROL_UI.CONTROL_UI_CONNECTED)
+        else if(state == Constants.CONTROL_UI.CONTROL_UI_CONNECTED)
         {
             startService(new Intent(getBaseContext(), MyService.class));
-            RedFlashLight();
-
-            controlTimerThread(true);
 
             start_button.startAnimation(animation);
             start_button.setBackground(transitionButton);
@@ -426,14 +494,14 @@ public class MainActivity extends Activity {
             start_button.setText(R.string.broadcasting);
             start_button.setEnabled(true);
         }
-        else if(state == CONTROL_UI.CONTROL_UI_RECONNECTING)
+        else if(state == Constants.CONTROL_UI.CONTROL_UI_RECONNECTING)
         {
             controlTimerThread(false);
 
             start_button.setText(R.string.reconnecting);
             start_button.setEnabled(true);
         }
-        else if(state == CONTROL_UI.CONTROL_UI_RECONNECTED)
+        else if(state == Constants.CONTROL_UI.CONTROL_UI_RECONNECTED)
         {
             controlTimerThread(true, timeSwapBuff);
 
@@ -446,14 +514,13 @@ public class MainActivity extends Activity {
         }
         else
         {
-            invalidateOptionsMenu();
-
             start_button.clearAnimation();
             start_button.setBackground(buttonColor);
             start_button.setText(R.string.start_broadcast);
             start_button.setEnabled(true);
 
-            ClearLED();
+            timeSwapBuff += timeInMilliseconds;
+            customHandler.removeCallbacks(updateTimerThread);
 
             ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
             ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
@@ -463,8 +530,6 @@ public class MainActivity extends Activity {
             ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
 
             controlTimerThread(false);
-
-            stopService(new Intent(getBaseContext(), MyService.class));
         }
     }
 
@@ -513,39 +578,39 @@ public class MainActivity extends Activity {
             return;
         }
 
-        controlRecordingUI(CONTROL_UI.CONTROL_UI_CONNECTING);
+        controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_CONNECTING);
 
-        if (hasCore()) {
+        if (hasCore) {
             stopRecording(view);
             return;
         }
 
         if (!checkPermission()) {
             startLock.unlock();
-            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
+            controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
             Utils.requestPermissions(this);
 
             return;
         }
 
-        if (Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if (wrapperState != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
             startLock.unlock();
-            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
+            controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
             return;
         }
 
         if (!isOnline()) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_SHORT).show();
             startLock.unlock();
-            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
+            controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
             return;
         }
 
         if (!coolmic.isConnectionSet()) {
             startLock.unlock();
-            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
+            controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle(R.string.mainactivity_missing_connection_details_title);
@@ -575,7 +640,7 @@ public class MainActivity extends Activity {
             alertDialog.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     startLock.unlock();
-                    controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
+                    controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
                     dialog.cancel();
                 }
             });
@@ -597,113 +662,54 @@ public class MainActivity extends Activity {
     {
         invalidateOptionsMenu();
 
-        try {
-            String portnum;
-            String server = coolmic.getServerName();
-            Integer port_num = 8000;
+        if(mBackgroundServiceBound)
+        {
+            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_START, 0, 0);
 
-            if (server.indexOf(":") > 0) {
-                String[] split = server.split(":");
-                server = split[0];
-                portnum = split[1];
-                port_num = Integer.parseInt(portnum);
+            msgReply.replyTo = mBackgroundServiceClient;
+
+            Bundle bundle = msgReply.getData();
+
+            bundle.putString("profile", "default");
+
+            try {
+                mBackgroundService.send(msgReply);
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
-
-            Log.d("VS", server);
-            Log.d("VS", port_num.toString());
-            String username = coolmic.getUsername();
-            String password = coolmic.getPassword();
-            String mountpoint = coolmic.getMountpoint();
-            String sampleRate_string = coolmic.getSampleRate();
-            String channel_string = coolmic.getChannels();
-            String quality_string = coolmic.getQuality();
-            String title = coolmic.getTitle();
-            String artist = coolmic.getArtist();
-            String codec_string = coolmic.getCodec();
-
-            Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-            Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-            int status = Wrapper.init(MainActivity.this, server, port_num, username, password, mountpoint, codec_string, Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
-
-            if(status != 0)
-            {
-                throw new Exception("Failed to init Core: "+String.valueOf(status));
-            }
-
-            status = Wrapper.performMetaDataQualityUpdate(title, artist, Double.parseDouble(quality_string), 0);
-
-            if(status != 0)
-            {
-                throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
-            }
-
-            if(coolmic.getReconnect()) {
-                status = Wrapper.setReconnectionProfile("enabled");
-            }
-            else
-            {
-                status = Wrapper.setReconnectionProfile("disabled");
-            }
-
-            if(status != 0)
-            {
-                throw new Exception(getString(R.string.exception_failed_reconnect, status));
-            }
-
-            status = Wrapper.start();
-
-            Log.d("VS", "Status:" + status);
-
-            if(status != 0)
-            {
-                throw new Exception(getString(R.string.exception_start_failed, status));
-            }
-
-            int interval = Integer.parseInt(coolmic.getVuMeterInterval());
-
-            Wrapper.setVuMeterInterval(interval);
-
-            controlVuMeterUI(interval != 0);
-
-            startLock.unlock();
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            Log.e("VS", "Livestream Start: Exception: ", e);
-
-            stopRecording(null);
-
-            Toast.makeText(MainActivity.this, R.string.exception_failed_start_general, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void stopRecording(@SuppressWarnings("unused") View view) {
-        if(Wrapper.getState() != Wrapper.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if(wrapperState != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
         }
 
-        if(!hasCore())
+        if(!hasCore)
         {
             return;
         }
 
-        timeSwapBuff += timeInMilliseconds;
-        customHandler.removeCallbacks(updateTimerThread);
-
-        controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
+        controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
         if(startLock.isHeldByCurrentThread()) {
             startLock.unlock();
         }
 
-        Wrapper.stop();
-        Wrapper.unref();
-
-        Toast.makeText(MainActivity.this, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
+        if(mBackgroundServiceBound)
+        {
+            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_STOP, 0, 0);
+            msgReply.replyTo = mBackgroundServiceClient;
+            try {
+                mBackgroundService.send(msgReply);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
@@ -718,79 +724,6 @@ public class MainActivity extends Activity {
 
     }
 
-    @SuppressWarnings("unused")
-    private void callbackHandler(int what, int arg0, int arg1)
-    {
-        Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
-
-        final int what_final = what;
-        final int arg0_final = arg0;
-        final int arg1_final = arg1;
-        MainActivity.this.runOnUiThread(new Runnable(){
-            String error = "";
-
-            public void run(){
-                switch(what_final) {
-                    case 1:
-                        controlTimerThread(true, 0);
-
-                        break;
-                    case 2:
-                        controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
-
-                        break;
-                    case 3:
-                        if(coolmic.getReconnect()) {
-                            controlRecordingUI(CONTROL_UI.CONTROL_UI_RECONNECTING);
-                        }
-                        else
-                        {
-                            controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
-                        }
-
-                        Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_error, arg0_final), Toast.LENGTH_SHORT).show();
-
-                        break;
-                    case 4:
-
-                        if(arg1_final != 0)
-                        {
-                            error = getString(R.string.txtStateFormatError, arg1_final);
-                        }
-
-                        if(arg0_final == 2)
-                        {
-                            if(!coolmic.getReconnect()) {
-                                controlRecordingUI(CONTROL_UI.CONTROL_UI_CONNECTED);
-                            }
-                            else
-                            {
-                                controlRecordingUI(CONTROL_UI.CONTROL_UI_RECONNECTED);
-                            }
-                        }
-                        else if(arg0_final == 4 || arg0_final == 5)
-                        {
-                            if(!coolmic.getReconnect()) {
-                                controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
-                            }
-                            else
-                            {
-                                controlRecordingUI(CONTROL_UI.CONTROL_UI_RECONNECTING);
-                            }
-                        }
-
-                        ((TextView) MainActivity.this.findViewById(R.id.txtState)).setText(getString(R.string.txtStateFormat, Utils.getStringByName(MainActivity.this, "coolmic_cs", arg0_final), error));
-                        //Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
-
-                        break;
-                    case 5:
-                        ((TextView) MainActivity.this.findViewById(R.id.txtState)).setText(String.format("reconnect in %d secs", arg0_final));
-
-                        break;
-                }
-            }
-        });
-    }
 
     static int normalizeVUMeterPower(double power)
     {
@@ -845,50 +778,39 @@ public class MainActivity extends Activity {
         }
     }
 
-    @SuppressWarnings("unused")
-    private void callbackVUMeterHandler(VUMeterResult result)
-    {
-        Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
+    public void handleVUMeterResult(VUMeterResult vuMeterResult) {
+        TextProgressBar pbVuMeterLeft = this.findViewById(R.id.pbVuMeterLeft);
+        TextProgressBar pbVuMeterRight = this.findViewById(R.id.pbVuMeterRight);
 
-        final VUMeterResult result_final = result;
-        MainActivity.this.runOnUiThread(new Runnable(){
-            public void run(){
-                TextProgressBar pbVuMeterLeft = (TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft);
-                TextProgressBar pbVuMeterRight = (TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight);
+        TextView rbPeakLeft = this.findViewById(R.id.rbPeakLeft);
+        TextView rbPeakRight = this.findViewById(R.id.rbPeakRight);
 
-                TextView rbPeakLeft = (TextView) MainActivity.this.findViewById(R.id.rbPeakLeft);
-                TextView rbPeakRight = (TextView) MainActivity.this.findViewById(R.id.rbPeakRight);
-
-                if(result_final.channels < 2) {
-                    pbVuMeterLeft.setProgress(normalizeVUMeterPower(result_final.global_power));
-                    pbVuMeterLeft.setTextColor(result_final.global_power_color);
-                    pbVuMeterLeft.setText(normalizeVUMeterPowerString(result_final.global_power));
-                    pbVuMeterRight.setProgress(normalizeVUMeterPower(result_final.global_power));
-                    pbVuMeterRight.setTextColor(result_final.global_power_color);
-                    pbVuMeterRight.setText(normalizeVUMeterPowerString(result_final.global_power));
-                    rbPeakLeft.setText(normalizeVUMeterPeak(result_final.global_peak));
-                    rbPeakLeft.setTextColor(result_final.global_peak_color);
-                    rbPeakRight.setText(normalizeVUMeterPeak(result_final.global_peak));
-                    rbPeakRight.setTextColor(result_final.global_peak_color);
-                }
-                else
-                {
-                    pbVuMeterLeft.setProgress(normalizeVUMeterPower(result_final.channels_power[0]));
-                    pbVuMeterLeft.setTextColor(result_final.channels_power_color[0]);
-                    pbVuMeterLeft.setText(normalizeVUMeterPowerString(result_final.channels_power[0]));
-                    pbVuMeterRight.setProgress(normalizeVUMeterPower(result_final.channels_power[1]));
-                    pbVuMeterRight.setTextColor(result_final.channels_power_color[1]);
-                    pbVuMeterRight.setText(normalizeVUMeterPowerString(result_final.channels_power[1]));
-                    rbPeakLeft.setText(normalizeVUMeterPeak(result_final.channels_peak[0]));
-                    rbPeakLeft.setTextColor(result_final.channels_peak_color[0]);
-                    rbPeakRight.setText(normalizeVUMeterPeak(result_final.channels_peak[1]));
-                    rbPeakRight.setTextColor(result_final.channels_peak_color[1]);
-                }
-
-            }
-        });
+        if(vuMeterResult.channels < 2) {
+            pbVuMeterLeft.setProgress(normalizeVUMeterPower(vuMeterResult.global_power));
+            pbVuMeterLeft.setTextColor(vuMeterResult.global_power_color);
+            pbVuMeterLeft.setText(normalizeVUMeterPowerString(vuMeterResult.global_power));
+            pbVuMeterRight.setProgress(normalizeVUMeterPower(vuMeterResult.global_power));
+            pbVuMeterRight.setTextColor(vuMeterResult.global_power_color);
+            pbVuMeterRight.setText(normalizeVUMeterPowerString(vuMeterResult.global_power));
+            rbPeakLeft.setText(normalizeVUMeterPeak(vuMeterResult.global_peak));
+            rbPeakLeft.setTextColor(vuMeterResult.global_peak_color);
+            rbPeakRight.setText(normalizeVUMeterPeak(vuMeterResult.global_peak));
+            rbPeakRight.setTextColor(vuMeterResult.global_peak_color);
+        }
+        else
+        {
+            pbVuMeterLeft.setProgress(normalizeVUMeterPower(vuMeterResult.channels_power[0]));
+            pbVuMeterLeft.setTextColor(vuMeterResult.channels_power_color[0]);
+            pbVuMeterLeft.setText(normalizeVUMeterPowerString(vuMeterResult.channels_power[0]));
+            pbVuMeterRight.setProgress(normalizeVUMeterPower(vuMeterResult.channels_power[1]));
+            pbVuMeterRight.setTextColor(vuMeterResult.channels_power_color[1]);
+            pbVuMeterRight.setText(normalizeVUMeterPowerString(vuMeterResult.channels_power[1]));
+            rbPeakLeft.setText(normalizeVUMeterPeak(vuMeterResult.channels_peak[0]));
+            rbPeakLeft.setTextColor(vuMeterResult.channels_peak_color[0]);
+            rbPeakRight.setText(normalizeVUMeterPeak(vuMeterResult.channels_peak[1]));
+            rbPeakRight.setTextColor(vuMeterResult.channels_peak_color[1]);
+        }
     }
-
 
     // Broadcast receiver for receiving status updates from the IntentService
     private class StreamStatsReceiver extends BroadcastReceiver
