@@ -7,8 +7,14 @@ import java.io.Serializable;
  */
 public class VUMeterResult implements Serializable {
 
-    public VUMeterResult() {
-
+    public VUMeterResult(int rate, int channels, long frames, int global_peak, double global_power, int global_peak_color, int global_power_color) {
+        this.rate = rate;
+        this.channels = channels;
+        this.frames = frames;
+        this.global_peak = global_peak;
+        this.global_power = global_power;
+        this.global_peak_color = global_peak_color;
+        this.global_power_color = global_power_color;
     }
 
     public int rate;
@@ -28,6 +34,7 @@ public class VUMeterResult implements Serializable {
     public int[] channels_peak_color;
     public int[] channels_power_color;
 
+    @SuppressWarnings("unused")
     public void setChannelPeakPower(int channel, int peak, double power, int peak_color, int power_color)
     {
         if(this.channels_peak == null)

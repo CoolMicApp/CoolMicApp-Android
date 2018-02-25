@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 25
 
     defaultConfig {
         applicationId "cc.echonet.coolmicapp"
@@ -11,7 +11,7 @@ android {
         versionName "1.0.2"
 
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 25
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

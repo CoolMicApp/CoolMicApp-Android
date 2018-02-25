@@ -23,17 +23,16 @@ class Constants {
         Manifest.permission.ACCESS_NETWORK_STATE
     };
 
-    static final int C2S_MSG_SAY_HELLO = 1;
-    static final int C2S_MSG_REGISTER = 2;
-    static final int C2S_MSG_DEREGISTER = 3;
-    static final int C2S_MSG_STATE = 4;
-    static final int C2S_MSG_STREAM_STOP = 5;
-    static final int C2S_MSG_STREAM_START = 6;
-    static final int S2C_MSG_PONG = 51;
+    static final int C2S_MSG_STATE = 1;
+    static final int C2S_MSG_STREAM_STOP = 2;
+    static final int C2S_MSG_STREAM_START = 3;
     static final int S2C_MSG_STATE_REPLY = 52;
     static final int S2C_MSG_STREAM_STOP_REPLY = 53;
     static final int S2C_MSG_STREAM_START_REPLY = 54;
     static final int S2C_MSG_VUMETER = 55;
+
+    static final int H2S_MSG_TIMER = 100;
+
 
 
     enum CONTROL_UI {

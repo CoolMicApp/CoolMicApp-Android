@@ -75,12 +75,10 @@ import cc.echonet.coolmicdspjava.WrapperConstants;
  */
 public class MainActivity extends Activity {
     Messenger mBackgroundService = null;
-    Messenger mBackgroundServiceClient = null;
+    Messenger mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
     boolean mBackgroundServiceBound = false;
 
-    boolean hasCore = true;
-    Constants.CONTROL_UI uiState;
-    WrapperConstants.WrapperInitializationStatus wrapperState;
+    BackgroundServiceState backgroundServiceState;
 
 
     private ServiceConnection mBackgroundServiceConnection = new ServiceConnection() {
@@ -130,17 +128,32 @@ public class MainActivity extends Activity {
                 case Constants.S2C_MSG_STATE_REPLY:
                     Bundle bundle = msg.getData();
 
-                    Constants.CONTROL_UI oldState = activity.uiState;
+                    Constants.CONTROL_UI oldState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
-                    activity.uiState = (Constants.CONTROL_UI) bundle.getSerializable("uiState");
-                    activity.wrapperState = (WrapperConstants.WrapperInitializationStatus) bundle.getSerializable("wrapperState");
-                    activity.hasCore = bundle.getBoolean("hasCore");
-
-                    if(oldState != activity.uiState) {
-                        activity.controlRecordingUI(activity.uiState);
+                    if(activity.backgroundServiceState != null) {
+                        oldState = activity.backgroundServiceState.uiState;
                     }
 
-                    ((TextView) activity.findViewById(R.id.txtState)).setText(bundle.getString("txtState", "unknown"));
+                    activity.backgroundServiceState = (BackgroundServiceState) bundle.getSerializable("state");
+
+                    if(activity.backgroundServiceState == null)
+                    {
+                        return;
+                    }
+
+                    if(oldState != activity.backgroundServiceState.uiState) {
+                        activity.controlRecordingUI(activity.backgroundServiceState.uiState);
+                    }
+
+                    int secs = (int) (activity.backgroundServiceState.timerInMS / 1000);
+                    int mins = secs / 60;
+                    int hours = mins / 60;
+                    secs = secs % 60;
+                    mins = mins % 60;
+
+                    ((TextView) activity.findViewById(R.id.timerValue)).setText(activity.getString(R.string.timer_format, hours, mins, secs));
+
+                    ((TextView) activity.findViewById(R.id.txtState)).setText(activity.backgroundServiceState.txtState);
 
                     break;
 
@@ -169,11 +182,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    MainActivity() {
-        this.mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
-    }
-
-    final Context context = this;
     CoolMic coolmic = null;
     Button start_button;
 
@@ -190,47 +198,12 @@ public class MainActivity extends Activity {
     Menu myMenu;
     boolean backyes = false;
     ClipboardManager myClipboard;
-    long timeInMilliseconds = 0L;
-    long timeSwapBuff = 0L;
-    long updatedTime = 0L;
+
     ReentrantLock startLock = new ReentrantLock();
 
     TextView txtListeners;
 
     StreamStatsReceiver mStreamStatsReceiver = new StreamStatsReceiver();
-
-    //variable declaration for timer starts here
-    private long startTime = 0L;
-    private long lastStatsFetch = 0L;
-    //code for displaying timer starts here
-    Runnable updateTimerThread = new Runnable() {
-
-        @Override
-        public void run() {
-            runOnUiThread(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
-                    updatedTime = timeSwapBuff + timeInMilliseconds;
-                    int secs = (int) (updatedTime / 1000);
-                    int mins = secs / 60;
-                    int hours = mins / 60;
-                    secs = secs % 60;
-                    mins = mins % 60;
-
-                    timerValue.setText(MainActivity.this.getString(R.string.timer_format, hours, mins, secs));
-
-                    if(lastStatsFetch+15*1000 < timeInMilliseconds) {
-                        StreamStatsService.startActionStatsFetch(MainActivity.this, coolmic.getStreamStatsURL());
-                        lastStatsFetch = timeInMilliseconds;
-                    }
-                }
-            }));
-            customHandler.postDelayed(this, 0);
-        }
-    };
-    private TextView timerValue;
-    private Handler customHandler = new Handler();
 
     //variable declaration for timer ends here
     @Override
@@ -284,7 +257,9 @@ public class MainActivity extends Activity {
 
     private void exitApp() {
 
-        finish();
+        //finish();
+
+        stopService(new Intent(this, BackgroundService.class));
     }
 
     private void goSettings() {
@@ -353,7 +328,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.home);
-        timerValue = findViewById(R.id.timerValue);
         /*
         BroadcastReceiver mPowerKeyReceiver = new BroadcastReceiver() {
             @Override
@@ -375,7 +349,7 @@ public class MainActivity extends Activity {
         getApplicationContext().registerReceiver(mPowerKeyReceiver, theFilter);
         */
 
-        imageView1 = findViewById(R.id.imageView1);
+        imageView1 = (ImageView) findViewById(R.id.imageView1);
 
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
 
@@ -386,12 +360,12 @@ public class MainActivity extends Activity {
         animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
         animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
         animation.setRepeatMode(Animation.REVERSE);
-        start_button = findViewById(R.id.start_recording_button);
+        start_button = (Button) findViewById(R.id.start_recording_button);
         buttonColor = start_button.getBackground();
 
         coolmic = new CoolMic(this, "default");
 
-        txtListeners = findViewById(R.id.txtListeners);
+        txtListeners = (TextView) findViewById(R.id.txtListeners);
         IntentFilter mStatusIntentFilter = new IntentFilter( Constants.BROADCAST_STREAM_STATS_SERVICE );
         LocalBroadcastManager.getInstance(this).registerReceiver(mStreamStatsReceiver, mStatusIntentFilter);
 
@@ -481,8 +455,6 @@ public class MainActivity extends Activity {
 
             start_button.setText(R.string.cmdStartInitializing);
             start_button.setEnabled(false);
-
-            controlTimerThread(true, 0);
         }
         else if(state == Constants.CONTROL_UI.CONTROL_UI_CONNECTED)
         {
@@ -496,15 +468,11 @@ public class MainActivity extends Activity {
         }
         else if(state == Constants.CONTROL_UI.CONTROL_UI_RECONNECTING)
         {
-            controlTimerThread(false);
-
             start_button.setText(R.string.reconnecting);
             start_button.setEnabled(true);
         }
         else if(state == Constants.CONTROL_UI.CONTROL_UI_RECONNECTED)
         {
-            controlTimerThread(true, timeSwapBuff);
-
             start_button.clearAnimation();
             start_button.startAnimation(animation);
             start_button.setBackground(transitionButton);
@@ -519,39 +487,12 @@ public class MainActivity extends Activity {
             start_button.setText(R.string.start_broadcast);
             start_button.setEnabled(true);
 
-            timeSwapBuff += timeInMilliseconds;
-            customHandler.removeCallbacks(updateTimerThread);
-
             ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
             ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
             ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
             ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
             ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
             ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
-
-            controlTimerThread(false);
-        }
-    }
-
-    public void controlTimerThread(boolean running)
-    {
-        controlTimerThread(running, -1);
-    }
-
-    public void controlTimerThread(boolean running, long timerStartTime)
-    {
-        if(running) {
-            timeInMilliseconds = timerStartTime;
-            timeSwapBuff = timerStartTime;
-            updatedTime = timerStartTime;
-            timeSwapBuff += timeInMilliseconds;
-            customHandler.removeCallbacks(updateTimerThread);
-            startTime = SystemClock.uptimeMillis();
-            customHandler.postDelayed(updateTimerThread, 0);
-        }
-        else {
-            timeSwapBuff += timeInMilliseconds;
-            customHandler.removeCallbacks(updateTimerThread);
         }
     }
 
@@ -580,7 +521,7 @@ public class MainActivity extends Activity {
 
         controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_CONNECTING);
 
-        if (hasCore) {
+        if (backgroundServiceState.hasCore) {
             stopRecording(view);
             return;
         }
@@ -594,7 +535,7 @@ public class MainActivity extends Activity {
             return;
         }
 
-        if (wrapperState != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if (backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
             startLock.unlock();
             controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
@@ -681,16 +622,16 @@ public class MainActivity extends Activity {
     }
 
     public void stopRecording(@SuppressWarnings("unused") View view) {
-        if(wrapperState != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if(backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
         }
 
-        if(!hasCore)
+        if(!backgroundServiceState.hasCore)
         {
             return;
         }
 
-        controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
+        //controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
 
         if(startLock.isHeldByCurrentThread()) {
             startLock.unlock();
@@ -779,11 +720,11 @@ public class MainActivity extends Activity {
     }
 
     public void handleVUMeterResult(VUMeterResult vuMeterResult) {
-        TextProgressBar pbVuMeterLeft = this.findViewById(R.id.pbVuMeterLeft);
-        TextProgressBar pbVuMeterRight = this.findViewById(R.id.pbVuMeterRight);
+        TextProgressBar pbVuMeterLeft = (TextProgressBar) this.findViewById(R.id.pbVuMeterLeft);
+        TextProgressBar pbVuMeterRight = (TextProgressBar) this.findViewById(R.id.pbVuMeterRight);
 
-        TextView rbPeakLeft = this.findViewById(R.id.rbPeakLeft);
-        TextView rbPeakRight = this.findViewById(R.id.rbPeakRight);
+        TextView rbPeakLeft = (TextView) this.findViewById(R.id.rbPeakLeft);
+        TextView rbPeakRight = (TextView) this.findViewById(R.id.rbPeakRight);
 
         if(vuMeterResult.channels < 2) {
             pbVuMeterLeft.setProgress(normalizeVUMeterPower(vuMeterResult.global_power));

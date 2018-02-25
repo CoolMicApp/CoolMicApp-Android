@@ -41,11 +41,13 @@ extern "C" {
 coolmic_simple_t * coolmic_simple_obj = NULL;
 static JavaVM *g_vm = NULL;
 jclass vumeter_result_class;
+jclass wrapper_callback_events_class;
 jobject callbackHandlerObject;
 jmethodID callbackHandlerMethod;
 jmethodID callbackHandlerVUMeterMethod;
-jmethodID callbackHandlerConnectionStateMethod;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env, jobject obj)
 {
     LOGI("start start");
@@ -58,7 +60,10 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env
 
     return coolmic_simple_start(coolmic_simple_obj);
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env, jobject obj)
 {
     LOGI("start stop");
@@ -72,7 +77,10 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env,
 
     return coolmic_simple_stop(coolmic_simple_obj);
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_ref(JNIEnv * env, jobject obj)
 {
     LOGI("start ref");
@@ -85,7 +93,10 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_ref(JNIEnv * env, 
 
     return coolmic_simple_ref(coolmic_simple_obj);
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env, jobject obj)
 {
     LOGI("start unref");
@@ -105,46 +116,27 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
 
     return error;
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jboolean JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_hasCore(JNIEnv * env, jobject obj)
 {
     LOGI("hasCore %p %d", coolmic_simple_obj,  (coolmic_simple_obj == NULL ? 0 : 1));
 
-    return (coolmic_simple_obj == NULL ? 0 : 1);
+    return (jboolean) (coolmic_simple_obj == NULL ? 0 : 1);
 }
+#pragma clang diagnostic pop
 
-static void javaCallback(int code, int arg0, int arg1) {
-    JNIEnv * env;
-	// double check it's all ok
-    int getEnvStat = (*g_vm)->GetEnv(g_vm,  (void **) &env, JNI_VERSION_1_6);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event_t event, void *thread, void *arg0, void *arg1)
+{
+    coolmic_vumeter_result_t * vumeter_result;
+    coolmic_simple_connectionstate_t * connection_state;
+    struct timespec * timespecPtr;
+    const int * error_code;
 
-    if (getEnvStat == JNI_EDETACHED) {
-        LOGI("GetEnv: not attached");
-        if ((*g_vm)->AttachCurrentThread(g_vm, &env, NULL) != 0) {
-            LOGI("Failed to attach");
-            return;
-        }
-    } else if (getEnvStat == JNI_OK) {
-        //
-    } else if (getEnvStat == JNI_EVERSION) {
-	    LOGI("GetEnv: version not supported");
-
-	    return;
-    }
-
-    LOGI("callback(%d, %d, %d)", code, arg0, arg1);
-
-    (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, code, arg0, arg1);
-
-	if ((*env)->ExceptionCheck(env)) {
-		(*env)->ExceptionDescribe(env);
-	}
-
-	(*g_vm)->DetachCurrentThread(g_vm);
-}
-
-static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
-    int i;
     JNIEnv * env;
     // double check it's all ok
     int getEnvStat = (*g_vm)->GetEnv(g_vm,  (void **) &env, JNI_VERSION_1_6);
@@ -153,84 +145,32 @@ static void javaCallbackVUMeter(coolmic_vumeter_result_t * result) {
         LOGI("GetEnv: not attached");
         if ((*g_vm)->AttachCurrentThread(g_vm, &env, NULL) != 0) {
             LOGI("Failed to attach");
-            return;
+            return 0 ;
         }
     } else if (getEnvStat == JNI_OK) {
         //
     } else if (getEnvStat == JNI_EVERSION) {
         LOGI("GetEnv: version not supported");
-        return;
+
+        return 0;
     }
-
-    LOGI("VUM: PRE OBJ CONSTRUCTOR RESOLVING ");
-
-    jmethodID methodId = (*env)->GetMethodID(env, vumeter_result_class, "<init>", "()V");
-
-    LOGI("VUM: PRE OBJ GEN");
-
-    jobject obj = (*env)->NewObject(env, vumeter_result_class, methodId);
-
-    LOGI("VUM: PRE OBJ FILLING ");
-
-    LOGI("VUM: PRE OBJ FILLING RATE");
-    jfieldID fid = (*env)->GetFieldID(env, vumeter_result_class, "rate","I");
-    (*env)->SetIntField(env, obj, fid, result->rate);
-
-    LOGI("VUM: PRE OBJ FILLING CHANNELS");
-    fid = (*env)->GetFieldID(env, vumeter_result_class, "channels","I");
-    (*env)->SetIntField(env, obj, fid, result->channels);
-
-    LOGI("VUM: PRE OBJ FILLING FRAMES");
-    fid = (*env)->GetFieldID(env, vumeter_result_class, "frames","J");
-    (*env)->SetLongField(env, obj, fid, result->frames);
-
-    LOGI("VUM: PRE OBJ FILLING GLOBAL_PEAK");
-    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_peak","I");
-    (*env)->SetIntField(env, obj, fid, result->global_peak);
-
-    LOGI("VUM: PRE OBJ FILLING GLOBAL_POWER ");
-    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_power","D");
-    (*env)->SetDoubleField(env, obj, fid, result->global_power);
-
-    LOGI("VUM: PRE OBJ FILLING GLOBAL_PEAK COLOR");
-    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_peak_color","I");
-    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->global_peak, COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
-
-    LOGI("VUM: PRE OBJ FILLING GLOBAL_POWER COLOR");
-    fid = (*env)->GetFieldID(env, vumeter_result_class, "global_power_color","I");
-    (*env)->SetIntField(env, obj, fid, coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->global_power, COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
-
-    LOGI("VUM: PRE OBJ FILLING CHANNEL VALUES ");
-
-    jmethodID vumeterResultChannelValues = (*env)->GetMethodID(env, vumeter_result_class, "setChannelPeakPower", "(IIDII)V");
-
-    for(i = 0;i < result->channels; i++)
-    {
-        (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, i, result->channel_peak[i], result->channel_power[i],  coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(result->channel_peak[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75), coolmic_util_ahsv2argb(1, coolmic_util_power2hue(result->channel_power[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
-    }
-
-    LOGI("VUM: POST OBJ GEN & FILLING ");
-
-    (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerVUMeterMethod, (*env)->NewGlobalRef(env, obj));
-
-
-    LOGI("VUM: POST CALLBACK DISPATCH");
-
-    if ((*env)->ExceptionCheck(env)) {
-        (*env)->ExceptionDescribe(env);
-    }
-
-    (*g_vm)->DetachCurrentThread(g_vm);
-}
-
-static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event_t event, void *thread, void *arg0, void *arg1)
-{
-    coolmic_vumeter_result_t * vumeter_result;
-    coolmic_simple_connectionstate_t * connection_state;
-    struct timespec * timespecPtr;
-    const int * error_code;
 
     LOGI("EVENT: %d %p %p", event, arg0, arg1);
+
+    jfieldID fidERROR    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "ERROR", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject ERROR = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidERROR);
+    jfieldID fidThreadPostStart    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "THREAD_POST_START", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject THREAD_POST_START = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidThreadPostStart);
+    jfieldID fidThreadPreStop   = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "THREAD_PRE_STOP", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject THREAD_PRE_STOP = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidThreadPreStop);
+    jfieldID fidThreadPostStop    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "THREAD_POST_STOP", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject THREAD_POST_STOP = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidThreadPostStop);
+    jmethodID methodId = (*env)->GetMethodID(env, vumeter_result_class, "<init>", "(IIJIDII)V");
+    jmethodID vumeterResultChannelValues = (*env)->GetMethodID(env, vumeter_result_class, "setChannelPeakPower", "(IIDII)V");
+    jfieldID fidSTREAMSTATE    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "STREAMSTATE", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject STREAMSTATE = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidSTREAMSTATE);
+    jfieldID fidRECONNECT    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "RECONNECT", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject RECONNECT = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidRECONNECT);
 
     switch (event) {
         case COOLMIC_SIMPLE_EVENT_THREAD_START:
@@ -238,21 +178,42 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
             break;
         case COOLMIC_SIMPLE_EVENT_THREAD_POST_START:
             LOGI("THREAD POST START!");
-            javaCallback(1, -1, -1);
+
+            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, THREAD_POST_START, -1, -1);
+            
             break;
         case COOLMIC_SIMPLE_EVENT_THREAD_PRE_STOP:
             LOGI("THREAD PRE STOP");
 
-            javaCallback(2, -1, -1);
+            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, THREAD_PRE_STOP, -1, -1);
+
+
+            (*env)->DeleteLocalRef(env, THREAD_POST_START);
+            (*env)->DeleteLocalRef(env, THREAD_PRE_STOP);
+            (*env)->DeleteLocalRef(env, THREAD_POST_STOP);
+            (*env)->DeleteLocalRef(env, STREAMSTATE);
+            (*env)->DeleteLocalRef(env, RECONNECT);
+            (*env)->DeleteLocalRef(env, ERROR);
+
+            if (getEnvStat == JNI_OK) {
+                (*g_vm)->DetachCurrentThread(g_vm);
+            }
+
+            return 0;
+
             break;
         case COOLMIC_SIMPLE_EVENT_THREAD_STOP:
             LOGI("THREAD STOP");
+
+            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, THREAD_POST_STOP, -1, -1);
+
             break;
         case COOLMIC_SIMPLE_EVENT_ERROR:
+
             if (arg0 == NULL) {
-                javaCallback(3, COOLMIC_ERROR_GENERIC, -1);
+                (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, ERROR, COOLMIC_ERROR_GENERIC, -1);
             } else {
-                javaCallback(3, *(const int *) arg0, -1);
+                (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, ERROR, *(const int *) arg0, -1);
             }
 
             LOGI("ERROR: %p", arg0);
@@ -260,12 +221,21 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
         case COOLMIC_SIMPLE_EVENT_VUMETER_RESULT:
             vumeter_result = (coolmic_vumeter_result_t *) arg0;
 
-            LOGI("VUM: PRE CALL");
-            javaCallbackVUMeter(vumeter_result);
-            LOGI("VUM: POST CALL ");
+            jobject obj = (*env)->NewObject(env, vumeter_result_class, methodId, (jint) vumeter_result->rate, (jint) vumeter_result->channels, (jlong) vumeter_result->frames, (jint) vumeter_result->global_peak, (jdouble) vumeter_result->global_power, (jint) coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(vumeter_result->global_peak, COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75), (jint) coolmic_util_ahsv2argb(1, coolmic_util_power2hue(vumeter_result->global_power, COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
+
+            for(int i = 0;i < vumeter_result->channels; i++)
+            {
+                (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, (jint) i, (jint) vumeter_result->channel_peak[i], (jdouble) vumeter_result->channel_power[i], (jint) coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(vumeter_result->channel_peak[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75), (jint) coolmic_util_ahsv2argb(1, coolmic_util_power2hue(vumeter_result->channel_power[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
+            }
+
+            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerVUMeterMethod, (*env)->NewGlobalRef(env, obj));
+
+
+            (*env)->DeleteLocalRef(env, obj);
 
             LOGI("VUM: c%d c0 %f c1 %f c2 %f g %f", vumeter_result->channels, vumeter_result->channel_power[0],
                  vumeter_result->channel_power[1], vumeter_result->channel_power[2], vumeter_result->global_power);
+
             break;
         case COOLMIC_SIMPLE_EVENT_STREAMSTATE:
             connection_state = (coolmic_simple_connectionstate_t *) arg0;
@@ -273,12 +243,14 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 
             if (error_code == NULL)
             {
-                javaCallback(4, (int) *connection_state, COOLMIC_ERROR_NONE);
+                (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, STREAMSTATE, (int) *connection_state, COOLMIC_ERROR_NONE);
+                
                 LOGI("SS: state: %d code: NULL", (int) *connection_state);
             }
             else
             {
-                javaCallback(4, (int) *connection_state, *error_code);
+                (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, STREAMSTATE, (int) *connection_state, *error_code);
+
                 LOGI("SS: state: %d code: %d", (int) *connection_state, *error_code);
             }
             break;
@@ -286,8 +258,8 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
             timespecPtr = (struct timespec *) arg0;
 
             LOGI("RECONNECT: in: %lli", (long long int) timespecPtr->tv_sec);
-
-            javaCallback(5, (int) timespecPtr->tv_sec, NULL);
+            
+            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, RECONNECT, (int) timespecPtr->tv_sec, NULL);
 
             break;
         default:
@@ -296,10 +268,25 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
             break;
     }
 
+    (*env)->DeleteLocalRef(env, THREAD_POST_START);
+    (*env)->DeleteLocalRef(env, THREAD_PRE_STOP);
+    (*env)->DeleteLocalRef(env, THREAD_POST_STOP);
+    (*env)->DeleteLocalRef(env, STREAMSTATE);
+    (*env)->DeleteLocalRef(env, RECONNECT);
+    (*env)->DeleteLocalRef(env, ERROR);
+
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionDescribe(env);
+    }
+
+    //(*g_vm)->DetachCurrentThread(g_vm);
 
     return 0;
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jstring title, jstring artist, jdouble quality, jint restart)
 {
     LOGI("performMetaDataQualityUpdate start");
@@ -330,6 +317,7 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
 
     return result;
 }
+#pragma clang diagnostic pop
 
 static int logging_callback(coolmic_logging_level_t level, const char *msg)
 {
@@ -340,6 +328,8 @@ static int logging_callback(coolmic_logging_level_t level, const char *msg)
 }
 
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
 {
     LOGI("start init");
@@ -362,7 +352,7 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
     callbackHandlerObject = (*env)->NewGlobalRef(env, objHandler);
 
     jclass cls = (*env)->GetObjectClass(env, callbackHandlerObject);
-    callbackHandlerMethod = (*env)->GetMethodID(env, cls, "callbackHandler", "(III)V");
+    callbackHandlerMethod = (*env)->GetMethodID(env, cls, "callbackHandler", "(Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;II)V");
     callbackHandlerVUMeterMethod = (*env)->GetMethodID(env, cls, "callbackVUMeterHandler", "(Lcc/echonet/coolmicdspjava/VUMeterResult;)V");
 
     if (callbackHandlerMethod == 0)
@@ -380,7 +370,8 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
     shout_config.password = passwordNative;
     shout_config.mount    = mountNative;
 
-    coolmic_simple_obj = coolmic_simple_new(codecNative, rate, channels, buffersize, &shout_config);
+    coolmic_simple_obj = coolmic_simple_new(codecNative, (uint_least32_t) (int) rate,
+                                            (unsigned int) (int) channels, buffersize, &shout_config);
 
     if(coolmic_simple_obj == NULL)
     {
@@ -403,7 +394,10 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
 
     return (coolmic_simple_obj == NULL ? 1 : 0);
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(JNIEnv * env, jobject obj, jint interval)
 {
     LOGI("setVuMeterInterval start");
@@ -414,14 +408,22 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(
         return -999666;
     }
 
-    return coolmic_simple_set_vumeter_interval(coolmic_simple_obj, interval);
+    return coolmic_simple_set_vumeter_interval(coolmic_simple_obj, (size_t) interval);
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic pop
 JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_initNative(JNIEnv * env, jobject obj)
 {
     vumeter_result_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/VUMeterResult"));
-}
+    wrapper_callback_events_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents"));
 
+}
+#pragma clang diagnostic pop
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL
 Java_cc_echonet_coolmicdspjava_Wrapper_setReconnectionProfile(JNIEnv *env, jclass type,
                                                               jstring profile_) {
@@ -433,10 +435,13 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setReconnectionProfile(JNIEnv *env, jclas
         return -999666;
     }
 
-    return coolmic_simple_set_reconnection_profile(coolmic_simple_obj, profile);
+    jint result = coolmic_simple_set_reconnection_profile(coolmic_simple_obj, profile);
 
     (*env)->ReleaseStringUTFChars(env, profile_, profile);
+
+    return result;
 }
+#pragma clang diagnostic pop
 
 static int __setMasterGain(unsigned int channels, uint16_t scale, const uint16_t *gain) {
     coolmic_transform_t *transform;
@@ -461,11 +466,16 @@ static int __setMasterGain(unsigned int channels, uint16_t scale, const uint16_t
     return ret;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL
 Java_cc_echonet_coolmicdspjava_Wrapper_resetMasterGain(JNIEnv *env, jclass type) {
     return __setMasterGain(0, 0, NULL);
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL
 Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainStereo(JNIEnv *env, jclass type, jint scale,
                                                            jint gain_left, jint gain_right) {
@@ -473,7 +483,10 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainStereo(JNIEnv *env, jclass t
 
     return __setMasterGain(2, (uint16_t)scale, cgain);
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL
 Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainMono(JNIEnv *env, jclass type, jint scale,
                                                          jint gain) {
@@ -481,6 +494,7 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainMono(JNIEnv *env, jclass typ
 
     return __setMasterGain(2, (uint16_t)scale, cgain);
 }
+#pragma clang diagnostic pop
 
 #ifdef __cplusplus
 }
