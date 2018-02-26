@@ -38,7 +38,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,7 +45,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -65,10 +63,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Locale;
-import java.util.concurrent.locks.ReentrantLock;
 
 import cc.echonet.coolmicdspjava.VUMeterResult;
-import cc.echonet.coolmicdspjava.WrapperConstants;
 
 /**
  * This activity demonstrates how to use JNI to encode and decode ogg/vorbis audio
@@ -77,6 +73,7 @@ public class MainActivity extends Activity {
     Messenger mBackgroundService = null;
     Messenger mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
     boolean mBackgroundServiceBound = false;
+    Constants.CONTROL_UI currentState;
 
     BackgroundServiceState backgroundServiceState;
 
@@ -127,51 +124,73 @@ public class MainActivity extends Activity {
             switch (msg.what) {
                 case Constants.S2C_MSG_STATE_REPLY:
                     Bundle bundle = msg.getData();
-
-                    Constants.CONTROL_UI oldState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
-
-                    if(activity.backgroundServiceState != null) {
-                        oldState = activity.backgroundServiceState.uiState;
-                    }
-
                     activity.backgroundServiceState = (BackgroundServiceState) bundle.getSerializable("state");
 
-                    if(activity.backgroundServiceState == null)
-                    {
+                    if(activity.backgroundServiceState == null) {
                         return;
                     }
 
-                    if(oldState != activity.backgroundServiceState.uiState) {
-                        activity.controlRecordingUI(activity.backgroundServiceState.uiState);
-                    }
+                    activity.controlRecordingUI(activity.backgroundServiceState.uiState);
 
-                    int secs = (int) (activity.backgroundServiceState.timerInMS / 1000);
-                    int mins = secs / 60;
-                    int hours = mins / 60;
-                    secs = secs % 60;
-                    mins = mins % 60;
-
-                    ((TextView) activity.findViewById(R.id.timerValue)).setText(activity.getString(R.string.timer_format, hours, mins, secs));
-
+                    ((TextView) activity.findViewById(R.id.timerValue)).setText(activity.backgroundServiceState.timerString);
                     ((TextView) activity.findViewById(R.id.txtState)).setText(activity.backgroundServiceState.txtState);
+                    ((TextView) activity.findViewById(R.id.txtListeners)).setText(activity.backgroundServiceState.listenersString);
 
                     break;
 
                 case Constants.S2C_MSG_STREAM_START_REPLY:
                     activity.controlVuMeterUI(Integer.parseInt(activity.coolmic.getVuMeterInterval()) != 0);
-                    activity.startLock.unlock();
-
-                    activity.controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
 
                     break;
 
                 case Constants.S2C_MSG_STREAM_STOP_REPLY:
                     Toast.makeText(activity, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
 
-                    activity.controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
+                    break;
+
+                case Constants.S2C_MSG_PERMISSIONS_MISSING:
+                    Utils.requestPermissions(activity);
 
                     break;
 
+                case Constants.S2C_MSG_CONNECTION_UNSET:
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+                    alertDialog.setTitle(R.string.mainactivity_missing_connection_details_title);
+                    alertDialog.setMessage(R.string.mainactivity_missing_connection_details_body);
+                    alertDialog.setNegativeButton(R.string.mainactivity_missing_connection_details_no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Utils.loadCMTSData(activity, "default");
+                            activity.startRecording(null);
+                        }
+                    });
+
+                    alertDialog.show();
+
+                    break;
+
+                case Constants.S2C_MSG_CMTS_TOS:
+                    AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(activity);
+                    alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
+                    alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);
+                    alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialogCMTSTOS.setPositiveButton(R.string.coolmic_tos_accept, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            activity.startRecording(null, true);
+                        }
+                    });
+
+                    alertDialogCMTSTOS.show();
+
+                    break;
                 case Constants.S2C_MSG_VUMETER:
                     Bundle bundleVUMeter = msg.getData();
 
@@ -195,37 +214,12 @@ public class MainActivity extends Activity {
 
     Drawable buttonColor;
     ImageView imageView1;
-    Menu myMenu;
-    boolean backyes = false;
     ClipboardManager myClipboard;
-
-    ReentrantLock startLock = new ReentrantLock();
-
-    TextView txtListeners;
-
-    StreamStatsReceiver mStreamStatsReceiver = new StreamStatsReceiver();
-
-    //variable declaration for timer ends here
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        /*
-        if (hasCore()) {
-            menu.findItem(R.id.menu_action_settings).setVisible(false);
-            menu.findItem(R.id.menu_action_about).setVisible(false);
-        } else {
-            menu.findItem(R.id.menu_action_settings).setVisible(true);
-            menu.findItem(R.id.menu_action_about).setVisible(true);
-        }
-        */
-        return true;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_menu, menu);
-        myMenu = menu;
         return true;
     }
 
@@ -256,9 +250,6 @@ public class MainActivity extends Activity {
     }
 
     private void exitApp() {
-
-        //finish();
-
         stopService(new Intent(this, BackgroundService.class));
     }
 
@@ -272,29 +263,14 @@ public class MainActivity extends Activity {
         startActivity(i);
     }
 
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            imageView1.getLayoutParams().height = 180;
+            imageView1.getLayoutParams().height = 60;
         } else {
             imageView1.getLayoutParams().height = 400;
         }
-    }
-
-    private boolean checkPermission() {
-        return Utils.checkRequiredPermissions(this);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
     }
 
     @Override
@@ -328,33 +304,12 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.home);
-        /*
-        BroadcastReceiver mPowerKeyReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String strAction = intent.getAction();
-                if (strAction.equals(Intent.ACTION_SCREEN_OFF) || strAction.equals(Intent.ACTION_SCREEN_ON) || strAction.equals(Intent.ACTION_USER_PRESENT)) {
-                    if (hasCore()) {
-                        RedFlashLight();
-                    }
-                }
-            }
-        };
-        final IntentFilter theFilter = new IntentFilter();
-        // System Defined Broadcast
-        theFilter.addAction(Intent.ACTION_SCREEN_ON);
-        theFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        theFilter.addAction(Intent.ACTION_USER_PRESENT);
-
-        getApplicationContext().registerReceiver(mPowerKeyReceiver, theFilter);
-        */
 
         imageView1 = (ImageView) findViewById(R.id.imageView1);
 
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         animation.setDuration(500); // duration - half a second
         animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
@@ -365,30 +320,9 @@ public class MainActivity extends Activity {
 
         coolmic = new CoolMic(this, "default");
 
-        txtListeners = (TextView) findViewById(R.id.txtListeners);
-        IntentFilter mStatusIntentFilter = new IntentFilter( Constants.BROADCAST_STREAM_STATS_SERVICE );
-        LocalBroadcastManager.getInstance(this).registerReceiver(mStreamStatsReceiver, mStatusIntentFilter);
-
-
         controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
 
-        if(mBackgroundServiceBound)
-        {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STATE, 0, 0);
-            msgReply.replyTo = mBackgroundServiceClient;
-            try {
-                mBackgroundService.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /*
-        if(hasCore())
-        {
-            controlRecordingUI(CONTROL_UI.CONTROL_UI_CONNECTED);
-        }
-        */
+        controlRecordingUI(currentState);
     }
 
     public void onImageClick(View view) {
@@ -447,6 +381,11 @@ public class MainActivity extends Activity {
     }
 
     public void controlRecordingUI(Constants.CONTROL_UI state) {
+        if(state == currentState)
+        {
+            return;
+        }
+
         if(state == Constants.CONTROL_UI.CONTROL_UI_CONNECTING)
         {
             start_button.startAnimation(animation);
@@ -454,38 +393,20 @@ public class MainActivity extends Activity {
             transitionButton.startTransition(5000);
 
             start_button.setText(R.string.cmdStartInitializing);
-            start_button.setEnabled(false);
         }
         else if(state == Constants.CONTROL_UI.CONTROL_UI_CONNECTED)
         {
-            startService(new Intent(getBaseContext(), MyService.class));
-
             start_button.startAnimation(animation);
             start_button.setBackground(transitionButton);
+            transitionButton.startTransition(5000);
 
             start_button.setText(R.string.broadcasting);
-            start_button.setEnabled(true);
-        }
-        else if(state == Constants.CONTROL_UI.CONTROL_UI_RECONNECTING)
-        {
-            start_button.setText(R.string.reconnecting);
-            start_button.setEnabled(true);
-        }
-        else if(state == Constants.CONTROL_UI.CONTROL_UI_RECONNECTED)
-        {
-            start_button.clearAnimation();
-            start_button.startAnimation(animation);
-            start_button.setBackground(transitionButton);
-
-            start_button.setText(R.string.broadcasting);
-            start_button.setEnabled(true);
         }
         else
         {
             start_button.clearAnimation();
             start_button.setBackground(buttonColor);
             start_button.setText(R.string.start_broadcast);
-            start_button.setEnabled(true);
 
             ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
             ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
@@ -494,6 +415,8 @@ public class MainActivity extends Activity {
             ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
             ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
         }
+
+        currentState = state;
     }
 
     public void controlVuMeterUI(boolean visible)
@@ -515,132 +438,21 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
-        if (!startLock.tryLock()) {
-            return;
-        }
-
-        controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_CONNECTING);
-
-        if (backgroundServiceState.hasCore) {
-            stopRecording(view);
-            return;
-        }
-
-        if (!checkPermission()) {
-            startLock.unlock();
-            controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
-
-            Utils.requestPermissions(this);
-
-            return;
-        }
-
-        if (backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
-            startLock.unlock();
-            controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
-            return;
-        }
-
-        if (!isOnline()) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_SHORT).show();
-            startLock.unlock();
-            controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
-            return;
-        }
-
-        if (!coolmic.isConnectionSet()) {
-            startLock.unlock();
-            controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
-
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setTitle(R.string.mainactivity_missing_connection_details_title);
-            alertDialog.setMessage(R.string.mainactivity_missing_connection_details_body);
-            alertDialog.setNegativeButton(R.string.mainactivity_missing_connection_details_no, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    Utils.loadCMTSData(MainActivity.this, "default");
-                    startRecording(null);
-                }
-            });
-
-            alertDialog.show();
-
-            return;
-        }
-
-        if(coolmic.isCMTSConnection()) {
-
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setTitle(R.string.coolmic_tos_title);
-            alertDialog.setMessage(R.string.coolmic_tos);
-            alertDialog.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    startLock.unlock();
-                    controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
-                    dialog.cancel();
-                }
-            });
-            alertDialog.setPositiveButton(R.string.coolmic_tos_accept, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    startRecordingStep2();
-                }
-            });
-
-            alertDialog.show();
-        }
-        else
-        {
-            startRecordingStep2();
-        }
+        startRecording(view, false);
     }
 
-    void startRecordingStep2()
-    {
-        invalidateOptionsMenu();
-
+    public void startRecording(View view, boolean cmtsTOSAccepted) {
         if(mBackgroundServiceBound)
         {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_START, 0, 0);
+            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_ACTION, 0, 0);
 
             msgReply.replyTo = mBackgroundServiceClient;
 
             Bundle bundle = msgReply.getData();
 
             bundle.putString("profile", "default");
+            bundle.putBoolean("cmtsTOSAccepted", cmtsTOSAccepted);
 
-            try {
-                mBackgroundService.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void stopRecording(@SuppressWarnings("unused") View view) {
-        if(backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
-        }
-
-        if(!backgroundServiceState.hasCore)
-        {
-            return;
-        }
-
-        //controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
-
-        if(startLock.isHeldByCurrentThread()) {
-            startLock.unlock();
-        }
-
-        if(mBackgroundServiceBound)
-        {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_STOP, 0, 0);
-            msgReply.replyTo = mBackgroundServiceClient;
             try {
                 mBackgroundService.send(msgReply);
             } catch (RemoteException e) {
@@ -656,13 +468,8 @@ public class MainActivity extends Activity {
         }
         else
         {
-            if(checkPermission())
-            {
-                startRecording(null);
-            }
+            startRecording(null);
         }
-
-
     }
 
 
@@ -750,21 +557,6 @@ public class MainActivity extends Activity {
             rbPeakLeft.setTextColor(vuMeterResult.channels_peak_color[0]);
             rbPeakRight.setText(normalizeVUMeterPeak(vuMeterResult.channels_peak[1]));
             rbPeakRight.setTextColor(vuMeterResult.channels_peak_color[1]);
-        }
-    }
-
-    // Broadcast receiver for receiving status updates from the IntentService
-    private class StreamStatsReceiver extends BroadcastReceiver
-    {
-        // Prevents instantiation
-        private StreamStatsReceiver() {
-        }
-        // Called when the BroadcastReceiver gets an Intent it's registered to receive
-
-        public void onReceive(Context context, Intent intent) {
-            StreamStats obj = intent.getParcelableExtra(Constants.EXTRA_DATA_STATS_OBJ);
-
-            txtListeners.setText(context.getString(R.string.formatListeners, obj.getListenersCurrent(), obj.getListenersPeak()));
         }
     }
 }

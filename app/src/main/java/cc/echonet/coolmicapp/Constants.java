@@ -24,12 +24,15 @@ class Constants {
     };
 
     static final int C2S_MSG_STATE = 1;
-    static final int C2S_MSG_STREAM_STOP = 2;
-    static final int C2S_MSG_STREAM_START = 3;
+    static final int C2S_MSG_STREAM_ACTION = 2;
+
     static final int S2C_MSG_STATE_REPLY = 52;
     static final int S2C_MSG_STREAM_STOP_REPLY = 53;
     static final int S2C_MSG_STREAM_START_REPLY = 54;
-    static final int S2C_MSG_VUMETER = 55;
+    static final int S2C_MSG_PERMISSIONS_MISSING = 55;
+    static final int S2C_MSG_CONNECTION_UNSET = 56;
+    static final int S2C_MSG_CMTS_TOS = 57;
+    static final int S2C_MSG_VUMETER = 58;
 
     static final int H2S_MSG_TIMER = 100;
 
@@ -38,8 +41,6 @@ class Constants {
     enum CONTROL_UI {
         CONTROL_UI_CONNECTING,
         CONTROL_UI_CONNECTED,
-        CONTROL_UI_RECONNECTING,
-        CONTROL_UI_RECONNECTED,
         CONTROL_UI_DISCONNECTED
     }
 }

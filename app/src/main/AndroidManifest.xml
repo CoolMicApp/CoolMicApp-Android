@@ -17,18 +17,9 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service
-            android:name=".MyService"
-            android:enabled="true"
-            android:stopWithTask="false" />
-        <service
-            android:name=".StreamStatsService"
-            android:exported="false" />
 
         <activity
             android:name=".SettingsActivity"
@@ -49,7 +40,7 @@
         <service
             android:name=".BackgroundService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="false" />
     </application>
 
 </manifest>

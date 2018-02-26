@@ -1,6 +1,5 @@
 package cc.echonet.coolmicapp;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,12 +9,10 @@ import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.widget.Toast;
 
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import java.util.UUID;
-
-import static android.R.attr.text;
 
 /**
  * Created by stjauernick@de.loewenfelsen.net on 10/13/16.
@@ -31,13 +28,13 @@ public class Utils {
         return context.getString(resid);
     }
 
-    public static  String getStringByName(Context context, String name, int subid) {
+    static  String getStringByName(Context context, String name, int subid) {
         int resid;
 
         if (subid < 0) {
-            resid = context.getResources().getIdentifier(String.format("%s_n%d", name, -subid), "string", context.getPackageName());
+            resid = context.getResources().getIdentifier(String.format(Locale.ENGLISH, "%s_n%d", name, -subid), "string", context.getPackageName());
         } else {
-            resid = context.getResources().getIdentifier(String.format("%s_p%d", name, subid), "string", context.getPackageName());
+            resid = context.getResources().getIdentifier(String.format(Locale.ENGLISH, "%s_p%d", name, subid), "string", context.getPackageName());
         }
 
         if (resid == 0)
@@ -48,9 +45,9 @@ public class Utils {
 
 
     //Stolen from: http://stackoverflow.com/a/23704728 & http://stackoverflow.com/a/18879453 (removed the shortening because it did not work reliably)
-    public static String generateShortUuid() {
+    private static String generateShortUuid() {
         UUID uuid = UUID.randomUUID();
-        MessageDigest md = null;
+        MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
@@ -65,11 +62,11 @@ public class Utils {
         return Base64.encodeToString(digest, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING).substring(0, 20);
     }
 
-    public static boolean checkRequiredPermissions(Activity activity) {
+    static boolean checkRequiredPermissions(Context context) {
         int grantedCount = 0;
 
         for (String permission: Constants.REQUIRED_PERMISSIONS) {
-            if(ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED)
+            if(ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
             {
                 grantedCount++;
             }
@@ -79,7 +76,7 @@ public class Utils {
     }
 
 
-    public static boolean shouldShowRequestPermissionRationale(Activity activity) {
+    private static boolean shouldShowRequestPermissionRationale(Activity activity) {
         int grantedCount = 0;
 
         for (String permission: Constants.REQUIRED_PERMISSIONS) {
@@ -92,7 +89,7 @@ public class Utils {
         return grantedCount > 0;
     }
 
-    public static void requestPermissions(Activity activity) {
+    static void requestPermissions(Activity activity) {
         if(!checkRequiredPermissions(activity))
         {
             if (shouldShowRequestPermissionRationale(activity)) {
@@ -107,7 +104,7 @@ public class Utils {
         }
     }
 
-    public static boolean onRequestPermissionsResult(Activity activity, int requestCode, String[] permissions, int[] grantResults) {
+    static boolean onRequestPermissionsResult(Activity activity, int requestCode, String[] permissions, int[] grantResults) {
         if(requestCode == Constants.PERMISSION_CHECK_REQUEST_CODE) {
             boolean permissions_ok = true;
 
@@ -130,21 +127,21 @@ public class Utils {
         }
     }
 
-    public static void loadCMTSData(Activity activity, String profileName) {
-        SharedPreferences.Editor editor = new CoolMic(activity, profileName).getPrefs().edit();
+    static void loadCMTSData(Context context, String profileName) {
+        SharedPreferences.Editor editor = new CoolMic(context, profileName).getPrefs().edit();
 
         String randomComponent = Utils.generateShortUuid();
 
-        editor.putString("connection_address", activity.getString(R.string.pref_default_connection_address));
-        editor.putString("connection_username", activity.getString(R.string.pref_default_connection_username));
-        editor.putString("connection_password", activity.getString(R.string.pref_default_connection_password));
-        editor.putString("connection_mountpoint", activity.getString(R.string.pref_default_connection_mountpoint, randomComponent));
-        editor.putString("audio_codec", activity.getString(R.string.pref_default_audio_codec));
-        editor.putString("audio_samplerate", activity.getString(R.string.pref_default_audio_samplerate));
+        editor.putString("connection_address", context.getString(R.string.pref_default_connection_address));
+        editor.putString("connection_username", context.getString(R.string.pref_default_connection_username));
+        editor.putString("connection_password", context.getString(R.string.pref_default_connection_password));
+        editor.putString("connection_mountpoint", context.getString(R.string.pref_default_connection_mountpoint, randomComponent));
+        editor.putString("audio_codec", context.getString(R.string.pref_default_audio_codec));
+        editor.putString("audio_samplerate", context.getString(R.string.pref_default_audio_samplerate));
 
         editor.apply();
 
-        Toast.makeText(activity, R.string.settings_conn_defaults_loaded, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, R.string.settings_conn_defaults_loaded, Toast.LENGTH_SHORT).show();
     }
 
 }
