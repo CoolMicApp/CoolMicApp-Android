@@ -25,6 +25,7 @@ class Constants {
 
     static final int C2S_MSG_STATE = 1;
     static final int C2S_MSG_STREAM_ACTION = 2;
+    static final int C2S_MSG_STREAM_RELOAD = 3;
 
     static final int S2C_MSG_STATE_REPLY = 52;
     static final int S2C_MSG_STREAM_STOP_REPLY = 53;

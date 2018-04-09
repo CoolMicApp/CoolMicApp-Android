@@ -200,6 +200,12 @@ public class BackgroundService extends Service {
 
                     break;
 
+                case Constants.C2S_MSG_STREAM_RELOAD:
+                    service.reloadParameters();
+
+                    break;
+
+
                 case Constants.H2S_MSG_TIMER:
                     if(service.backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
                         service.backgroundServiceState.timerInMS = SystemClock.uptimeMillis() - service.backgroundServiceState.startTime;
@@ -299,7 +305,7 @@ public class BackgroundService extends Service {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        Notification.Builder builder = new Notification.Builder(getApplicationContext()).setOngoing(true).setSmallIcon(R.drawable.icon).setContentIntent(resultPendingIntent).setContentTitle(title).setContentText(message);
+        Notification.Builder builder = new Notification.Builder(getApplicationContext()).setOngoing(true).setSmallIcon(R.drawable.icon).setContentIntent(resultPendingIntent).setContentTitle(title).setContentText(message).setOnlyAlertOnce(true);
 
         if(flashLed)
         {
@@ -379,6 +385,11 @@ public class BackgroundService extends Service {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
+    private void reloadParameters() {
+        int ret = Wrapper.performMetaDataQualityUpdate(coolmic.getTitle(), coolmic.getArtist(), Double.parseDouble(coolmic.getQuality()), 1 );
+        Toast.makeText(getApplicationContext(), String.format(Locale.ENGLISH, "Update Result: %d", ret), Toast.LENGTH_SHORT).show();
     }
 
     private void prepareStream(final String profile, boolean cmtsTOSAccepted, final Messenger replyTo) {
@@ -541,11 +552,14 @@ public class BackgroundService extends Service {
     }
 
     public void stopStream(Messenger replyTo) {
+        Log.d("BS", "Stop Stream");
         if(hasCore())
         {
             Wrapper.stop();
             Wrapper.unref();
         }
+
+        Log.d("BS", "Past Core Check");
 
         hasCore();
 
@@ -581,10 +595,9 @@ public class BackgroundService extends Service {
 
                 backgroundServiceState.txtState = "disconnected";
 
+
                 break;
              case THREAD_POST_STOP:
-
-                 //Wrapper.unref();
 
                  backgroundServiceState.txtState="disconnected(post thread stopped)";
 
@@ -652,7 +665,7 @@ public class BackgroundService extends Service {
 
                 break;
              case RECONNECT:
-                backgroundServiceState.txtState = String.format("reconnect in %d sec", arg0);
+                backgroundServiceState.txtState = String.format(getString(R.string.reconnect_in), arg0);
 
                 break;
          }

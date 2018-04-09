@@ -284,7 +284,9 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
         // Bind to the service
-        bindService(new Intent(this, BackgroundService.class), mBackgroundServiceConnection,
+        Intent intent = new Intent(this, BackgroundService.class);
+        startService(intent);
+        bindService(intent, mBackgroundServiceConnection,
                 Context.BIND_AUTO_CREATE);
     }
 
@@ -323,6 +325,26 @@ public class MainActivity extends Activity {
         controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
 
         controlRecordingUI(currentState);
+
+        start_button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(mBackgroundServiceBound)
+                {
+                    Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_RELOAD, 0, 0);
+
+                    msgReply.replyTo = mBackgroundServiceClient;
+
+                    try {
+                        mBackgroundService.send(msgReply);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                return true;
+            }
+        });
     }
 
     public void onImageClick(View view) {

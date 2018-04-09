@@ -196,7 +196,7 @@
     <string name="mainactivity_toast_native_components_not_ready">Native components not ready.</string>
     <string name="mainactivity_toast_check_connection">Check Internet Connection</string>
     <string name="mainactivity_toast_check_connection_details">Set the connection details</string>
-    <string name="cmdStartInitializing">CONNECTING</string>
+    <string name="cmdStartInitializing">Connecting</string>
     <string name="popup_about_lbl_buildts">Build TS:</string>
     <string name="menu_action_share">Share</string>
     <string name="menu_action_share_default">Cool Mic unconfigured! Please set Connection Info!</string>
@@ -217,8 +217,9 @@
     <string name="mainactivity_missing_connection_details_body">You seem to have no connection details set. Should we load the Test System Data? If you decline please set them in the Settings.</string>
     <string name="mainactivity_missing_connection_details_no">No.</string>
     <string name="mainactivity_missing_connection_details_yes">Yes</string>
-    <string name="pref_title_connection_reconnect">Perform Autoreconnect?</string>
+    <string name="pref_title_connection_reconnect">Auto-Reconnect</string>
     <string name="pref_option_connection_reconnect_off">off</string>
     <string name="pref_option_connection_reconnect_on">on</string>
-    <string name="reconnecting">... Reconnecting ...</string>
+    <string name="reconnecting">Reconnecting</string>
+    <string name="reconnect_in">Reconnecting in %d Sec</string>
 </resources>
