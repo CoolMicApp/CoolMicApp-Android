@@ -142,7 +142,7 @@
     <string name="pref_default_vumeter_interval">40</string>
     <string name="mainactivity_broadcast_url_copied">Livestream URL copied to clipboard</string>
     <string name="mainactivity_connectiondetails_unset">Set the connection details</string>
-    <string name="mainactivity_callback_error">there was an error! CODE: %1$d</string>
+    <string name="mainactivity_callback_error">there was an error! Error: %1$s</string>
     <string name="mainactivity_callback_streamstate">Stream State: State: %1$d Error: %2$d</string>
     <string name="question_stop_broadcasting">Stop Livestream?</string>
     <string name="exception_start_failed">Failed to start Livestream: %1$d</string>
