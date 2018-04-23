@@ -389,7 +389,18 @@ public class BackgroundService extends Service {
 
     private void reloadParameters() {
         int ret = Wrapper.performMetaDataQualityUpdate(coolmic.getTitle(), coolmic.getArtist(), Double.parseDouble(coolmic.getQuality()), 1 );
+
         Toast.makeText(getApplicationContext(), String.format(Locale.ENGLISH, "Update Result: %d", ret), Toast.LENGTH_SHORT).show();
+
+        if(coolmic.getReconnect()) {
+            ret = Wrapper.setReconnectionProfile("enabled");
+        }
+        else
+        {
+            ret = Wrapper.setReconnectionProfile("disabled");
+        }
+
+        Toast.makeText(getApplicationContext(), String.format(Locale.ENGLISH, "Reconnect Result: %d", ret), Toast.LENGTH_SHORT).show();
     }
 
     private void prepareStream(final String profile, boolean cmtsTOSAccepted, final Messenger replyTo) {
