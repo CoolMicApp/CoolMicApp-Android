@@ -627,7 +627,13 @@ public class BackgroundService extends Service {
 
                 */
 
-                backgroundServiceState.txtState = getString(R.string.mainactivity_callback_error, Utils.getStringByName(this, "coolmic_error", arg0));
+                Message msgReply = Message.obtain(null, Constants.S2C_MSG_ERROR, 0, 0);
+
+                Bundle bundle = msgReply.getData();
+
+                bundle.putString("error", getString(R.string.mainactivity_callback_error, Utils.getStringByName(this, "coolmic_error", arg0)));
+
+                sendMessageToAll(msgReply);
 
                 break;
              case STREAMSTATE:

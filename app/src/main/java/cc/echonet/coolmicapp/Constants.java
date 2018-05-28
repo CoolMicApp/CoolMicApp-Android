@@ -34,6 +34,7 @@ class Constants {
     static final int S2C_MSG_CONNECTION_UNSET = 56;
     static final int S2C_MSG_CMTS_TOS = 57;
     static final int S2C_MSG_VUMETER = 58;
+    static final int S2C_MSG_ERROR = 59;
 
     static final int H2S_MSG_TIMER = 100;
 

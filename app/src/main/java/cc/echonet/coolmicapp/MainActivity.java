@@ -121,9 +121,10 @@ public class MainActivity extends Activity {
 
         @Override
         public void handleMessage(Message msg) {
+            Bundle bundle = msg.getData();
+
             switch (msg.what) {
                 case Constants.S2C_MSG_STATE_REPLY:
-                    Bundle bundle = msg.getData();
                     activity.backgroundServiceState = (BackgroundServiceState) bundle.getSerializable("state");
 
                     if(activity.backgroundServiceState == null) {
@@ -138,6 +139,12 @@ public class MainActivity extends Activity {
 
                     break;
 
+                case Constants.S2C_MSG_ERROR:
+                    String error = bundle.getString("error");
+
+                    Toast.makeText(activity, error, Toast.LENGTH_LONG).show();
+
+                    break;
                 case Constants.S2C_MSG_STREAM_START_REPLY:
                     activity.controlVuMeterUI(Integer.parseInt(activity.coolmic.getVuMeterInterval()) != 0);
 
