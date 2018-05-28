@@ -171,6 +171,23 @@
         <item>80</item>
     </string-array>
 
+    <!-- Backend errors -->
+    <string name="coolmic_error_p0">No error</string>
+    <string name="coolmic_error_n1">Generic, unknown error</string>
+    <string name="coolmic_error_n8">Function not implemented</string>
+    <string name="coolmic_error_n9">Bad address</string>
+    <string name="coolmic_error_n10">Invalid argument</string>
+    <string name="coolmic_error_n11">Not enough space</string>
+    <string name="coolmic_error_n12">Device or resource busy</string>
+    <string name="coolmic_error_n13">Operation not permitted</string>
+    <string name="coolmic_error_n14">Connection refused</string>
+    <string name="coolmic_error_n15">Connected.</string>
+    <string name="coolmic_error_n16">Unconnected.</string>
+    <string name="coolmic_error_n17">TLS requested but not supported by peer</string>
+    <string name="coolmic_error_n18">LS connection can not be established because of bad certificate</string>
+    <string name="coolmic_error_n19">Invalid request code</string>
+    <string name="coolmic_error_n20">Retry last action</string>
+
     <string name="coolmic_cs_n1">Invalid</string>
     <string name="coolmic_cs_p1">Connecting</string>
     <string name="coolmic_cs_p2">Connected</string>
