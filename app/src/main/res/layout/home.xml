@@ -43,6 +43,8 @@
                     android:gravity="center_vertical|center_horizontal" />
             </LinearLayout>
 
+
+
             <ImageView
                     android:id="@+id/imageView1"
                     android:layout_width="fill_parent"
@@ -163,5 +165,19 @@
             android:text="@string/start_broadcast"
                     android:layout_marginBottom="30dip" />
 
+                <SeekBar
+                    android:id="@+id/pbGainMeterLeft"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/darker_gray"
+                    android:max="100"
+                    android:progress="90" />
+                <SeekBar
+                    android:id="@+id/pbGainMeterRight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/darker_gray"
+                    android:max="100"
+                    android:progress="90" />
             </LinearLayout>
     </LinearLayout>

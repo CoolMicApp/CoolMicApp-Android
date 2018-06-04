@@ -59,6 +59,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -202,14 +203,49 @@ public class MainActivity extends Activity {
                     Bundle bundleVUMeter = msg.getData();
 
                     activity.handleVUMeterResult((VUMeterResult) bundleVUMeter.getSerializable("vumeterResult"));
+
+                    break;
+                case Constants.C2S_MSG_GAIN:
+                    Bundle bundleGain = msg.getData();
+
+                    activity.setGain(bundleGain.getInt("left"), bundleGain.getInt("right"));
+
+                    break;
                 default:
                     super.handleMessage(msg);
             }
         }
     }
 
+    private void setGain(int left, int right) {
+        gainLeft.setProgress(left);
+        gainRight.setProgress(right);
+    }
+
+    private void sendGain(int left, int right) {
+        if(mBackgroundServiceBound)
+        {
+            Message msgReply = Message.obtain(null, Constants.C2S_MSG_GAIN, 0, 0);
+
+            msgReply.replyTo = mBackgroundServiceClient;
+
+            Bundle bundle = msgReply.getData();
+
+            bundle.putInt("left", left);
+            bundle.putInt("right", right);
+
+            try {
+                mBackgroundService.send(msgReply);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     CoolMic coolmic = null;
     Button start_button;
+    SeekBar gainLeft;
+    SeekBar gainRight;
 
     Animation animation = new AlphaAnimation(1, 0);
 
@@ -325,6 +361,41 @@ public class MainActivity extends Activity {
         animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
         animation.setRepeatMode(Animation.REVERSE);
         start_button = (Button) findViewById(R.id.start_recording_button);
+
+        gainLeft = (SeekBar) findViewById(R.id.pbGainMeterLeft);
+        gainRight = (SeekBar) findViewById(R.id.pbGainMeterRight);
+
+        SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if(b) {
+                    if(backgroundServiceState.channels != 2)
+                    {
+                        int value = seekBar.getProgress();
+
+                        setGain(value, value);
+                    }
+
+                    MainActivity.this.sendGain(gainLeft.getProgress(), gainRight.getProgress());
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        };
+
+        gainLeft.setOnSeekBarChangeListener(seekBarChangeListener);
+        gainRight.setOnSeekBarChangeListener(seekBarChangeListener);
+
+
         buttonColor = start_button.getBackground();
 
         coolmic = new CoolMic(this, "default");

@@ -27,6 +27,7 @@ class BackgroundServiceState implements Serializable {
     String listenersString = "0 (Max: 0 )";
     long lastStateFetch = 0L;
     boolean hadError = false;
+    long channels = 1;
 
     BackgroundServiceState() {
         Log.v("BackgroundServiceState", "BSS constructed");

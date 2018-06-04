@@ -179,6 +179,8 @@ public class BackgroundService extends Service {
 
         @Override
         public void handleMessage(Message msg) {
+            Bundle data = msg.getData();
+
             switch (msg.what) {
                 case Constants.C2S_MSG_STATE:
                     if(msg.replyTo != null) {
@@ -190,8 +192,6 @@ public class BackgroundService extends Service {
                     break;
 
                 case Constants.C2S_MSG_STREAM_ACTION:
-
-                    Bundle data = msg.getData();
 
                     String profile = data.getString("profile", "default");
                     Boolean cmtsTOSAccepted = data.getBoolean("cmtsTOSAccepted", false);
@@ -232,11 +232,37 @@ public class BackgroundService extends Service {
                     }
 
                     break;
+                case Constants.C2S_MSG_GAIN:
+                    service.setGain(data.getInt("left"), data.getInt("right"));
+                    break;
                 default:
                     super.handleMessage(msg);
             }
         }
     }
+
+    private void setGain(int left, int right) {
+        if(backgroundServiceState.channels != 2)
+        {
+            Wrapper.setMasterGainMono(100, left);
+        }
+        else
+        {
+            Wrapper.setMasterGainStereo(100, left, right);
+        }
+    }
+
+    private void sendGain(int left, int right) {
+        Message msgReply = Message.obtain(null, Constants.C2S_MSG_GAIN, 0, 0);
+
+        Bundle bundle = msgReply.getData();
+
+        bundle.putInt("left", left);
+        bundle.putInt("right", right);
+
+        sendMessageToAll(msgReply);
+    }
+
 
     /**
      * When binding to the service, we return an interface to our messenger
@@ -472,6 +498,10 @@ public class BackgroundService extends Service {
         backgroundServiceState.timerInMS = 0;
         backgroundServiceState.timerString = "00:00:00";
         backgroundServiceState.hadError = false;
+        backgroundServiceState.channels = Integer.parseInt(coolmic.getChannels());
+
+        //setGain(100, 100);
+        sendGain(100, 100);
 
         try {
             String portnum;
