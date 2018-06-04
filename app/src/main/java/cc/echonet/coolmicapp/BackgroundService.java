@@ -471,6 +471,7 @@ public class BackgroundService extends Service {
 
         backgroundServiceState.timerInMS = 0;
         backgroundServiceState.timerString = "00:00:00";
+        backgroundServiceState.hadError = false;
 
         try {
             String portnum;
@@ -606,6 +607,10 @@ public class BackgroundService extends Service {
 
                 backgroundServiceState.txtState = "disconnected";
 
+                if(backgroundServiceState.hadError) {
+                    Wrapper.stop();
+                    Wrapper.unref();
+                }
 
                 break;
              case THREAD_POST_STOP:
@@ -634,6 +639,8 @@ public class BackgroundService extends Service {
                 bundle.putString("error", getString(R.string.mainactivity_callback_error, Utils.getStringByName(this, "coolmic_error", arg0)));
 
                 sendMessageToAll(msgReply);
+
+                backgroundServiceState.hadError = true;
 
                 break;
              case STREAMSTATE:
