@@ -691,6 +691,8 @@ public class BackgroundService extends Service {
              case RECONNECT:
                 backgroundServiceState.txtState = String.format(getString(R.string.reconnect_in), arg0);
 
+                 backgroundServiceState.hadError = false;
+
                 break;
          }
 
