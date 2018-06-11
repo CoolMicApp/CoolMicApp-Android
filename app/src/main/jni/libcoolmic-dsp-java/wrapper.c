@@ -497,7 +497,7 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainMono(JNIEnv *env, jclass typ
                                                          jint gain) {
     const uint16_t cgain[1] = {(uint16_t)gain};
 
-    return __setMasterGain(2, (uint16_t)scale, cgain);
+    return __setMasterGain(1, (uint16_t)scale, cgain);
 }
 #pragma clang diagnostic pop
 
