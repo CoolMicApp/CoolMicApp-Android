@@ -459,6 +459,11 @@ static int __setMasterGain(unsigned int channels, uint16_t scale, const uint16_t
         return -999666;
     }
 
+    if (channels > 1) {
+        LOGI("gain: channels=%u, scale=%u, gain=%p{%u, %u, ...}", (unsigned int)channels, (unsigned int)scale, gain, (unsigned int)gain[0], (unsigned int)gain[1]);
+    } else {
+        LOGI("gain: channels=%u, scale=%u, gain=%p{%u, ...}", (unsigned int)channels, (unsigned int)scale, gain, (unsigned int)gain[0]);
+    }
     ret = coolmic_transform_set_master_gain(transform, channels, scale, gain);
 
     coolmic_transform_unref(transform);
