@@ -414,7 +414,13 @@ public class BackgroundService extends Service {
     }
 
     private void reloadParameters() {
-        int ret = Wrapper.performMetaDataQualityUpdate(coolmic.getTitle(), coolmic.getArtist(), Double.parseDouble(coolmic.getQuality()), 1 );
+        int ret;
+
+        if (coolmic == null) {
+            return;
+        }
+
+        ret = Wrapper.performMetaDataQualityUpdate(coolmic.getTitle(), coolmic.getArtist(), Double.parseDouble(coolmic.getQuality()), 1 );
 
         Toast.makeText(getApplicationContext(), String.format(Locale.ENGLISH, "Update Result: %d", ret), Toast.LENGTH_SHORT).show();
 
