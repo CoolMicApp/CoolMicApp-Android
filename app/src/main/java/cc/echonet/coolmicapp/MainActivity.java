@@ -337,6 +337,7 @@ public class MainActivity extends Activity {
         super.onStart();
         // Bind to the service
         connectService();
+        controlRecordingUI(currentState);
         Toast.makeText(this, "onStart()", Toast.LENGTH_SHORT).show();
     }
 
@@ -493,7 +494,28 @@ public class MainActivity extends Activity {
         */
     }
 
+    private long getChannels() {
+        if (currentState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
+            return backgroundServiceState.channels;
+        }
+
+        if (coolmic != null) {
+            return Integer.parseInt(coolmic.getChannels());
+        }
+
+        return 2; // default.
+    }
+
     public void controlRecordingUI(Constants.CONTROL_UI state) {
+        View sb;
+
+        sb = findViewById(R.id.pbGainMeterLeft);
+        if (this.getChannels() == 2) {
+            sb.setVisibility(View.VISIBLE);
+        } else {
+            sb.setVisibility(View.GONE);
+        }
+
         if(state == currentState)
         {
             return;
