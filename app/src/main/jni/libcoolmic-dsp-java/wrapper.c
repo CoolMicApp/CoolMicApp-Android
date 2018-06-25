@@ -303,8 +303,8 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
 
     LOGI("performMetaDataQualityUpdate(%s, %s, %g)", titleNative, artistNative, quality);
 
-    coolmic_simple_set_meta(coolmic_simple_obj, "TITLE", titleNative, 0);
-    coolmic_simple_set_meta(coolmic_simple_obj, "ARTIST", artistNative, 0);
+    coolmic_simple_set_meta(coolmic_simple_obj, "TITLE", titleNative, 1);
+    coolmic_simple_set_meta(coolmic_simple_obj, "ARTIST", artistNative, 1);
     coolmic_simple_set_quality(coolmic_simple_obj, quality);
 
     if(restart)
