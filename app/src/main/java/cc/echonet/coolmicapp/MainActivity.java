@@ -96,6 +96,7 @@ public class MainActivity extends Activity {
 
             try {
                 mBackgroundService.send(msg);
+                sendStreamReload();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
