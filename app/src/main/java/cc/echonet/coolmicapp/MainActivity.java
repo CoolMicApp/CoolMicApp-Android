@@ -323,14 +323,20 @@ public class MainActivity extends Activity {
         Log.v("$$$$$$", "In Method: onDestroy()");
     }
 
+    private void connectService() {
+        if (!mBackgroundServiceBound) {
+            Intent intent = new Intent(this, BackgroundService.class);
+            startService(intent);
+            bindService(intent, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         // Bind to the service
-        Intent intent = new Intent(this, BackgroundService.class);
-        startService(intent);
-        bindService(intent, mBackgroundServiceConnection,
-                Context.BIND_AUTO_CREATE);
+        connectService();
+        Toast.makeText(this, "onStart()", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -407,22 +413,28 @@ public class MainActivity extends Activity {
         start_button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if(mBackgroundServiceBound)
-                {
-                    Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_RELOAD, 0, 0);
-
-                    msgReply.replyTo = mBackgroundServiceClient;
-
-                    try {
-                        mBackgroundService.send(msgReply);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+                sendStreamReload();
                 return true;
             }
         });
+    }
+
+    private void sendStreamReload() {
+        if(mBackgroundServiceBound)
+        {
+            System.out.println("MainActivity.sendStreamReload: We have a background service!");
+            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_RELOAD, 0, 0);
+
+            msgReply.replyTo = mBackgroundServiceClient;
+
+            try {
+                mBackgroundService.send(msgReply);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("MainActivity.sendStreamReload: No background service!");
+        }
     }
 
     public void onImageClick(View view) {
