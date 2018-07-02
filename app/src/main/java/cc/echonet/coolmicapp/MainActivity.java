@@ -295,6 +295,13 @@ public class MainActivity extends Activity {
 
     private void exitApp() {
         stopService(new Intent(this, BackgroundService.class));
+        this.finish();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                System.exit(0);
+            }
+        }, 500);
     }
 
     private void goSettings() {
