@@ -270,8 +270,6 @@ public class BackgroundService extends Service {
      */
     @Override
     public IBinder onBind(Intent intent) {
-        Toast.makeText(getApplicationContext(), "binding", Toast.LENGTH_SHORT).show();
-
         backgroundServiceState.clientCount++;
 
         if(backgroundServiceState.bindCounts++ == 0) {
@@ -286,8 +284,6 @@ public class BackgroundService extends Service {
         backgroundServiceState.clientCount--;
         if(!hasCore())
         {
-            Toast.makeText(getApplicationContext(), "stopping service", Toast.LENGTH_SHORT).show();
-
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
             if(nm != null) {
@@ -302,8 +298,6 @@ public class BackgroundService extends Service {
         }
         else
         {
-            Toast.makeText(getApplicationContext(), "backgrounding service", Toast.LENGTH_SHORT).show();
-
             postNotification();
 
             startForeground(Constants.NOTIFICATION_ID_LED, notification);
@@ -422,8 +416,6 @@ public class BackgroundService extends Service {
 
         ret = Wrapper.performMetaDataQualityUpdate(coolmic.getTitle(), coolmic.getArtist(), Double.parseDouble(coolmic.getQuality()), 1 );
 
-        Toast.makeText(getApplicationContext(), String.format(Locale.ENGLISH, "Update Result: %d", ret), Toast.LENGTH_SHORT).show();
-
         if(coolmic.getReconnect()) {
             ret = Wrapper.setReconnectionProfile("enabled");
         }
@@ -432,7 +424,6 @@ public class BackgroundService extends Service {
             ret = Wrapper.setReconnectionProfile("disabled");
         }
 
-        Toast.makeText(getApplicationContext(), String.format(Locale.ENGLISH, "Reconnect Result: %d", ret), Toast.LENGTH_SHORT).show();
     }
 
     private void prepareStream(final String profile, boolean cmtsTOSAccepted, final Messenger replyTo) {
@@ -635,13 +626,13 @@ public class BackgroundService extends Service {
              case THREAD_POST_START:
                 backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
 
-                backgroundServiceState.txtState = "connecting";
+                backgroundServiceState.txtState = "Connecting";
 
                 break;
              case THREAD_PRE_STOP:
                 backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
-                backgroundServiceState.txtState = "disconnected";
+                backgroundServiceState.txtState = "Disconnected";
 
                 if(backgroundServiceState.hadError) {
                     Wrapper.stop();
@@ -651,7 +642,7 @@ public class BackgroundService extends Service {
                 break;
              case THREAD_POST_STOP:
 
-                 backgroundServiceState.txtState="disconnected(post thread stopped)";
+                 backgroundServiceState.txtState="Disconnected(post thread stopped)";
 
                  backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 

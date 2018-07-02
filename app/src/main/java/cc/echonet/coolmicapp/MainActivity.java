@@ -338,7 +338,6 @@ public class MainActivity extends Activity {
         // Bind to the service
         connectService();
         controlRecordingUI(currentState);
-        Toast.makeText(this, "onStart()", Toast.LENGTH_SHORT).show();
     }
 
     @Override

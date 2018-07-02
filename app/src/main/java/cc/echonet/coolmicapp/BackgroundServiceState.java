@@ -14,7 +14,7 @@ import cc.echonet.coolmicdspjava.WrapperConstants;
 class BackgroundServiceState implements Serializable {
     Constants.CONTROL_UI oldState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
     Constants.CONTROL_UI uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
-    String txtState = "disconnected";
+    String txtState = "Disconnected";
 
     int bindCounts = 0;
     int clientCount = 0;
