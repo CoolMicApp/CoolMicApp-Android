@@ -589,7 +589,7 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view) {
-        startRecording(view, false);
+        startRecording(view, true);
     }
 
     public void startRecording(View view, boolean cmtsTOSAccepted) {
