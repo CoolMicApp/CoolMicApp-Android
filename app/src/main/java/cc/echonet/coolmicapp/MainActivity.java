@@ -294,14 +294,27 @@ public class MainActivity extends Activity {
     }
 
     private void exitApp() {
+        disconnectService();
+
         stopService(new Intent(this, BackgroundService.class));
-        this.finish();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                stopService(new Intent(getApplicationContext(), BackgroundService.class));
+            }
+        }, 250);
+
+        //System.exit(0);
+
+        //this.finish();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 System.exit(0);
             }
         }, 500);
+
     }
 
     private void goSettings() {
@@ -339,6 +352,13 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void disconnectService() {
+        if (mBackgroundServiceBound) {
+            unbindService(mBackgroundServiceConnection);
+            mBackgroundServiceBound = false;
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -351,10 +371,7 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         // Unbind from the service
-        if (mBackgroundServiceBound) {
-            unbindService(mBackgroundServiceConnection);
-            mBackgroundServiceBound = false;
-        }
+        disconnectService();
     }
 
 

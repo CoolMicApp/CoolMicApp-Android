@@ -742,5 +742,9 @@ public class BackgroundService extends Service {
         sendMessageToAll(msgReply);
     }
 
-
+    @Override
+    public void onDestroy() {
+        Log.v("BG", "BackgroundService.onDestroy()");
+        super.onDestroy();
+    }
 }
