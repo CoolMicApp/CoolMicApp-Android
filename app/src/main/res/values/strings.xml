@@ -13,7 +13,7 @@
     <string name="start_broadcast">Start Livestream</string>
     <string name="stop_broadcast">Stop Livestream</string>
     <string name="broadcasting">You Are Live - Tap to Stop</string>
-    <string name="img_content">CoolMic Logo</string>
+    <string name="img_content">Cool Mic Logo</string>
 
     <!-- main.xml -->
     <string name="sample_rate">Sample Rate</string>
@@ -74,7 +74,7 @@
     <string name="pref_default_audio_channels">1</string>
     <string name="pref_default_audio_quality">-0.1</string>
     <string name="prefs_header_utilities">Utilities</string>
-    <string name="pref_title_utility_connection_default">Use CoolMic Test Server</string>
+    <string name="pref_title_utility_connection_default">Use Cool Mic Test Server</string>
     <string name="pref_title_utility_qr_scan">QR Code Scan</string>
     <string name="pref_title_utility_permission_check">Permission Check</string>
     <string name="menu_action_settings">Settings</string>
@@ -89,8 +89,8 @@
     <string name="popup_about_lbl_git_revision">GIT Commit:</string>
     <string name="popup_about_lbl_git_dirty">GIT Dirty:</string>
 
-    <string name="aboutactivity_copy_string">CoolMic App Report\nVersion: %1$s\nBuild Type: %2$s\nGIT Branch: %3$s\nGIT Revision: %4$s\nGIT Branch: %5$s</string>
-    <string name="aboutactivity_copied_string">CoolMic Report copied to clipboard</string>
+    <string name="aboutactivity_copy_string">Cool Mic App Report\nVersion: %1$s\nBuild Type: %2$s\nGIT Branch: %3$s\nGIT Revision: %4$s\nGIT Branch: %5$s</string>
+    <string name="aboutactivity_copied_string">Cool Mic Report copied to clipboard</string>
 
     <string-array name="pref_titles_audio_channels">
         <item>Mono (1 Channel)</item>
@@ -149,7 +149,7 @@
     <string name="exception_failed_metadata_quality">Failed to set Metadata or Quality: %1$d</string>
     <string name="exception_failed_reconnect">Could not set Reconnection Mode: %1$d</string>
     <string name="exception_failed_start_general">"Failed to start Livestream. "</string>
-    <string name="settings_conn_defaults_loaded">CoolMic Test Server Data Loaded</string>
+    <string name="settings_conn_defaults_loaded">Cool Mic Test Server Data Loaded</string>
     <string name="lblState">State:</string>
     <string name="txtState">N/A</string>
 
@@ -198,7 +198,7 @@
     <string name="coolmic_help_url">http://coolmic.net/help</string>
     <string name="coolmic_back_message">Tap [ Ok ] to stop Livestream.</string>
     <string name="aboutactivity_cmd_about_copy">Copy to Clipboard</string>
-    <string name="settingsactivity_toast_permission_denied">CoolMic needs the requested permissions for recording and streaming. Without them it is quite useless</string>
+    <string name="settingsactivity_toast_permission_denied">Cool Mic needs the requested permissions for recording and streaming. Without them it is quite useless</string>
     <string name="settingsactivity_url_invalid">Please scan a valid URI</string>
     <string name="settingsactivity_qrcode_loaded">Loaded settings from QR code</string>
     <string name="settingsactivity_toast_permissions_granted">All required permissions granted</string>
