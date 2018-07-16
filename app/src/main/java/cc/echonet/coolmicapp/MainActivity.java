@@ -163,14 +163,7 @@ public class MainActivity extends Activity {
                     break;
 
                 case Constants.S2C_MSG_CONNECTION_UNSET:
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
-                    alertDialog.setTitle(R.string.mainactivity_missing_connection_details_title);
-                    alertDialog.setMessage(R.string.mainactivity_missing_connection_details_body);
-                    alertDialog.setNegativeButton(R.string.mainactivity_missing_connection_details_no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
+                    AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(activity);
                     alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Utils.loadCMTSData(activity, "default");

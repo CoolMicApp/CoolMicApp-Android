@@ -1,7 +1,9 @@
 package cc.echonet.coolmicapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -144,4 +146,16 @@ public class Utils {
         Toast.makeText(context, R.string.settings_conn_defaults_loaded, Toast.LENGTH_SHORT).show();
     }
 
+    public static AlertDialog.Builder buildAlertDialogCMTSTOS(Activity activity) {
+        AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(activity);
+        alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
+        alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);
+        alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        return alertDialogCMTSTOS;
+    }
 }

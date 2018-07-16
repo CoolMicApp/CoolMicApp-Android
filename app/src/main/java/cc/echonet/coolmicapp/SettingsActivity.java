@@ -222,11 +222,18 @@ public class SettingsActivity extends PreferenceActivity {
                 button_util_conn_default.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference arg0) {
+                        AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(getActivity());
+                        alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Utils.loadCMTSData(getActivity(), "default");
 
-                        Utils.loadCMTSData(getActivity(), "default");
+                                refreshSummaryForConnectionSettings();
+                                handleSampleRateEnabled();
+                            }
+                        });
 
-                        refreshSummaryForConnectionSettings();
-                        handleSampleRateEnabled();
+                        alertDialog.show();
+
 
                         return true;
                     }
