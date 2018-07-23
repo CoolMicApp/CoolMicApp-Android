@@ -309,7 +309,7 @@ public class BackgroundService extends Service {
     private void postNotification() {
         boolean flashLed = (backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
         String title = String.format(Locale.ENGLISH,"State: %s", backgroundServiceState.txtState);
-        String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", backgroundServiceState.timerString, !flashLed ? "(PAUSED)" : "", backgroundServiceState.listenersString);
+        String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", backgroundServiceState.timerString, !flashLed ? "(Stopped)" : "", backgroundServiceState.listenersString);
 
         postNotification(message, title, flashLed);
     }
