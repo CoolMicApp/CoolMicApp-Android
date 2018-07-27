@@ -764,7 +764,13 @@ public class BackgroundService extends Service {
 
     @Override
     public void onDestroy() {
+        NotificationManager nm;
+
         Log.v("BG", "BackgroundService.onDestroy()");
+        stopStream(null);
+        nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.cancelAll();
         super.onDestroy();
+        Log.v("BG", "BackgroundService.onDestroy() done");
     }
 }
