@@ -59,6 +59,10 @@ public class BackgroundService extends Service {
 
     private BackgroundServiceState backgroundServiceState;
 
+    private String oldNotificationMessage;
+    private String oldNotificationTitle;
+    private boolean oldNotificationFlashLed;
+
     public BackgroundService() {
         mIncomingHandler = new IncomingHandler(this);
         mMessenger = new Messenger(mIncomingHandler);
@@ -309,12 +313,22 @@ public class BackgroundService extends Service {
     private void postNotification() {
         boolean flashLed = (backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
         String title = String.format(Locale.ENGLISH,"State: %s", backgroundServiceState.txtState);
-        String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", backgroundServiceState.timerString, !flashLed ? "(Stopped)" : "", backgroundServiceState.listenersString);
+        //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", backgroundServiceState.timerString, !flashLed ? "(Stopped)" : "", backgroundServiceState.listenersString);
+        String message = String.format(Locale.ENGLISH, "Listeners: %s",backgroundServiceState.listenersString);
 
         postNotification(message, title, flashLed);
     }
 
     private void postNotification(String message, String title, boolean flashLed) {
+
+        if (message.equals(oldNotificationMessage) && title.equals(oldNotificationTitle) && flashLed == oldNotificationFlashLed) {
+            return;
+        }
+
+        oldNotificationMessage = message;
+        oldNotificationTitle = title;
+        oldNotificationFlashLed = flashLed;
+
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         Intent resultIntent = new Intent(this, MainActivity.class);
