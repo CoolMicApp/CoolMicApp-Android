@@ -337,6 +337,8 @@ public class MainActivity extends Activity {
         super.onDestroy();
 
         Log.v("$$$$$$", "In Method: onDestroy()");
+
+        this.exitApp();
     }
 
     private void connectService() {
