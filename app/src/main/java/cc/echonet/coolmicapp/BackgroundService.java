@@ -209,6 +209,10 @@ public class BackgroundService extends Service {
 
                     break;
 
+                case Constants.C2S_MSG_STREAM_STOP:
+                    service.stopStream(msg.replyTo);
+
+                    break;
 
                 case Constants.H2S_MSG_TIMER:
                     if(service.backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
@@ -618,12 +622,14 @@ public class BackgroundService extends Service {
 
         backgroundServiceState.initialConnectPerformed = false;
 
-        Message msgReply = Message.obtain(null, Constants.S2C_MSG_STREAM_STOP_REPLY, 0, 0);
+        if (replyTo != null) {
+            Message msgReply = Message.obtain(null, Constants.S2C_MSG_STREAM_STOP_REPLY, 0, 0);
 
-        try {
-            replyTo.send(msgReply);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            try {
+                replyTo.send(msgReply);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
 
         sendStateToAll();

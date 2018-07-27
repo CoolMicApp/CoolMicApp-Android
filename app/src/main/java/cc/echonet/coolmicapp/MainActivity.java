@@ -287,6 +287,8 @@ public class MainActivity extends Activity {
     }
 
     private void exitApp() {
+        stopRecording();
+
         disconnectService();
 
         stopService(new Intent(this, BackgroundService.class));
@@ -603,6 +605,20 @@ public class MainActivity extends Activity {
 
             bundle.putString("profile", "default");
             bundle.putBoolean("cmtsTOSAccepted", cmtsTOSAccepted);
+
+            try {
+                mBackgroundService.send(msgReply);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void stopRecording() {
+        if (mBackgroundServiceBound) {
+            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_STOP, 0, 0);
+
+            msgReply.replyTo = mBackgroundServiceClient;
 
             try {
                 mBackgroundService.send(msgReply);
