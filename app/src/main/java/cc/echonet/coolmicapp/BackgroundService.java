@@ -541,10 +541,11 @@ public class BackgroundService extends Service {
             String title = coolmic.getTitle();
             String artist = coolmic.getArtist();
             String codec_string = coolmic.getCodec();
+            int sampleRate = Integer.parseInt(sampleRate_string);
 
             Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
             Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-            int status = Wrapper.init(this, server, port_num, username, password, mountpoint, codec_string, Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string), buffersize);
+            int status = Wrapper.init(this, server, port_num, username, password, mountpoint, codec_string, sampleRate, Integer.parseInt(channel_string), buffersize);
 
             hasCore();
 
@@ -582,7 +583,7 @@ public class BackgroundService extends Service {
                 throw new Exception(getString(R.string.exception_start_failed, status));
             }
 
-            int interval = Integer.parseInt(coolmic.getVuMeterInterval());
+            int interval = Integer.parseInt(coolmic.getVuMeterInterval())*(sampleRate/48000);
 
             Wrapper.setVuMeterInterval(interval);
 
