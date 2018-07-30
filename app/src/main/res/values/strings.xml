@@ -154,21 +154,21 @@
     <string name="txtState">N/A</string>
 
     <string-array name="pref_titles_vumeter_interval">
-        <item>Disabled</item>
         <item>Very Fast</item>
         <item>Fast</item>
         <item>Normal</item>
         <item>Slow</item>
         <item>Very Slow</item>
+        <item>Disabled</item>
     </string-array>
 
     <string-array name="pref_values_vumeter_interval">
-        <item>0</item>
         <item>10</item>
         <item>20</item>
         <item>40</item>
         <item>60</item>
         <item>80</item>
+        <item>0</item>
     </string-array>
 
     <!-- Backend errors -->
