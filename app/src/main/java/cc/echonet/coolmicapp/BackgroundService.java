@@ -583,7 +583,10 @@ public class BackgroundService extends Service {
                 throw new Exception(getString(R.string.exception_start_failed, status));
             }
 
-            int interval = Integer.parseInt(coolmic.getVuMeterInterval())*(sampleRate/48000);
+            int interval = Integer.parseInt(coolmic.getVuMeterInterval());
+
+            /* Normalize interval to a sample rate of 48kHz (as per Opus specs). */
+            interval = (interval * sampleRate) / 48000;
 
             Wrapper.setVuMeterInterval(interval);
 
