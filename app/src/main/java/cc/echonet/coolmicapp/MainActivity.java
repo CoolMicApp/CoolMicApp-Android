@@ -362,13 +362,6 @@ public class MainActivity extends Activity {
         // Bind to the service
         connectService();
         controlRecordingUI(currentState);
-
-        ((Button)findViewById(R.id.start_recording_button)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startRecording(v);
-            }
-        });
     }
 
     @Override
@@ -444,6 +437,13 @@ public class MainActivity extends Activity {
             public boolean onLongClick(View view) {
                 sendStreamReload();
                 return true;
+            }
+        });
+
+        start_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startRecording(v);
             }
         });
     }
