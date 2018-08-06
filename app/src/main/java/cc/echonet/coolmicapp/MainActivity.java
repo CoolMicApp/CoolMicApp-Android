@@ -133,28 +133,45 @@ public class MainActivity extends Activity {
                         return;
                     }
 
+                    Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: State="+activity.backgroundServiceState.uiState.toString());
+
                     activity.controlRecordingUI(activity.backgroundServiceState.uiState);
 
                     ((TextView) activity.findViewById(R.id.timerValue)).setText(activity.backgroundServiceState.timerString);
                     ((TextView) activity.findViewById(R.id.txtState)).setText(activity.backgroundServiceState.txtState);
                     ((TextView) activity.findViewById(R.id.txtListeners)).setText(activity.backgroundServiceState.listenersString);
 
+                    if (activity.backgroundServiceState.uiState.equals(Constants.CONTROL_UI.CONTROL_UI_CONNECTING)) {
+                        Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: X!");
+                    }
+
                     break;
 
                 case Constants.S2C_MSG_ERROR:
                     String error = bundle.getString("error");
 
+                    Log.v("IH", "In Handler: S2C_MSG_ERROR: State="+activity.backgroundServiceState.uiState.toString());
+                    Log.v("IH", "In Handler: S2C_MSG_ERROR: error="+error);
+
                     Toast.makeText(activity, error, Toast.LENGTH_LONG).show();
+
+                    if (activity.backgroundServiceState.uiState.equals(Constants.CONTROL_UI.CONTROL_UI_CONNECTING)) {
+                        Log.v("IH", "In Handler: S2C_MSG_ERROR: X!");
+                    }
 
                     break;
                 case Constants.S2C_MSG_STREAM_START_REPLY:
                     activity.controlVuMeterUI(Integer.parseInt(activity.coolmic.getVuMeterInterval()) != 0);
 
+                    Log.v("IH", "In Handler: S2C_MSG_STREAM_START_REPLY: X!");
+                    activity.start_button.setClickable(true);
                     break;
 
                 case Constants.S2C_MSG_STREAM_STOP_REPLY:
                     Toast.makeText(activity, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
 
+                    Log.v("IH", "In Handler: S2C_MSG_STREAM_STOP_REPLY: X!");
+                    activity.start_button.setClickable(true);
                     break;
 
                 case Constants.S2C_MSG_PERMISSIONS_MISSING:
@@ -238,6 +255,7 @@ public class MainActivity extends Activity {
 
     CoolMic coolmic = null;
     Button start_button;
+    boolean start_button_debounce_active = false;
     SeekBar gainLeft;
     SeekBar gainRight;
 
@@ -443,6 +461,16 @@ public class MainActivity extends Activity {
         start_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (start_button_debounce_active)
+                    return;
+                start_button_debounce_active = true;
+                v.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        start_button_debounce_active = false;
+                    }
+                }, 500);
+                start_button.setClickable(false);
                 startRecording(v);
             }
         });
