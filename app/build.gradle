@@ -7,8 +7,8 @@ android {
 
     defaultConfig {
         applicationId "cc.echonet.coolmicapp"
-        versionCode 7
-        versionName "1.0.3"
+        versionCode 8
+        versionName "1.0.4"
 
         minSdkVersion 16
         targetSdkVersion 26
