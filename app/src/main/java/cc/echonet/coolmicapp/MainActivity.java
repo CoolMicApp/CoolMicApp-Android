@@ -314,9 +314,6 @@ public class MainActivity extends Activity {
             }
         }, 250);
 
-        //System.exit(0);
-
-        //this.finish();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -525,33 +522,6 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        // Write your code here
-        /*
-        if (hasCore()) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-            alertDialog.setTitle(R.string.question_stop_broadcasting);
-            alertDialog.setMessage(R.string.coolmic_back_message);
-            alertDialog.setNegativeButton(R.string.mainactivity_quit_cancel, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    backyes = false;
-                    dialog.cancel();
-                }
-            });
-            alertDialog.setPositiveButton(R.string.mainactivity_quit_ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    backyes = true;
-                    dialog.cancel();
-
-                    controlRecordingUI(CONTROL_UI.CONTROL_UI_DISCONNECTED);
-
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            });
-            alertDialog.show();
-        } else {
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
-        */
     }
 
     private long getChannels() {
