@@ -18,9 +18,9 @@ class Constants {
     static final int PERMISSION_CHECK_REQUEST_CODE = 1;
 
     static final String[] REQUIRED_PERMISSIONS = {
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.INTERNET,
-        Manifest.permission.ACCESS_NETWORK_STATE
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE
     };
 
     static final int C2S_MSG_STATE = 1;
@@ -40,7 +40,6 @@ class Constants {
     static final int S2C_MSG_GAIN = 60;
 
     static final int H2S_MSG_TIMER = 100;
-
 
 
     enum CONTROL_UI {

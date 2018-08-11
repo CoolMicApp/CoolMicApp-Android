@@ -73,7 +73,7 @@ public class BackgroundService extends Service {
     }
 
     protected void addClient(Messenger messenger) {
-        if(!clients.contains(messenger)) {
+        if (!clients.contains(messenger)) {
             clients.add(messenger);
         }
     }
@@ -82,8 +82,7 @@ public class BackgroundService extends Service {
         backgroundServiceState.listenersString = getApplicationContext().getString(R.string.formatListeners, listeners_current, listeners_peak);
     }
 
-    private String exceptionToString(Exception ex)
-    {
+    private String exceptionToString(Exception ex) {
         StringWriter sw = new StringWriter();
         ex.printStackTrace(new PrintWriter(sw));
         return sw.toString();
@@ -107,18 +106,17 @@ public class BackgroundService extends Service {
                     conn.setRequestProperty("Accept-Charset", "utf-8");
                     conn.setRequestProperty("Accept-Encoding", "text/xml");
                     conn.setRequestProperty("Accept-Language", "en-US");
-                    conn.setRequestProperty("Authorization","Basic " + Base64.encodeToString(u.getUserInfo().getBytes(),Base64.NO_WRAP));
+                    conn.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(u.getUserInfo().getBytes(), Base64.NO_WRAP));
                     conn.connect();
 
                     if (conn.getResponseCode() != 200) {
                         Log.e("CM-StreamStatsService", "HTTP error, invalid server status code: " + conn.getResponseMessage());
-                    }
-                    else {
+                    } else {
                         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                         DocumentBuilder builder = factory.newDocumentBuilder();
                         Document doc = builder.parse(conn.getInputStream());
 
-                        Log.d("CM-StreamStatsService", "Parsed Document "+doc.toString());
+                        Log.d("CM-StreamStatsService", "Parsed Document " + doc.toString());
 
                         XPathFactory xpathFactory = XPathFactory.newInstance();
                         XPath xpath = xpathFactory.newXPath();
@@ -133,24 +131,20 @@ public class BackgroundService extends Service {
                         String listeners = (String) expr_listeners.evaluate(doc, XPathConstants.STRING);
                         String listeners_peak = (String) expr_listeners_peak.evaluate(doc, XPathConstants.STRING);
 
-                        Log.d("CM-StreamStatsService", "post xpath eval "+listeners+ " "+listeners_peak);
+                        Log.d("CM-StreamStatsService", "post xpath eval " + listeners + " " + listeners_peak);
 
                         int listenersCurrent = -1;
                         int listenersPeak = -1;
 
-                        if(!listeners.isEmpty()) {
+                        if (!listeners.isEmpty()) {
                             listenersCurrent = Integer.valueOf(listeners);
-                        }
-                        else
-                        {
+                        } else {
                             Log.d("CM-StreamStatsService", "found no listeners");
                         }
 
-                        if(!listeners_peak.isEmpty()) {
+                        if (!listeners_peak.isEmpty()) {
                             listenersPeak = Integer.valueOf(listeners_peak);
-                        }
-                        else
-                        {
+                        } else {
                             Log.d("CM-StreamStatsService", "found no listeners peak");
                         }
 
@@ -187,7 +181,7 @@ public class BackgroundService extends Service {
 
             switch (msg.what) {
                 case Constants.C2S_MSG_STATE:
-                    if(msg.replyTo != null) {
+                    if (msg.replyTo != null) {
                         service.addClient(msg.replyTo);
                     }
 
@@ -215,7 +209,7 @@ public class BackgroundService extends Service {
                     break;
 
                 case Constants.H2S_MSG_TIMER:
-                    if(service.backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
+                    if (service.backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
                         service.backgroundServiceState.timerInMS = SystemClock.uptimeMillis() - service.backgroundServiceState.startTime;
 
                         int secs = (int) (service.backgroundServiceState.timerInMS / 1000);
@@ -230,7 +224,7 @@ public class BackgroundService extends Service {
 
                         service.sendStateToAll();
 
-                        if(service.backgroundServiceState.lastStateFetch+15*1000 < service.backgroundServiceState.timerInMS) {
+                        if (service.backgroundServiceState.lastStateFetch + 15 * 1000 < service.backgroundServiceState.timerInMS) {
                             new Thread(service.fetchListeners()).start();
 
                             service.backgroundServiceState.lastStateFetch = service.backgroundServiceState.timerInMS;
@@ -250,12 +244,9 @@ public class BackgroundService extends Service {
     }
 
     private void setGain(int left, int right) {
-        if(backgroundServiceState.channels != 2)
-        {
+        if (backgroundServiceState.channels != 2) {
             Wrapper.setMasterGainMono(100, left);
-        }
-        else
-        {
+        } else {
             Wrapper.setMasterGainStereo(100, left, right);
         }
     }
@@ -280,7 +271,7 @@ public class BackgroundService extends Service {
     public IBinder onBind(Intent intent) {
         backgroundServiceState.clientCount++;
 
-        if(backgroundServiceState.bindCounts++ == 0) {
+        if (backgroundServiceState.bindCounts++ == 0) {
             postNotification();
         }
 
@@ -290,11 +281,10 @@ public class BackgroundService extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         backgroundServiceState.clientCount--;
-        if(!hasCore())
-        {
+        if (!hasCore()) {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-            if(nm != null) {
+            if (nm != null) {
                 nm.cancel(Constants.NOTIFICATION_ID_LED);
             }
 
@@ -303,9 +293,7 @@ public class BackgroundService extends Service {
             clients.clear();
 
             stopSelf();
-        }
-        else
-        {
+        } else {
             postNotification();
 
             startForeground(Constants.NOTIFICATION_ID_LED, notification);
@@ -316,9 +304,9 @@ public class BackgroundService extends Service {
 
     private void postNotification() {
         boolean flashLed = (backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
-        String title = String.format(Locale.ENGLISH,"State: %s", backgroundServiceState.txtState);
+        String title = String.format(Locale.ENGLISH, "State: %s", backgroundServiceState.txtState);
         //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", backgroundServiceState.timerString, !flashLed ? "(Stopped)" : "", backgroundServiceState.listenersString);
-        String message = String.format(Locale.ENGLISH, "Listeners: %s",backgroundServiceState.listenersString);
+        String message = String.format(Locale.ENGLISH, "Listeners: %s", backgroundServiceState.listenersString);
 
         postNotification(message, title, flashLed);
     }
@@ -345,20 +333,19 @@ public class BackgroundService extends Service {
 
         Notification.Builder builder = new Notification.Builder(getApplicationContext()).setOngoing(true).setSmallIcon(R.drawable.icon).setContentIntent(resultPendingIntent).setContentTitle(title).setContentText(message).setOnlyAlertOnce(true);
 
-        if(flashLed)
-        {
+        if (flashLed) {
             builder.setLights(0xFFff0000, 100, 100);
         }
 
         notification = builder.build();
 
-        if(nm != null) {
+        if (nm != null) {
             nm.notify(Constants.NOTIFICATION_ID_LED, notification);
         }
     }
 
     private void checkWrapper() {
-        if(backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if (backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             if (backgroundServiceState.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED) {
                 if (Wrapper.init() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
                     Log.d("WrapperInit", Wrapper.getInitException().toString());
@@ -432,13 +419,11 @@ public class BackgroundService extends Service {
             return;
         }
 
-        ret = Wrapper.performMetaDataQualityUpdate(coolmic.getTitle(), coolmic.getArtist(), Double.parseDouble(coolmic.getQuality()), 1 );
+        ret = Wrapper.performMetaDataQualityUpdate(coolmic.getTitle(), coolmic.getArtist(), Double.parseDouble(coolmic.getQuality()), 1);
 
-        if(coolmic.getReconnect()) {
+        if (coolmic.getReconnect()) {
             ret = Wrapper.setReconnectionProfile("enabled");
-        }
-        else
-        {
+        } else {
             ret = Wrapper.setReconnectionProfile("disabled");
         }
 
@@ -452,8 +437,7 @@ public class BackgroundService extends Service {
             return;
         }
 
-        if(!Utils.checkRequiredPermissions(getApplicationContext()))
-        {
+        if (!Utils.checkRequiredPermissions(getApplicationContext())) {
             Message msgReply = Message.obtain(null, Constants.S2C_MSG_PERMISSIONS_MISSING, 0, 0);
 
             try {
@@ -487,7 +471,7 @@ public class BackgroundService extends Service {
             return;
         }
 
-        if(coolmic.isCMTSConnection() && !cmtsTOSAccepted) {
+        if (coolmic.isCMTSConnection() && !cmtsTOSAccepted) {
             Message msgReply = Message.obtain(null, Constants.S2C_MSG_CMTS_TOS, 0, 0);
 
             try {
@@ -549,28 +533,23 @@ public class BackgroundService extends Service {
 
             hasCore();
 
-            if(status != 0)
-            {
-                throw new Exception("Failed to init Core: "+String.valueOf(status));
+            if (status != 0) {
+                throw new Exception("Failed to init Core: " + String.valueOf(status));
             }
 
             status = Wrapper.performMetaDataQualityUpdate(title, artist, Double.parseDouble(quality_string), 0);
 
-            if(status != 0)
-            {
+            if (status != 0) {
                 throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
             }
 
-            if(coolmic.getReconnect()) {
+            if (coolmic.getReconnect()) {
                 status = Wrapper.setReconnectionProfile("enabled");
-            }
-            else
-            {
+            } else {
                 status = Wrapper.setReconnectionProfile("disabled");
             }
 
-            if(status != 0)
-            {
+            if (status != 0) {
                 throw new Exception(getString(R.string.exception_failed_reconnect, status));
             }
 
@@ -578,8 +557,7 @@ public class BackgroundService extends Service {
 
             Log.d("VS", "Status:" + status);
 
-            if(status != 0)
-            {
+            if (status != 0) {
                 throw new Exception(getString(R.string.exception_start_failed, status));
             }
 
@@ -602,7 +580,6 @@ public class BackgroundService extends Service {
         }
 
 
-
         bundle.putBoolean("success", success);
 
         try {
@@ -614,8 +591,7 @@ public class BackgroundService extends Service {
 
     public void stopStream(Messenger replyTo) {
         Log.d("BS", "Stop Stream");
-        if(hasCore())
-        {
+        if (hasCore()) {
             Wrapper.stop();
             Wrapper.unref();
         }
@@ -640,38 +616,37 @@ public class BackgroundService extends Service {
     }
 
     @SuppressWarnings("unused")
-    private void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1)
-    {
+    private void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
         Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
 
         backgroundServiceState.oldState = backgroundServiceState.uiState;
 
-         switch(what) {
-             case THREAD_POST_START:
+        switch (what) {
+            case THREAD_POST_START:
                 backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
 
                 backgroundServiceState.txtState = "Connecting";
 
                 break;
-             case THREAD_PRE_STOP:
+            case THREAD_PRE_STOP:
                 backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
                 backgroundServiceState.txtState = "Disconnected";
 
-                if(backgroundServiceState.hadError) {
+                if (backgroundServiceState.hadError) {
                     Wrapper.stop();
                     Wrapper.unref();
                 }
 
                 break;
-             case THREAD_POST_STOP:
+            case THREAD_POST_STOP:
 
-                 backgroundServiceState.txtState="Disconnected(post thread stopped)";
+                backgroundServiceState.txtState = "Disconnected(post thread stopped)";
 
-                 backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
-                 break;
-             case ERROR:
+                break;
+            case ERROR:
                  /*
                 if(coolmic.getReconnect()) {
                     backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTING;
@@ -694,25 +669,23 @@ public class BackgroundService extends Service {
                 backgroundServiceState.hadError = true;
 
                 break;
-             case STREAMSTATE:
+            case STREAMSTATE:
                 String error = "";
 
-                if(arg1 != 0)
-                {
+                if (arg1 != 0) {
                     error = getString(R.string.txtStateFormatError, arg1);
                 }
 
                 /* connected */
-                if(arg0 == 2)
-                {
+                if (arg0 == 2) {
                     /*if(!backgroundServiceState.initialConnectPerformed || !coolmic.getReconnect()) {
-                    */
+                     */
 
-                        backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
-                        backgroundServiceState.initialConnectPerformed = true;
-                        backgroundServiceState.startTime = SystemClock.uptimeMillis();
+                    backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
+                    backgroundServiceState.initialConnectPerformed = true;
+                    backgroundServiceState.startTime = SystemClock.uptimeMillis();
 
-                        mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
+                    mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
                         /*
                     }
                     else if(backgroundServiceState.initialConnectPerformed && coolmic.getReconnect())
@@ -722,15 +695,12 @@ public class BackgroundService extends Service {
                     */
                 }
                 /* disconnected || connectionerror */
-                else if(arg0 == 4 || arg0 == 5)
-                {
+                else if (arg0 == 4 || arg0 == 5) {
                     mIncomingHandler.removeMessages(Constants.H2S_MSG_TIMER);
 
-                    if(!backgroundServiceState.initialConnectPerformed || !coolmic.getReconnect()) {
+                    if (!backgroundServiceState.initialConnectPerformed || !coolmic.getReconnect()) {
                         backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
-                    }
-                    else
-                    {
+                    } else {
                         backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
                     }
                 }
@@ -739,13 +709,13 @@ public class BackgroundService extends Service {
                 //Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
 
                 break;
-             case RECONNECT:
+            case RECONNECT:
                 backgroundServiceState.txtState = String.format(getString(R.string.reconnect_in), arg0);
 
-                 backgroundServiceState.hadError = false;
+                backgroundServiceState.hadError = false;
 
                 break;
-         }
+        }
 
         postNotification();
 
@@ -753,8 +723,7 @@ public class BackgroundService extends Service {
     }
 
     @SuppressWarnings("unused")
-    private void callbackVUMeterHandler(VUMeterResult result)
-    {
+    private void callbackVUMeterHandler(VUMeterResult result) {
         Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
 
         Message msgReply = Message.obtain(null, Constants.S2C_MSG_VUMETER, 0, 0);

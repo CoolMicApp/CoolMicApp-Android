@@ -35,25 +35,20 @@ public class VUMeterResult implements Serializable {
     public int[] channels_power_color;
 
     @SuppressWarnings("unused")
-    public void setChannelPeakPower(int channel, int peak, double power, int peak_color, int power_color)
-    {
-        if(this.channels_peak == null)
-        {
+    public void setChannelPeakPower(int channel, int peak, double power, int peak_color, int power_color) {
+        if (this.channels_peak == null) {
             this.channels_peak = new int[16];
         }
 
-        if(this.channels_power == null)
-        {
+        if (this.channels_power == null) {
             this.channels_power = new double[16];
         }
 
-        if(this.channels_peak_color == null)
-        {
+        if (this.channels_peak_color == null) {
             this.channels_peak_color = new int[16];
         }
 
-        if(this.channels_power_color == null)
-        {
+        if (this.channels_power_color == null) {
             this.channels_power_color = new int[16];
         }
 

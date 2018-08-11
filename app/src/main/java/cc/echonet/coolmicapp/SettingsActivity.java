@@ -57,16 +57,14 @@ public class SettingsActivity extends PreferenceActivity {
                 preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
                 preference.setDefaultValue(index >= 0 ? listPreference.getEntries()[index] : null);
                 ((ListPreference) preference).setValue(stringValue);
-            } else if(preference instanceof  EditTextPreference) {
+            } else if (preference instanceof EditTextPreference) {
                 EditTextPreference prefText = (EditTextPreference) preference;
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
                 prefText.setSummary(stringValue);
                 prefText.setDefaultValue(stringValue);
                 prefText.setText(stringValue);
-            }
-            else
-            {
+            } else {
                 preference.setSummary(stringValue);
                 preference.setDefaultValue(stringValue);
             }
@@ -129,8 +127,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if(!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults))
-        {
+        if (!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
@@ -280,14 +277,12 @@ public class SettingsActivity extends PreferenceActivity {
 
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences("default", Context.MODE_PRIVATE).edit();
 
-                if(u.getUserInfo() != null && u.getUserInfo().split(":").length >= 2) {
+                if (u.getUserInfo() != null && u.getUserInfo().split(":").length >= 2) {
                     String authority[] = u.getUserInfo().split(":");
 
                     editor.putString("connection_username", authority[0]);
                     editor.putString("connection_password", authority[1]);
-                }
-                else
-                {
+                } else {
                     final Uri uf = u;
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                     alertDialog.setTitle(R.string.settings_qrcode_invalid_noauth_title);
@@ -314,22 +309,19 @@ public class SettingsActivity extends PreferenceActivity {
 
                 String host = u.getHost();
 
-                if(u.getPort() != 8000)
-                {
-                    host = host+":"+u.getPort();
+                if (u.getPort() != 8000) {
+                    host = host + ":" + u.getPort();
                 }
 
                 String mountpoint = u.getPath().replaceAll("^/", "");
 
-                if(mountpoint.endsWith(".opus"))
-                {
+                if (mountpoint.endsWith(".opus")) {
                     editor.putString("audio_codec", getString(R.string.pref_default_audio_codec));
                     editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
 
                 }
 
                 editor.putString("connection_address", host);
-
 
 
                 editor.putString("connection_mountpoint", mountpoint);
@@ -356,8 +348,7 @@ public class SettingsActivity extends PreferenceActivity {
             findPreference("audio_samplerate").setEnabled(enabled);
         }
 
-        private void refreshSummaryForConnectionSettings()
-        {
+        private void refreshSummaryForConnectionSettings() {
             List<Preference> preferencesToUpdate = new ArrayList<>();
             preferencesToUpdate.add(findPreference("connection_address"));
             preferencesToUpdate.add(findPreference("connection_username"));
@@ -371,7 +362,7 @@ public class SettingsActivity extends PreferenceActivity {
             passwordPref.setDefaultValue(passwordValue);
             passwordPref.setText(passwordValue);
 
-            for(Preference preference: preferencesToUpdate) {
+            for (Preference preference : preferencesToUpdate) {
                 sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences("default", Context.MODE_PRIVATE).getString(preference.getKey(), ""));
             }
         }

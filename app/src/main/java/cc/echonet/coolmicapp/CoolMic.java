@@ -6,17 +6,17 @@
 
 /*
  * This file is part of Cool Mic.
- * 
+ *
  * Cool Mic is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Cool Mic is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Cool Mic.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -27,19 +27,19 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class CoolMic {
-     SharedPreferences prefs = null;
-     Context context = null;
+    SharedPreferences prefs = null;
+    Context context = null;
 
-     public CoolMic(Context context, String settingskey) {
+    public CoolMic(Context context, String settingskey) {
         this.prefs = context.getSharedPreferences(settingskey, Context.MODE_PRIVATE);
         this.context = context;
 
-         if (!this.prefs.getBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, false)) {
-             PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_all, true);
+        if (!this.prefs.getBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, false)) {
+            PreferenceManager.setDefaultValues(context, settingskey, Context.MODE_PRIVATE, R.xml.pref_all, true);
 
-             prefs.edit().putBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true).apply();
-         }
-     }
+            prefs.edit().putBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true).apply();
+        }
+    }
 
     public String getTitle() {
         return prefs.getString("general_title", context.getString(R.string.pref_default_general_title));
@@ -49,7 +49,9 @@ public class CoolMic {
         return prefs.getString("general_artist", context.getString(R.string.pref_default_general_artist));
     }
 
-    public String getServerName() { return prefs.getString("connection_address", ""); }
+    public String getServerName() {
+        return prefs.getString("connection_address", "");
+    }
 
     public String getMountpoint() {
         return prefs.getString("connection_mountpoint", "");
@@ -67,9 +69,13 @@ public class CoolMic {
         return prefs.getString("connection_password", "");
     }
 
-    public String getSampleRate() { return prefs.getString("audio_samplerate", context.getString(R.string.pref_default_audio_samplerate)); }
+    public String getSampleRate() {
+        return prefs.getString("audio_samplerate", context.getString(R.string.pref_default_audio_samplerate));
+    }
 
-    public String getCodec() { return prefs.getString("audio_codec", context.getString(R.string.pref_default_audio_codec)); }
+    public String getCodec() {
+        return prefs.getString("audio_codec", context.getString(R.string.pref_default_audio_codec));
+    }
 
     public String getChannels() {
         return prefs.getString("audio_channels", context.getString(R.string.pref_default_audio_channels));
@@ -90,8 +96,7 @@ public class CoolMic {
     public String getStreamURL() {
         String port = ":8000";
 
-        if(this.getServerName().indexOf(':') > 0)
-        {
+        if (this.getServerName().indexOf(':') > 0) {
             port = "";
         }
 
@@ -107,14 +112,12 @@ public class CoolMic {
     }
 
     public boolean isCMTSConnection() {
-        if(
-            this.getServerName().contains("coolmic.net") || this.getServerName().contains("echonet.cc") ||
-            this.getServerName().contains("64.142.100.248") || this.getServerName().contains("64.142.100.249") ||
-            this.getServerName().contains("46.165.219.118") ){
+        if (
+                this.getServerName().contains("coolmic.net") || this.getServerName().contains("echonet.cc") ||
+                        this.getServerName().contains("64.142.100.248") || this.getServerName().contains("64.142.100.249") ||
+                        this.getServerName().contains("46.165.219.118")) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }

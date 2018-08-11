@@ -30,7 +30,7 @@ public class Utils {
         return context.getString(resid);
     }
 
-    static  String getStringByName(Context context, String name, int subid) {
+    static String getStringByName(Context context, String name, int subid) {
         int resid;
 
         if (subid < 0) {
@@ -67,9 +67,8 @@ public class Utils {
     static boolean checkRequiredPermissions(Context context) {
         int grantedCount = 0;
 
-        for (String permission: Constants.REQUIRED_PERMISSIONS) {
-            if(ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
-            {
+        for (String permission : Constants.REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
                 grantedCount++;
             }
         }
@@ -81,9 +80,8 @@ public class Utils {
     private static boolean shouldShowRequestPermissionRationale(Activity activity) {
         int grantedCount = 0;
 
-        for (String permission: Constants.REQUIRED_PERMISSIONS) {
-            if(ActivityCompat.shouldShowRequestPermissionRationale(activity, permission))
-            {
+        for (String permission : Constants.REQUIRED_PERMISSIONS) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
                 grantedCount++;
             }
         }
@@ -92,22 +90,19 @@ public class Utils {
     }
 
     static void requestPermissions(Activity activity) {
-        if(!checkRequiredPermissions(activity))
-        {
+        if (!checkRequiredPermissions(activity)) {
             if (shouldShowRequestPermissionRationale(activity)) {
                 Toast.makeText(activity, R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
             }
 
             ActivityCompat.requestPermissions(activity, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_CHECK_REQUEST_CODE);
-        }
-        else
-        {
+        } else {
             Toast.makeText(activity, R.string.settingsactivity_toast_permissions_granted, Toast.LENGTH_LONG).show();
         }
     }
 
     static boolean onRequestPermissionsResult(Activity activity, int requestCode, String[] permissions, int[] grantResults) {
-        if(requestCode == Constants.PERMISSION_CHECK_REQUEST_CODE) {
+        if (requestCode == Constants.PERMISSION_CHECK_REQUEST_CODE) {
             boolean permissions_ok = true;
 
             for (int i = 0; i < grantResults.length; i++) {
@@ -122,9 +117,7 @@ public class Utils {
             }
 
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }

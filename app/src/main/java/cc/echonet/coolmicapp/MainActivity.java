@@ -6,17 +6,17 @@
 
 /*
  * This file is part of Cool Mic.
- * 
+ *
  * Cool Mic is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Cool Mic is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Cool Mic.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -125,11 +125,11 @@ public class MainActivity extends Activity {
                 case Constants.S2C_MSG_STATE_REPLY:
                     activity.backgroundServiceState = (BackgroundServiceState) bundle.getSerializable("state");
 
-                    if(activity.backgroundServiceState == null) {
+                    if (activity.backgroundServiceState == null) {
                         return;
                     }
 
-                    Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: State="+activity.backgroundServiceState.uiState.toString());
+                    Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: State=" + activity.backgroundServiceState.uiState.toString());
 
                     activity.controlRecordingUI(activity.backgroundServiceState.uiState);
 
@@ -146,8 +146,8 @@ public class MainActivity extends Activity {
                 case Constants.S2C_MSG_ERROR:
                     String error = bundle.getString("error");
 
-                    Log.v("IH", "In Handler: S2C_MSG_ERROR: State="+activity.backgroundServiceState.uiState.toString());
-                    Log.v("IH", "In Handler: S2C_MSG_ERROR: error="+error);
+                    Log.v("IH", "In Handler: S2C_MSG_ERROR: State=" + activity.backgroundServiceState.uiState.toString());
+                    Log.v("IH", "In Handler: S2C_MSG_ERROR: error=" + error);
 
                     Toast.makeText(activity, error, Toast.LENGTH_LONG).show();
 
@@ -230,8 +230,7 @@ public class MainActivity extends Activity {
     }
 
     private void sendGain(int left, int right) {
-        if(mBackgroundServiceBound)
-        {
+        if (mBackgroundServiceBound) {
             Message msgReply = Message.obtain(null, Constants.C2S_MSG_GAIN, 0, 0);
 
             msgReply.replyTo = mBackgroundServiceClient;
@@ -417,9 +416,8 @@ public class MainActivity extends Activity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if(b) {
-                    if(backgroundServiceState.channels != 2)
-                    {
+                if (b) {
+                    if (backgroundServiceState.channels != 2) {
                         int value = seekBar.getProgress();
 
                         setGain(value, value);
@@ -479,8 +477,7 @@ public class MainActivity extends Activity {
     }
 
     private void sendStreamReload() {
-        if(mBackgroundServiceBound)
-        {
+        if (mBackgroundServiceBound) {
             System.out.println("MainActivity.sendStreamReload: We have a background service!");
             Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_RELOAD, 0, 0);
 
@@ -546,29 +543,23 @@ public class MainActivity extends Activity {
             sb.setVisibility(View.GONE);
         }
 
-        if(state == currentState)
-        {
+        if (state == currentState) {
             return;
         }
 
-        if(state == Constants.CONTROL_UI.CONTROL_UI_CONNECTING)
-        {
+        if (state == Constants.CONTROL_UI.CONTROL_UI_CONNECTING) {
             start_button.startAnimation(animation);
             start_button.setBackground(transitionButton);
             transitionButton.startTransition(5000);
 
             start_button.setText(R.string.cmdStartInitializing);
-        }
-        else if(state == Constants.CONTROL_UI.CONTROL_UI_CONNECTED)
-        {
+        } else if (state == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
             start_button.startAnimation(animation);
             start_button.setBackground(transitionButton);
             transitionButton.startTransition(5000);
 
             start_button.setText(R.string.broadcasting);
-        }
-        else
-        {
+        } else {
             start_button.clearAnimation();
             start_button.setBackground(buttonColor);
             start_button.setText(R.string.start_broadcast);
@@ -584,15 +575,12 @@ public class MainActivity extends Activity {
         currentState = state;
     }
 
-    public void controlVuMeterUI(boolean visible)
-    {
-        if(findViewById(R.id.llVuMeterLeft) != null)
-        {
+    public void controlVuMeterUI(boolean visible) {
+        if (findViewById(R.id.llVuMeterLeft) != null) {
             findViewById(R.id.llVuMeterLeft).setVisibility((visible ? View.VISIBLE : View.GONE));
         }
 
-        if(findViewById(R.id.llVuMeterRight) != null)
-        {
+        if (findViewById(R.id.llVuMeterRight) != null) {
             findViewById(R.id.llVuMeterRight).setVisibility((visible ? View.VISIBLE : View.GONE));
         }
 
@@ -607,8 +595,7 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view, boolean cmtsTOSAccepted) {
-        if(mBackgroundServiceBound)
-        {
+        if (mBackgroundServiceBound) {
             Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_ACTION, 0, 0);
 
             msgReply.replyTo = mBackgroundServiceClient;
@@ -642,65 +629,46 @@ public class MainActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
+        if (!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-        else
-        {
+        } else {
             startRecording(null);
         }
     }
 
 
-    static int normalizeVUMeterPower(double power)
-    {
-        int g_p = (int)((60.+power) * (100. / 60.));
+    static int normalizeVUMeterPower(double power) {
+        int g_p = (int) ((60. + power) * (100. / 60.));
 
-        if(g_p > 100)
-        {
+        if (g_p > 100) {
             g_p = 100;
         }
 
-        if(g_p < 0)
-        {
+        if (g_p < 0) {
             g_p = 0;
         }
 
         return g_p;
     }
 
-    static String normalizeVUMeterPeak(int peak)
-    {
-        if(peak == -32768 || peak == 32767)
-        {
+    static String normalizeVUMeterPeak(int peak) {
+        if (peak == -32768 || peak == 32767) {
             return "P";
-        }
-        else if(peak < -30000 || peak > 30000)
-        {
+        } else if (peak < -30000 || peak > 30000) {
             return "p";
-        }
-        else if(peak < -8000 || peak > 8000)
-        {
+        } else if (peak < -8000 || peak > 8000) {
             return "g";
-        }
-        else
-        {
+        } else {
             return "";
         }
     }
 
-    static String normalizeVUMeterPowerString(double power)
-    {
-        if(power < -100)
-        {
+    static String normalizeVUMeterPowerString(double power) {
+        if (power < -100) {
             return "-100";
-        }
-        else if(power > 0)
-        {
+        } else if (power > 0) {
             return "0";
-        }
-        else
-        {
+        } else {
             return String.format(Locale.ENGLISH, "%.2f", power);
         }
     }
@@ -712,7 +680,7 @@ public class MainActivity extends Activity {
         TextView rbPeakLeft = (TextView) this.findViewById(R.id.rbPeakLeft);
         TextView rbPeakRight = (TextView) this.findViewById(R.id.rbPeakRight);
 
-        if(vuMeterResult.channels < 2) {
+        if (vuMeterResult.channels < 2) {
             pbVuMeterLeft.setProgress(normalizeVUMeterPower(vuMeterResult.global_power));
             pbVuMeterLeft.setTextColor(vuMeterResult.global_power_color);
             pbVuMeterLeft.setText(normalizeVUMeterPowerString(vuMeterResult.global_power));
@@ -723,9 +691,7 @@ public class MainActivity extends Activity {
             rbPeakLeft.setTextColor(vuMeterResult.global_peak_color);
             rbPeakRight.setText(normalizeVUMeterPeak(vuMeterResult.global_peak));
             rbPeakRight.setTextColor(vuMeterResult.global_peak_color);
-        }
-        else
-        {
+        } else {
             pbVuMeterLeft.setProgress(normalizeVUMeterPower(vuMeterResult.channels_power[0]));
             pbVuMeterLeft.setTextColor(vuMeterResult.channels_power_color[0]);
             pbVuMeterLeft.setText(normalizeVUMeterPowerString(vuMeterResult.channels_power[0]));

@@ -29,7 +29,7 @@ public class AboutActivity extends Activity {
 
         this.setupActionBar();
 
-        String shortRev = BuildConfig.GIT_REVISION.substring(BuildConfig.GIT_REVISION.length()-8);
+        String shortRev = BuildConfig.GIT_REVISION.substring(BuildConfig.GIT_REVISION.length() - 8);
 
         ((TextView) findViewById(R.id.txtVersion)).setText(BuildConfig.VERSION_NAME);
         ((TextView) findViewById(R.id.txtBuildType)).setText(BuildConfig.BUILD_TYPE);
@@ -40,7 +40,7 @@ public class AboutActivity extends Activity {
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
-        cmdAboutCopy = (Button)findViewById(R.id.cmdAboutCopy);
+        cmdAboutCopy = (Button) findViewById(R.id.cmdAboutCopy);
         cmdAboutCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,7 +48,7 @@ public class AboutActivity extends Activity {
             }
         });
 
-        cmdOpenPrivacyPolicy = (Button)findViewById(R.id.cmdOpenPrivacyPolicy);
+        cmdOpenPrivacyPolicy = (Button) findViewById(R.id.cmdOpenPrivacyPolicy);
         cmdOpenPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,7 +56,7 @@ public class AboutActivity extends Activity {
             }
         });
 
-        cmdOpenLicenses = (Button)findViewById(R.id.cmdOpenLicenses);
+        cmdOpenLicenses = (Button) findViewById(R.id.cmdOpenLicenses);
         cmdOpenLicenses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

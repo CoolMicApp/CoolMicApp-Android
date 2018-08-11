@@ -52,7 +52,7 @@ public class StreamStats implements Parcelable {
         dest.writeInt(listeners_peak);
     }
 
-    public StreamStats(){
+    public StreamStats() {
 
     }
 
