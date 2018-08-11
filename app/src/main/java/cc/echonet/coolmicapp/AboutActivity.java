@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,10 @@ public class AboutActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Button cmdAboutCopy;
+        Button cmdOpenPrivacyPolicy;
+        Button cmdOpenLicenses;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
@@ -34,6 +39,30 @@ public class AboutActivity extends Activity {
         ((TextView) findViewById(R.id.txtGITDirty)).setText(BuildConfig.GIT_DIRTY);
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+
+        cmdAboutCopy = (Button)findViewById(R.id.cmdAboutCopy);
+        cmdAboutCopy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCMDAboutCopy(v);
+            }
+        });
+
+        cmdOpenPrivacyPolicy = (Button)findViewById(R.id.cmdOpenPrivacyPolicy);
+        cmdOpenPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCMDAboutOpenPP(v);
+            }
+        });
+
+        cmdOpenLicenses = (Button)findViewById(R.id.cmdOpenLicenses);
+        cmdOpenLicenses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCMDAboutOpenLicenses(v);
+            }
+        });
     }
 
     /**
