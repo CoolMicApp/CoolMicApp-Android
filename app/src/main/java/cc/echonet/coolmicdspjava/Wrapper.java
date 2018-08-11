@@ -22,8 +22,6 @@
  */
 package cc.echonet.coolmicdspjava;
 
-import android.app.Activity;
-
 /**
  * Created by stephanj on 2/22/15.
  */

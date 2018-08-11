@@ -3,8 +3,6 @@ package cc.echonet.coolmicapp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
 /**
  * Created by stephanj on 21.03.2016.
  */
