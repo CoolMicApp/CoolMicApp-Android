@@ -400,6 +400,15 @@ public class MainActivity extends Activity {
 
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
 
+        if (imageView1 != null) {
+            imageView1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onImageClick(v);
+                }
+            });
+        }
+
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
         animation.setDuration(500); // duration - half a second
