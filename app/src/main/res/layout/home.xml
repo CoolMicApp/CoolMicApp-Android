@@ -27,20 +27,22 @@
 
                 <cc.echonet.coolmicapp.TextProgressBar
                     android:id="@+id/pbVuMeterLeft"
+                    style="@style/Widget.ProgressBar.Vertical"
                     android:layout_width="30dip"
                     android:layout_height="fill_parent"
-                    style="@style/Widget.ProgressBar.Vertical"
-                    android:max="100"
                     android:layout_weight="2"
+                    android:contentDescription="@string/description_pbVuMeterLeft"
+                    android:max="100"
                     android:progressTint="@android:color/secondary_text_dark" />
 
                 <TextView
+                    android:id="@+id/rbPeakLeft"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/description_rbPeakLeft"
                     android:enabled="false"
-                    android:id="@+id/rbPeakLeft"
-                    android:text=""
-                    android:gravity="center_vertical|center_horizontal" />
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="" />
             </LinearLayout>
 
 
@@ -65,12 +67,14 @@
                     android:layout_height="match_parent"
                     style="@style/Widget.ProgressBar.Vertical"
                     android:layout_weight="2"
+                    android:contentDescription="@string/description_pbVuMeterRight"
                     android:max="100"
                     android:progressTint="@android:color/secondary_text_dark" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/description_rbPeakRight"
                     android:enabled="false"
                     android:id="@+id/rbPeakRight"
                     android:checked="true"
@@ -168,6 +172,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/darker_gray"
+                    android:contentDescription="@string/description_pbGainMeterLeft"
                     android:max="100"
                     android:progress="90" />
                 <SeekBar
@@ -175,6 +180,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/darker_gray"
+                    android:contentDescription="@string/description_pbGainMeterRight"
                     android:max="100"
                     android:progress="90" />
             </LinearLayout>
