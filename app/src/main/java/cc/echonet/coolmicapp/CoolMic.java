@@ -27,6 +27,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class CoolMic {
+    static final int defaultVolume = 90;
+
     SharedPreferences prefs = null;
     Context context = null;
 
@@ -87,6 +89,22 @@ public class CoolMic {
 
     public String getVuMeterInterval() {
         return prefs.getString("vumeter_interval", context.getString(R.string.pref_default_vumeter_interval));
+    }
+
+    public int getVolumeLeft() {
+        return prefs.getInt("volume_left", defaultVolume);
+    }
+
+    public int getVolumeRight() {
+        return prefs.getInt("volume_right", defaultVolume);
+    }
+
+    public void setVolumeLeft(int volume) {
+        prefs.edit().putInt("volume_left", volume).apply();
+    }
+
+    public void setVolumeRight(int volume) {
+        prefs.edit().putInt("volume_right", volume).apply();
     }
 
     public String getStreamStatsURL() {

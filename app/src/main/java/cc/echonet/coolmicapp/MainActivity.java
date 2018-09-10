@@ -270,6 +270,9 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
         }
+
+        coolmic.setVolumeLeft(left);
+        coolmic.setVolumeRight(right);
     }
 
     @Override
@@ -447,7 +450,6 @@ public class MainActivity extends Activity {
         gainLeft.setOnSeekBarChangeListener(seekBarChangeListener);
         gainRight.setOnSeekBarChangeListener(seekBarChangeListener);
 
-
         buttonColor = start_button.getBackground();
 
         coolmic = new CoolMic(this, "default");
@@ -455,6 +457,8 @@ public class MainActivity extends Activity {
         controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
 
         controlRecordingUI(currentState);
+
+        setGain(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
 
         start_button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
