@@ -112,14 +112,20 @@ public class CoolMic {
     }
 
     public boolean isCMTSConnection() {
-        if (
-                this.getServerName().contains("coolmic.net") || this.getServerName().contains("echonet.cc") ||
-                        this.getServerName().contains("64.142.100.248") || this.getServerName().contains("64.142.100.249") ||
-                        this.getServerName().contains("46.165.219.118")) {
-            return true;
-        } else {
-            return false;
+        String CMTSHosts[] = {"coolmic.net", "echonet.cc", "64.142.100.248", "64.142.100.249", "46.165.219.118"};
+        String serverName = this.getServerName();
+
+        if (serverName.indexOf(':') > 0) {
+            serverName = serverName.split(":", 2)[0];
         }
+
+        for (int i = 0; i < CMTSHosts.length; i++) {
+            if (serverName.endsWith(CMTSHosts[i])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public SharedPreferences getPrefs() {
