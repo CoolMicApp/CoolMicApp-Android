@@ -75,6 +75,25 @@ public class MainActivity extends Activity {
     BackgroundServiceState backgroundServiceState;
 
 
+    CoolMic coolmic = null;
+    Button start_button;
+    boolean start_button_debounce_active = false;
+    SeekBar gainLeft;
+    SeekBar gainRight;
+
+    Animation animation = new AlphaAnimation(1, 0);
+
+    ColorDrawable transitionColorGrey = new ColorDrawable(Color.parseColor("#66999999"));
+    ColorDrawable transitionColorRed = new ColorDrawable(Color.RED);
+    ColorDrawable[] transitionColorDefault = {transitionColorGrey, transitionColorRed};
+
+    TransitionDrawable transitionButton = new TransitionDrawable(transitionColorDefault);
+
+    Drawable buttonColor;
+    ImageView imageView1;
+    ClipboardManager myClipboard;
+
+
     private ServiceConnection mBackgroundServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             // This is called when the connection with the service has been
@@ -252,24 +271,6 @@ public class MainActivity extends Activity {
             }
         }
     }
-
-    CoolMic coolmic = null;
-    Button start_button;
-    boolean start_button_debounce_active = false;
-    SeekBar gainLeft;
-    SeekBar gainRight;
-
-    Animation animation = new AlphaAnimation(1, 0);
-
-    ColorDrawable transitionColorGrey = new ColorDrawable(Color.parseColor("#66999999"));
-    ColorDrawable transitionColorRed = new ColorDrawable(Color.RED);
-    ColorDrawable[] transitionColorDefault = {transitionColorGrey, transitionColorRed};
-
-    TransitionDrawable transitionButton = new TransitionDrawable(transitionColorDefault);
-
-    Drawable buttonColor;
-    ImageView imageView1;
-    ClipboardManager myClipboard;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
