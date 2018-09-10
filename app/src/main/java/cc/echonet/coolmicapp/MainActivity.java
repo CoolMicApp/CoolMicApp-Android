@@ -164,9 +164,14 @@ public class MainActivity extends Activity {
                     break;
 
                 case Constants.S2C_MSG_STREAM_STOP_REPLY:
-                    Toast.makeText(activity, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
+                    boolean was_running = bundle.getBoolean("was_running");
 
                     Log.v("IH", "In Handler: S2C_MSG_STREAM_STOP_REPLY: X!");
+
+                    if (was_running) {
+                        Toast.makeText(activity, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
+                    }
+
                     activity.start_button.setClickable(true);
                     break;
 

@@ -590,10 +590,13 @@ public class BackgroundService extends Service {
     }
 
     public void stopStream(Messenger replyTo) {
+        boolean was_running = false;
+
         Log.d("BS", "Stop Stream");
         if (hasCore()) {
             Wrapper.stop();
             Wrapper.unref();
+            was_running = true;
         }
 
         Log.d("BS", "Past Core Check");
@@ -604,6 +607,9 @@ public class BackgroundService extends Service {
 
         if (replyTo != null) {
             Message msgReply = Message.obtain(null, Constants.S2C_MSG_STREAM_STOP_REPLY, 0, 0);
+
+            Bundle bundle = msgReply.getData();
+            bundle.putBoolean("was_running", was_running);
 
             try {
                 replyTo.send(msgReply);
