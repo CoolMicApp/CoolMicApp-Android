@@ -500,7 +500,7 @@ public class BackgroundService extends Service {
         backgroundServiceState.channels = Integer.parseInt(coolmic.getChannels());
 
         //setGain(100, 100);
-        sendGain(100, 100);
+        sendGain(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
 
         try {
             String portnum;
