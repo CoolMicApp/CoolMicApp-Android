@@ -27,7 +27,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class CoolMic {
-    static final int defaultVolume = 90;
+    static final int defaultVolume = 100;
 
     SharedPreferences prefs = null;
     Context context = null;
