@@ -167,6 +167,15 @@
             android:text="@string/start_broadcast"
                     android:layout_marginBottom="30dip" />
 
+                <TextView
+                    android:layout_width="match_parent"
+
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/input_gain"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp" />
+
                 <SeekBar
                     android:id="@+id/pbGainMeterLeft"
                     android:layout_width="match_parent"
