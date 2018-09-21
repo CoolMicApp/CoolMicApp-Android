@@ -15,7 +15,7 @@
     <string name="broadcasting">You Are Live - Tap to Stop</string>
     <string name="img_content">Cool Mic Logo</string>
     <string name="description_pbGainMeterLeft">Gain for left channel</string>
-    <string name="description_pbGainMeterRight">gain for right channel</string>
+    <string name="description_pbGainMeterRight">Gain for right channel</string>
     <string name="description_pbVuMeterRight">VU-Meter for left channel</string>
     <string name="description_pbVuMeterLeft">VU-Meter for right channel</string>
     <string name="description_rbPeakLeft">Peak indicator for left channel</string>
