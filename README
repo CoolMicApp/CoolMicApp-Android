@@ -13,11 +13,14 @@ smartphone or tablet.
 Features
 -=-=-=-=-
 
-  + Streams live audio from microphone or mic/line jack to any Icecast server
-  + Active listener count (current + peak/max)
-  + Graphical VU meter
-  + Broadcast length timer
+  + Streams live audio from microphone or mic/line jack to any Icecast 2.x server
+  + Configurable metadata (Title, Artist) sent to Icecast
   + Easy sharing of your unique livestream URL
+  + Auto-reconnect feature
+  + Input gain (input volume) slider
+  + Graphical VU meter with adjustable update interval
+  + Active listener count (current + peak/max)
+  + Broadcast length timer
   + Supports the open source, patent free Ogg/Opus audio codec
   + Supports the open source, patent free Ogg/Vorbis audio codec
   + Configurable Opus + Vorbis quality level settings
@@ -25,8 +28,8 @@ Features
   + Configurable number of audio channels (1/Mono, 2/Stereo)
   + Configurable sample rate (8000, 11025, 16000, 22050, 44100, 48000Hz)
   + Configurable server port (Under “Connection”, use SERVER:PORT)
-  + Automatically configure for testing with Cool Mic’s Public Livestream Server
   + Scan QR Code for auto-configuration
+  + Allows basic testing by using predefined Cool Mic Test Server configuration (CMTS)
   + Prevents screen + Wi-Fi sleep mode during livestream
   + Check current Cool Mic -> Android OS permissions
   + Simple and easy to use interface
@@ -46,4 +49,4 @@ following methods to contact us:
                     CoolMic-Dev:    https://lists.logicalnetworking.net/listinfo/coolmic-dev
                     CoolMic-User:   https://lists.logicalnetworking.net/listinfo/coolmic-user
 
-+ Website:        https://coolmic.net
++ Website: https://coolmic.net
