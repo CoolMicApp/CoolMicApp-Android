@@ -29,7 +29,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-
+    flavorDimensions "version"
+    productFlavors {
+        defaultConfig {
+            dimension "version"
+        }
+        debugdev {
+            dimension "version"
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
+    }
     externalNativeBuild {
         ndkBuild {
             path 'src/main/jni/Android.mk'
