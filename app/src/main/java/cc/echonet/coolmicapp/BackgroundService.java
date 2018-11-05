@@ -331,7 +331,16 @@ public class BackgroundService extends Service {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        Notification.Builder builder = new Notification.Builder(getApplicationContext()).setOngoing(true).setSmallIcon(R.drawable.icon).setContentIntent(resultPendingIntent).setContentTitle(title).setContentText(message).setOnlyAlertOnce(true);
+        Notification.Builder builder = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(getApplicationContext(), getApplicationContext().getResources().getString(R.string.notification_id_channel));
+        }
+        else {
+            builder = new Notification.Builder(getApplicationContext());
+        }
+
+        builder = builder.setOngoing(true).setSmallIcon(R.drawable.icon).setContentIntent(resultPendingIntent).setContentTitle(title).setContentText(message).setOnlyAlertOnce(true);
+
 
         if (flashLed) {
             builder.setLights(0xFFff0000, 100, 100);
