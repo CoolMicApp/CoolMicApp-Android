@@ -11,4 +11,5 @@ LOCAL_CFLAGS += -I$(LOCAL_PATH)/opus/include -I$(LOCAL_PATH)/ -I$(LOCAL_PATH)/op
 
 LOCAL_SRC_FILES := $(addprefix opus/, $(CELT_SOURCES)) $(addprefix opus/, $(SILK_SOURCES) $(SILK_SOURCES_FLOAT)) $(addprefix opus/, $(OPUS_SOURCES) $(OPUS_SOURCES_FLOAT))
 
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 include $(BUILD_SHARED_LIBRARY)

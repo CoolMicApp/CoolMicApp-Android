@@ -3,8 +3,9 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := coolmic-dsp
-LOCAL_CFLAGS += -I$(LOCAL_PATH)/../include -I$(LOCAL_PATH)/../opus -I$(LOCAL_PATH)/libcoolmic-dsp/include -fsigned-char -DHAVE_SNDDRV_DRIVER_OPENSL -DHAVE_SNDDRV_DRIVER_STDIO -DHAVE_ENC_OPUS -DHAVE_ENC_OPUS_BROKEN_INCLUDE_PATH
-#LOCAL_CFLAGS += -march=armv6 -marm -mfloat-abi=softfp -mfpu=vfp
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/libcoolmic-dsp/include
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/libcoolmic-dsp/include
+LOCAL_CFLAGS += -I$(LOCAL_PATH)/../include -fsigned-char -DHAVE_SNDDRV_DRIVER_OPENSL -DHAVE_SNDDRV_DRIVER_STDIO -DHAVE_ENC_OPUS -DHAVE_ENC_OPUS_BROKEN_INCLUDE_PATH#LOCAL_CFLAGS += -march=armv6 -marm -mfloat-abi=softfp -mfpu=vfp
 
 LOCAL_SHARED_LIBRARIES := libogg libvorbis libshout libopus
 

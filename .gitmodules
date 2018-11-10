@@ -7,3 +7,9 @@
 [submodule "app/src/main/jni/opus/opus"]
 	path = app/src/main/jni/opus-android-build-wrapper/opus
 	url = https://git.xiph.org/opus.git
+[submodule "app/src/main/jni/libogg-android-build-wrapper/libogg"]
+	path = app/src/main/jni/libogg-android-build-wrapper/libogg
+	url = https://git.xiph.org/ogg.git
+[submodule "app/src/main/jni/libvorbis-android-build-wrapper/libvorbis"]
+	path = app/src/main/jni/libvorbis-android-build-wrapper/libvorbis
+	url = https://git.xiph.org/vorbis.git
