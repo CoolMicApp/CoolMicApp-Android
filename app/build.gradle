@@ -2,12 +2,28 @@ import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.application'
 
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def versionPropertiesFile = projectDir.toPath().resolve("version.properties").toFile()
+
+// Initialize a new Properties() object called keystoreProperties.
+def versionProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+versionProperties.load(new FileInputStream(versionPropertiesFile))
+
+Integer versionMajor = versionProperties['versionMajor'] as Integer
+Integer versionMinor = versionProperties['versionMinor'] as Integer
+Integer versionPatch = versionProperties['versionPatch'] as Integer
+
 android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "cc.echonet.coolmicapp"
-        versionCode 10
-        versionName "1.0.6"
+        versionCode versionMajor * 10000
+        + versionMinor * 100
+        + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
         minSdkVersion 16
         targetSdkVersion 27
@@ -27,6 +43,11 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            resValue "string", "app_version","${defaultConfig.versionName}"
+        }
+        debug {
+            versionNameSuffix ".debug"
+            resValue "string", "app_version","${defaultConfig.versionName}${versionNameSuffix}"
         }
     }
     flavorDimensions "version"
