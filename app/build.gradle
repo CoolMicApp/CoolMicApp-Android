@@ -16,14 +16,21 @@ Integer versionMajor = versionProperties['versionMajor'] as Integer
 Integer versionMinor = versionProperties['versionMinor'] as Integer
 Integer versionPatch = versionProperties['versionPatch'] as Integer
 
+String versionNameTmp = "${versionMajor}.${versionMinor}.${versionPatch}"
+Integer versionCodeTmp = versionMajor * 10000 + versionMinor * 100 + versionPatch
+
+task appVersion {
+    doLast {
+        println "${versionNameTmp}-${versionCodeTmp}"
+    }
+}
+
 android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "cc.echonet.coolmicapp"
-        versionCode versionMajor * 10000
-        + versionMinor * 100
-        + versionPatch
-        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        versionCode versionCodeTmp
+        versionName versionNameTmp
 
         minSdkVersion 16
         targetSdkVersion 27
