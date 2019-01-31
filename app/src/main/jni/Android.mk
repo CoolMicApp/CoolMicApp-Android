@@ -3,6 +3,7 @@ LOCAL_PATH := $(call my-dir)
 LOCAL_C_INCLUDE := $(LOCAL_PATH)/include
 
 include $(addprefix $(LOCAL_PATH)/, $(addsuffix /Android.mk, \
+	libigloo-android-build-wrapper \
     opus-android-build-wrapper \
     libogg-android-build-wrapper \
 	libvorbis-android-build-wrapper \

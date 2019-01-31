@@ -1,6 +1,9 @@
 [submodule "app/src/main/jni/libshout/libshout"]
 	path = app/src/main/jni/libshout-android-build-wrapper/libshout
 	url = ../icecast-libshout.git
+[submodule "app/src/main/jni/libigloo-android-build-wrapper/libigloo"]
+	path = app/src/main/jni/libigloo-android-build-wrapper/libigloo
+	url = ../icecast-common.git	
 [submodule "app/src/main/jni/libcoolmic-dsp/libcoolmic-dsp"]
 	path = app/src/main/jni/libcoolmic-dsp-android-build-wrapper/libcoolmic-dsp
 	url = ../libcoolmic-dsp.git
