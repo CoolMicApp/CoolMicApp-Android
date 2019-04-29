@@ -27,60 +27,96 @@
 #include <os.h>
 #endif
 
-#define SHOUTERR_SUCCESS		(0) /* No error */
-#define SHOUTERR_INSANE			(-1) /* Nonsensical arguments e.g. self being NULL */ 
-#define SHOUTERR_NOCONNECT		(-2) /* Couldn't connect */
-#define SHOUTERR_NOLOGIN		(-3) /* Login failed */
-#define SHOUTERR_SOCKET			(-4) /* Socket error */
-#define SHOUTERR_MALLOC			(-5) /* Out of memory */
-#define SHOUTERR_METADATA		(-6)
-#define SHOUTERR_CONNECTED		(-7) /* Cannot set parameter while connected */
-#define SHOUTERR_UNCONNECTED		(-8) /* Not connected */
-#define SHOUTERR_UNSUPPORTED		(-9) /* This libshout doesn't support the requested option */
-#define SHOUTERR_BUSY			(-10) /* Socket is busy */
-#define SHOUTERR_NOTLS                  (-11) /* TLS requested but not supported by peer */
-#define SHOUTERR_TLSBADCERT             (-12) /* TLS connection can not be established because of bad certificate */
-#define SHOUTERR_RETRY                  (-13) /* Retry last operation. */
-
-#define SHOUT_FORMAT_OGG		(0) /* application/ogg */
-#define SHOUT_FORMAT_MP3		(1) /* audio/mpeg */
-#define SHOUT_FORMAT_WEBM		(2) /* video/webm */
-#define SHOUT_FORMAT_WEBMAUDIO		(3) /* audio/webm audio only */
-
-/* backward-compatibility alias */
-#define SHOUT_FORMAT_VORBIS	SHOUT_FORMAT_OGG
-
-#define SHOUT_PROTOCOL_HTTP		(0)
-#define SHOUT_PROTOCOL_XAUDIOCAST	(1)
-#define SHOUT_PROTOCOL_ICY		(2)
-#define SHOUT_PROTOCOL_ROARAUDIO	(3)
-
-/* Possible TLS modes */
-#define SHOUT_TLS_DISABLED              (0)  /* Do not use TLS at all */
-#define SHOUT_TLS_AUTO                  (1)  /* Autodetect which TLS mode to use if any */
-#define SHOUT_TLS_AUTO_NO_PLAIN         (2)  /* Like SHOUT_TLS_AUTO_NO_PLAIN but does not allow plain connections */
-#define SHOUT_TLS_RFC2818               (11) /* Use TLS for transport layer like HTTPS [RFC2818] does. */
-#define SHOUT_TLS_RFC2817               (12) /* Use TLS via HTTP Upgrade:-header [RFC2817]. */
-
-#define SHOUT_AI_BITRATE	"bitrate"
-#define SHOUT_AI_SAMPLERATE	"samplerate"
-#define SHOUT_AI_CHANNELS	"channels"
-#define SHOUT_AI_QUALITY	"quality"
-
-#define SHOUT_META_NAME         "name"
-#define SHOUT_META_URL          "url"
-#define SHOUT_META_GENRE        "genre"
-#define SHOUT_META_DESCRIPTION  "description"
-#define SHOUT_META_IRC          "irc"
-#define SHOUT_META_AIM          "aim"
-#define SHOUT_META_ICQ          "icq"
-
-typedef struct shout shout_t;
-typedef struct _util_dict shout_metadata_t;
+#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define SHOUTERR_SUCCESS            (  0) /* No error */
+#define SHOUTERR_INSANE             ( -1) /* Nonsensical arguments e.g. self being NULL */ 
+#define SHOUTERR_NOCONNECT          ( -2) /* Couldn't connect */
+#define SHOUTERR_NOLOGIN            ( -3) /* Login failed */
+#define SHOUTERR_SOCKET             ( -4) /* Socket error */
+#define SHOUTERR_MALLOC             ( -5) /* Out of memory */
+#define SHOUTERR_METADATA           ( -6)
+#define SHOUTERR_CONNECTED          ( -7) /* Cannot set parameter while connected */
+#define SHOUTERR_UNCONNECTED        ( -8) /* Not connected */
+#define SHOUTERR_UNSUPPORTED        ( -9) /* This libshout doesn't support the requested option */
+#define SHOUTERR_BUSY               (-10) /* Socket is busy */
+#define SHOUTERR_NOTLS              (-11) /* TLS requested but not supported by peer */
+#define SHOUTERR_TLSBADCERT         (-12) /* TLS connection can not be established because of bad certificate */
+#define SHOUTERR_RETRY              (-13) /* Retry last operation. */
+
+#define SHOUT_FORMAT_OGG            (  0) /* Ogg */
+#define SHOUT_FORMAT_MP3            (  1) /* MP3 */
+#define SHOUT_FORMAT_WEBM           (  2) /* WebM */
+#define SHOUT_FORMAT_WEBMAUDIO      (  3) /* WebM, audio only, obsolete. Only used by shout_set_format() */
+#define SHOUT_FORMAT_MATROSKA       (  4) /* Matroska */
+
+/* backward-compatibility alias */
+#define SHOUT_FORMAT_VORBIS         SHOUT_FORMAT_OGG
+
+/* Usages */
+#define SHOUT_USAGE_AUDIO           (0x0001U) /* Audio substreams*/
+#define SHOUT_USAGE_VISUAL          (0x0002U) /* Picture/Video substreams (most often combined with SHOUT_USAGE_AUDIO) */
+#define SHOUT_USAGE_TEXT            (0x0004U) /* Text substreams that are not subtitles */
+#define SHOUT_USAGE_SUBTITLE        (0x0008U) /* Subtitle substreams */
+#define SHOUT_USAGE_LIGHT           (0x0010U) /* Light control substreams */
+#define SHOUT_USAGE_UI              (0x0020U) /* User interface data, such as DVD menus or buttons */
+#define SHOUT_USAGE_METADATA        (0x0040U) /* Substreams that include metadata for the stream */
+#define SHOUT_USAGE_APPLICATION     (0x0080U) /* Application specific data substreams */
+#define SHOUT_USAGE_CONTROL         (0x0100U) /* Substreams that control the infrastructure */
+#define SHOUT_USAGE_COMPLEX         (0x0200U) /* Substreams that are themself a mixture of other types */
+#define SHOUT_USAGE_OTHER           (0x0400U) /* Substream of types not listed here */
+#define SHOUT_USAGE_UNKNOWN         (0x0800U) /* The stream MAY contain additional substreams of unknown nature */
+#define SHOUT_USAGE_3D              (0x1000U) /* The Stream contains information for 3D playback */
+#define SHOUT_USAGE_4D              (0x2000U) /* The Stream contains information for 4D/XD playback */
+
+#define SHOUT_PROTOCOL_HTTP         (  0)
+#define SHOUT_PROTOCOL_XAUDIOCAST   (  1) /* Deprecated. May be removed in future versions. Do not use. */
+#define SHOUT_PROTOCOL_ICY          (  2)
+#define SHOUT_PROTOCOL_ROARAUDIO    (  3)
+
+/* Possible TLS modes */
+#define SHOUT_TLS_DISABLED          (  0) /* Do not use TLS at all */
+#define SHOUT_TLS_AUTO              (  1) /* Autodetect which TLS mode to use if any */
+#define SHOUT_TLS_AUTO_NO_PLAIN     (  2) /* Like SHOUT_TLS_AUTO_NO_PLAIN but does not allow plain connections */
+#define SHOUT_TLS_RFC2818           ( 11) /* Use TLS for transport layer like HTTPS [RFC2818] does. */
+#define SHOUT_TLS_RFC2817           ( 12) /* Use TLS via HTTP Upgrade:-header [RFC2817]. */
+
+#define SHOUT_AI_BITRATE            "bitrate"
+#define SHOUT_AI_SAMPLERATE         "samplerate"
+#define SHOUT_AI_CHANNELS           "channels"
+#define SHOUT_AI_QUALITY            "quality"
+
+#define SHOUT_META_NAME             "name"
+#define SHOUT_META_URL              "url"
+#define SHOUT_META_GENRE            "genre"
+#define SHOUT_META_DESCRIPTION      "description"
+#define SHOUT_META_IRC              "irc"
+#define SHOUT_META_AIM              "aim"
+#define SHOUT_META_ICQ              "icq"
+
+#define SHOUT_CALLBACK_PASS         (  1) /* Pass the event to the next handler */
+
+typedef enum {
+    SHOUT_CONTROL__MIN = 0,
+    SHOUT_CONTROL_GET_SERVER_CERTIFICATE_AS_PEM,
+    SHOUT_CONTROL_GET_SERVER_CERTIFICATE_CHAIN_AS_PEM,
+    SHOUT_CONTROL__MAX = 32767
+} shout_control_t;
+
+typedef enum {
+    SHOUT_EVENT__MIN = 0,
+    SHOUT_EVENT_TLS_CHECK_PEER_CERTIFICATE,
+    SHOUT_EVENT__MAX = 32767
+} shout_event_t;
+
+typedef struct shout shout_t;
+typedef struct _util_dict shout_metadata_t;
+
+typedef int (*shout_callback_t)(shout_t *shout, shout_event_t event, void *userdata, va_list ap);
 
 /* initializes the shout library. Must be called before anything else */
 void shout_init(void);
@@ -192,8 +228,16 @@ int shout_set_public(shout_t *self, unsigned int make_public);
 unsigned int shout_get_public(shout_t *self);
 
 /* takes a SHOUT_FORMAT_xxxx argument */
-int shout_set_format(shout_t *self, unsigned int format);
-unsigned int shout_get_format(shout_t *self);
+int shout_set_format(shout_t *self, unsigned int format); // obsolete
+unsigned int shout_get_format(shout_t *self); // obsolete
+
+/* Set the format of the content to send.
+ * * format is one of SHOUT_FORMAT_xxxx.
+ * * usage is a bit vector composed of SHOUT_USAGE_xxxx.
+ * * codecs is NULL as of this version. Future versions will also support NULL.
+ */
+int shout_set_content_format(shout_t *self, unsigned int format, unsigned int usage, const char *codecs);
+int shout_get_content_format(shout_t *self, unsigned int *format, unsigned int *usage, const char **codecs);
 
 /* takes a SHOUT_PROTOCOL_xxxxx argument */
 int shout_set_protocol(shout_t *self, unsigned int protocol);
@@ -252,6 +296,10 @@ void shout_metadata_free(shout_metadata_t *self);
  *   SHOUTERR_INSANE if self isn't a valid shout_metadata_t* or name is null
  *   SHOUTERR_MALLOC if memory can't be allocated */
 int shout_metadata_add(shout_metadata_t *self, const char *name, const char *value);
+
+/* Advanced. Do not use. */
+int shout_control(shout_t *self, shout_control_t control, ...);
+int shout_set_callback(shout_t *self, shout_callback_t callback, void *userdata);
 
 #ifdef __cplusplus
 }
