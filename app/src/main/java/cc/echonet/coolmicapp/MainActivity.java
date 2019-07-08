@@ -416,10 +416,10 @@ public class MainActivity extends Activity {
         animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
         animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
         animation.setRepeatMode(Animation.REVERSE);
-        start_button = (Button) findViewById(R.id.start_recording_button);
+        start_button = findViewById(R.id.start_recording_button);
 
-        gainLeft = (SeekBar) findViewById(R.id.pbGainMeterLeft);
-        gainRight = (SeekBar) findViewById(R.id.pbGainMeterRight);
+        gainLeft = findViewById(R.id.pbGainMeterLeft);
+        gainRight = findViewById(R.id.pbGainMeterRight);
 
         SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
 
@@ -586,18 +586,19 @@ public class MainActivity extends Activity {
     }
 
     public void controlVuMeterUI(boolean visible) {
-        if (findViewById(R.id.llVuMeterLeft) != null) {
-            findViewById(R.id.llVuMeterLeft).setVisibility((visible ? View.VISIBLE : View.GONE));
-        }
+        View meter;
+        int visibility = visible ? View.VISIBLE : View.GONE;
 
-        if (findViewById(R.id.llVuMeterRight) != null) {
-            findViewById(R.id.llVuMeterRight).setVisibility((visible ? View.VISIBLE : View.GONE));
-        }
+        meter = findViewById(R.id.llVuMeterLeft);
+        if (meter != null) meter.setVisibility(visibility);
 
-        findViewById(R.id.pbVuMeterLeft).setVisibility((visible ? View.VISIBLE : View.GONE));
-        findViewById(R.id.pbVuMeterRight).setVisibility((visible ? View.VISIBLE : View.GONE));
-        findViewById(R.id.rbPeakLeft).setVisibility((visible ? View.VISIBLE : View.GONE));
-        findViewById(R.id.rbPeakRight).setVisibility((visible ? View.VISIBLE : View.GONE));
+        meter = findViewById(R.id.llVuMeterRight);
+        if (meter != null) meter.setVisibility(visibility);
+
+        findViewById(R.id.pbVuMeterLeft).setVisibility(visibility);
+        findViewById(R.id.pbVuMeterRight).setVisibility(visibility);
+        findViewById(R.id.rbPeakLeft).setVisibility(visibility);
+        findViewById(R.id.rbPeakRight).setVisibility(visibility);
     }
 
     public void startRecording(View view) {
