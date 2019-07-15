@@ -342,16 +342,6 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            imageView1.getLayoutParams().height = 60;
-        } else {
-            imageView1.getLayoutParams().height = 400;
-        }
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
 
