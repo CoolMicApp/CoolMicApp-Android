@@ -28,7 +28,9 @@
 #include "coolmic-dsp/vumeter.h"
 #include "coolmic-dsp/util.h"
 #include "coolmic-dsp/logging.h"
+#include <igloo/types.h>
 #include <android/log.h>
+#include <igloo/ro.h>
 
 
 #define LOG_TAG "wrapper.c"
@@ -91,7 +93,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_ref(JNIEnv * env, 
         return -999666;
     }
 
-    return coolmic_simple_ref(coolmic_simple_obj);
+    return igloo_ro_ref(coolmic_simple_obj);
 }
 #pragma clang diagnostic pop
 
@@ -107,7 +109,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
         return -999666;
     }
 
-    int error =  coolmic_simple_unref(coolmic_simple_obj);
+    int error =  igloo_ro_unref(coolmic_simple_obj);
 
     if(error == COOLMIC_ERROR_NONE)
     {
@@ -370,7 +372,7 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
     shout_config.password = passwordNative;
     shout_config.mount    = mountNative;
 
-    coolmic_simple_obj = coolmic_simple_new(codecNative, (uint_least32_t) (int) rate,
+    coolmic_simple_obj = coolmic_simple_new(NULL, igloo_RO_NULL, codecNative, (uint_least32_t) (int) rate,
                                             (unsigned int) (int) channels, buffersize, &shout_config);
 
     if(coolmic_simple_obj == NULL)
@@ -466,7 +468,7 @@ static int __setMasterGain(unsigned int channels, uint16_t scale, const uint16_t
     }
     ret = coolmic_transform_set_master_gain(transform, channels, scale, gain);
 
-    coolmic_transform_unref(transform);
+    igloo_ro_unref(transform);
 
     return ret;
 }
