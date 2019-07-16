@@ -38,12 +38,7 @@ public class Client implements Closeable {
             mBackgroundService = new Messenger(service);
             mBackgroundServiceBound = true;
 
-            // Create and send a message to the service, using a supported 'what' value
-            Message msg = Message.obtain(null, Constants.C2S_MSG_STATE, 0, 0);
-
-            msg.replyTo = mBackgroundServiceClient;
-
-            sendMessage(msg);
+            sendMessage(Constants.C2S_MSG_STATE);
             reloadParameters();
         }
 
@@ -137,12 +132,24 @@ public class Client implements Closeable {
         }
     }
 
+    private Message createMessage(int what) {
+        Message message = Message.obtain(null, what, 0, 0);
+
+        message.replyTo = mBackgroundServiceClient;
+
+        return message;
+    }
+
     private void sendMessage(Message message) {
         try {
             mBackgroundService.send(message);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendMessage(int what) {
+        sendMessage(createMessage(what));
     }
 
     public Client(Context context, EventListener eventListener) {
@@ -155,69 +162,50 @@ public class Client implements Closeable {
     }
 
     public void startRecording(boolean cmtsTOSAccepted) {
-        if (mBackgroundServiceBound) {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_ACTION, 0, 0);
+        Message message = createMessage(Constants.C2S_MSG_STREAM_ACTION);
+        Bundle bundle = message.getData();
 
-            msgReply.replyTo = mBackgroundServiceClient;
+        bundle.putString("profile", "default");
+        bundle.putBoolean("cmtsTOSAccepted", cmtsTOSAccepted);
 
-            Bundle bundle = msgReply.getData();
-
-            bundle.putString("profile", "default");
-            bundle.putBoolean("cmtsTOSAccepted", cmtsTOSAccepted);
-
-            sendMessage(msgReply);
-        }
+        sendMessage(message);
     }
 
     public void stopRecording() {
-        if (mBackgroundServiceBound) {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_STOP, 0, 0);
-
-            msgReply.replyTo = mBackgroundServiceClient;
-
-            sendMessage(msgReply);
-        }
+        sendMessage(Constants.C2S_MSG_STREAM_STOP);
     }
 
     public void setGain(int left, int right) {
-        if (mBackgroundServiceBound) {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_GAIN, 0, 0);
+        Message message = createMessage(Constants.C2S_MSG_GAIN);
+        Bundle bundle = message.getData();
 
-            msgReply.replyTo = mBackgroundServiceClient;
+        bundle.putInt("left", left);
+        bundle.putInt("right", right);
 
-            Bundle bundle = msgReply.getData();
-
-            bundle.putInt("left", left);
-            bundle.putInt("right", right);
-
-            sendMessage(msgReply);
-        }
+        sendMessage(message);
     }
 
     public void reloadParameters() {
-        if (mBackgroundServiceBound) {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_RELOAD, 0, 0);
-
-            msgReply.replyTo = mBackgroundServiceClient;
-
-            sendMessage(msgReply);
-        }
+        sendMessage(Constants.C2S_MSG_STREAM_RELOAD);
     }
 
     public void connect() {
-        if (!mBackgroundServiceBound) {
-            Intent intent = new Intent(context, BackgroundService.class);
-            context.startService(intent);
-            context.bindService(intent, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
-        }
+        if (mBackgroundServiceBound)
+            return;
+
+        Intent intent = new Intent(context, BackgroundService.class);
+        context.startService(intent);
+        context.bindService(intent, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     public void disconnect() {
-        if (mBackgroundServiceBound) {
-            context.unbindService(mBackgroundServiceConnection);
-            mBackgroundServiceBound = false;
-        }
+        if (!mBackgroundServiceBound)
+            return;
+
+        context.unbindService(mBackgroundServiceConnection);
+        mBackgroundServiceBound = false;
     }
+
     @Override
     public void close() {
         disconnect();
