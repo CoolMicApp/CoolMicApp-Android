@@ -45,6 +45,7 @@ import javax.xml.xpath.XPathFactory;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
+import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
 
 public class BackgroundService extends Service {
     private List<Messenger> clients = new ArrayList<>();

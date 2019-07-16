@@ -5,14 +5,15 @@ import android.util.Log;
 import java.io.Serializable;
 
 import cc.echonet.coolmicdspjava.WrapperConstants;
+import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
 
 /**
  * Created by stephan on 2/24/18.
  */
 
-class BackgroundServiceState implements Serializable {
+public class BackgroundServiceState implements Serializable {
     Constants.CONTROL_UI oldState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
-    Constants.CONTROL_UI uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+    public Constants.CONTROL_UI uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
     String txtState = "Disconnected";
 
     int bindCounts = 0;
