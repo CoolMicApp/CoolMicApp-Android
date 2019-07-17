@@ -55,6 +55,31 @@ public class CoolMic {
         return prefs.getString("connection_address", "");
     }
 
+    public String getServerProtocol() {
+        // TODO: This is static for now but may change in future.
+        return "http";
+    }
+
+    public String getServerHostname() {
+        String serverName = getServerName();
+
+        if (serverName.indexOf(':') > 0) {
+            serverName = serverName.split(":", 2)[0];
+        }
+
+        return serverName;
+    }
+
+    public int getServerPort() {
+        String serverName = getServerName();
+
+        if (serverName.indexOf(':') > 0) {
+            return  Integer.parseInt(serverName.split(":", 2)[1]);
+        }
+
+        return 8000;
+    }
+
     public String getMountpoint() {
         return prefs.getString("connection_mountpoint", "");
     }
@@ -105,10 +130,6 @@ public class CoolMic {
 
     public void setVolumeRight(int volume) {
         prefs.edit().putInt("volume_right", volume).apply();
-    }
-
-    public String getStreamStatsURL() {
-        return String.format("http://%s:%s@%s/admin/stats.xml?mount=/%s", this.getUsername(), this.getPassword(), this.getServerName(), this.getMountpoint());
     }
 
     public String getStreamURL() {

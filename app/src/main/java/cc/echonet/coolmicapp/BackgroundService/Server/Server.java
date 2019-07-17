@@ -7,7 +7,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -15,34 +14,18 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicapp.CoolMic;
+import cc.echonet.coolmicapp.Icecast.Icecast;
+import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import cc.echonet.coolmicapp.MainActivity;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicapp.Utils;
@@ -67,6 +50,8 @@ public class Server extends Service {
     private String oldNotificationTitle;
     private boolean oldNotificationFlashLed;
 
+    private Icecast icecast;
+
     public Server() {
         mIncomingHandler = new IncomingHandler(this);
         mMessenger = new Messenger(mIncomingHandler);
@@ -86,87 +71,25 @@ public class Server extends Service {
         state.listenersString = getApplicationContext().getString(R.string.formatListeners, listeners_current, listeners_peak);
     }
 
-    private String exceptionToString(Exception ex) {
-        StringWriter sw = new StringWriter();
-        ex.printStackTrace(new PrintWriter(sw));
-        return sw.toString();
-    }
-
     private Message createMessage(int what) {
         return Message.obtain(null, what);
     }
 
     private Runnable fetchListeners() {
-        final String url = coolmic.getStreamStatsURL();
-
         return new Runnable() {
             @Override
             public void run() {
                 try {
-                    Uri u = Uri.parse(url);
+                    Stats request = icecast.getStats(coolmic.getMountpoint());
+                    cc.echonet.coolmicapp.Icecast.Response.Stats response;
 
-                    HttpURLConnection conn = (HttpURLConnection) new URL(u.toString()).openConnection();
-                    conn.setUseCaches(false);
+                    request.finish();
+                    response = request.getResponse();
 
-                    conn.setDoOutput(false);
-                    conn.setRequestMethod("GET");
-                    conn.setRequestProperty("Accept-Charset", "utf-8");
-                    conn.setRequestProperty("Accept-Encoding", "text/xml");
-                    conn.setRequestProperty("Accept-Language", "en-US");
-                    conn.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(u.getUserInfo().getBytes(), Base64.NO_WRAP));
-                    conn.connect();
+                    updateListeners(response.getListenerCurrent(), response.getListenerPeak());
 
-                    if (conn.getResponseCode() != 200) {
-                        Log.e("CM-StreamStatsService", "HTTP error, invalid server status code: " + conn.getResponseMessage());
-                    } else {
-                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder builder = factory.newDocumentBuilder();
-                        Document doc = builder.parse(conn.getInputStream());
-
-                        Log.d("CM-StreamStatsService", "Parsed Document " + doc.toString());
-
-                        XPathFactory xpathFactory = XPathFactory.newInstance();
-                        XPath xpath = xpathFactory.newXPath();
-
-                        Log.d("CM-StreamStatsService", "post xpath");
-
-                        XPathExpression expr_listeners = xpath.compile("/icestats/source/listeners/text()");
-                        XPathExpression expr_listeners_peak = xpath.compile("/icestats/source/listener_peak/text()");
-
-                        Log.d("CM-StreamStatsService", "post xpath compile");
-
-                        String listeners = (String) expr_listeners.evaluate(doc, XPathConstants.STRING);
-                        String listeners_peak = (String) expr_listeners_peak.evaluate(doc, XPathConstants.STRING);
-
-                        Log.d("CM-StreamStatsService", "post xpath eval " + listeners + " " + listeners_peak);
-
-                        int listenersCurrent = -1;
-                        int listenersPeak = -1;
-
-                        if (!listeners.isEmpty()) {
-                            listenersCurrent = Integer.valueOf(listeners);
-                        } else {
-                            Log.d("CM-StreamStatsService", "found no listeners");
-                        }
-
-                        if (!listeners_peak.isEmpty()) {
-                            listenersPeak = Integer.valueOf(listeners_peak);
-                        } else {
-                            Log.d("CM-StreamStatsService", "found no listeners peak");
-                        }
-
-                        updateListeners(listenersCurrent, listenersPeak);
-                    }
-                } catch (XPathExpressionException e) {
-                    Log.e("CM-StreamStatsService", "XPException while fetching Stats: " + exceptionToString(e));
-                } catch (SAXException e) {
-                    Log.e("CM-StreamStatsService", "SAXException while fetching Stats: " + exceptionToString(e));
-                } catch (ParserConfigurationException e) {
-                    Log.e("CM-StreamStatsService", "PCException while fetching Stats: " + exceptionToString(e));
-                } catch (IOException e) {
-                    Log.e("CM-StreamStatsService", "IOException while fetching Stats: " + exceptionToString(e));
                 } catch (Exception e) {
-                    Log.e("CM-StreamStatsService", "Exception while fetching Stats: " + exceptionToString(e));
+                    e.printStackTrace();
                 }
             }
         };
@@ -441,6 +364,12 @@ public class Server extends Service {
 
     private void prepareStream(final String profile, boolean cmtsTOSAccepted, final Messenger replyTo) {
         coolmic = new CoolMic(this, profile);
+
+        if (icecast != null)
+            icecast.close();
+
+        icecast = new Icecast(coolmic.getServerProtocol(), coolmic.getServerHostname(), coolmic.getServerPort());
+        icecast.setCredentials(coolmic.getUsername(), coolmic.getPassword());
 
         if (hasCore()) {
             stopStream(replyTo);
@@ -759,6 +688,7 @@ public class Server extends Service {
         stopStream(null);
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.cancelAll();
+        icecast.close();
         super.onDestroy();
         Log.v("BG", "Server.onDestroy() done");
     }
