@@ -14,37 +14,11 @@ import java.util.UUID;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicapp.Utils;
 
-public class Profile {
+public class Profile extends ProfileBase {
     private static final int DEFAULT_VOLUME = 100;
 
-    private Context context;
-    private SharedPreferences prefs;
-
-    Profile(Context context, String name) {
-        this.context = context;
-        this.prefs = context.getSharedPreferences(name, Context.MODE_PRIVATE);
-
-        if (!this.prefs.getBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, false)) {
-            PreferenceManager.setDefaultValues(context, name, Context.MODE_PRIVATE, R.xml.pref_all, true);
-
-            this.prefs.edit().putBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true).apply();
-        }
-    }
-
-    private String getString(String key) {
-        return getString(key, "");
-    }
-
-    private String getString(String key, String def) {
-        return prefs.getString(key, def);
-    }
-
-    private String getString(String key, int def) {
-        return getString(key, context.getString(def));
-    }
-
-    private boolean getBoolean(String key, boolean def) {
-        return prefs.getBoolean(key, def);
+    public Profile(Context context, String profile) {
+        super(context, profile);
     }
 
     //Stolen from: http://stackoverflow.com/a/23704728 & http://stackoverflow.com/a/18879453 (removed the shortening because it did not work reliably)
@@ -65,101 +39,28 @@ public class Profile {
         return Base64.encodeToString(digest, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING).substring(0, 20);
     }
 
-    public String getTrackArtist() {
-        return getString("general_artist");
+    public Track getTrack() {
+        return new Track(this);
     }
 
-    public String getTrackTitle() {
-        return getString("general_title");
+    public Server getServer() {
+        return new Server(this);
     }
 
-
-    public String getServerProtocol() {
-        // TODO: This is static for now but may change in future.
-        return "http";
+    public Audio getAudio() {
+        return new Audio(this);
     }
 
-    public String getServerHostname() {
-        String serverName = getString("connection_address");
-
-        if (serverName.indexOf(':') > 0) {
-            serverName = serverName.split(":", 2)[0];
-        }
-
-        return serverName;
+    public Codec getCodec() {
+        return new Codec(this, getAudio());
     }
 
-    public int getServerPort() {
-        String serverName = getString("connection_address");
-
-        if (serverName.indexOf(':') > 0) {
-            return  Integer.parseInt(serverName.split(":", 2)[1]);
-        }
-
-        return 8000;
+    public VUMeter getVUMeter() {
+        return new VUMeter(this);
     }
 
-    public String getServerUsername() {
-        return getString("connection_username");
-    }
-
-    public String getServerPassword() {
-        return getString("connection_password");
-    }
-
-    public boolean getServerReconnect() {
-        return getBoolean("connection_reconnect", false);
-    }
-
-    public String getServerMountpoint() {
-        return getString("connection_mountpoint");
-    }
-
-    public boolean isServerSet() {
-        return !getServerHostname().isEmpty() && !getServerMountpoint().isEmpty() && !getServerUsername().isEmpty() && !getServerPassword().isEmpty();
-    }
-
-    public URL getServerStreamURL() throws MalformedURLException {
-        return new URL(getServerProtocol(), getServerHostname(), getServerPort(), getServerMountpoint());
-    }
-
-    public int getAudioSampleRate() {
-        return Integer.parseInt(getString("audio_samplerate", R.string.pref_default_audio_samplerate));
-    }
-
-    public int getAudioChannels() {
-        return Integer.parseInt(getString("audio_channels", R.string.pref_default_audio_channels));
-    }
-
-
-    public String getCodecType() {
-        return getString("audio_codec", R.string.pref_default_audio_codec);
-    }
-
-    public double getCodecQuality() {
-        return Double.parseDouble(getString("audio_quality", R.string.pref_default_audio_quality));
-    }
-
-
-    public int getVUMeterInterval() {
-        return Integer.parseInt(getString("audio_interval", R.string.pref_default_vumeter_interval));
-    }
-
-
-    public int getVolumeLeft() {
-        return prefs.getInt("volume_left", DEFAULT_VOLUME);
-    }
-
-    public int getVolumeRight() {
-        return prefs.getInt("volume_left", DEFAULT_VOLUME);
-    }
-
-    public void setVolumeLeft(int volume) {
-        prefs.edit().putInt("volume_left", volume).apply();
-    }
-
-    public void setVolumeRight(int volume) {
-        prefs.edit().putInt("volume_right", volume).apply();
+    public Volume getVolume() {
+        return new Volume(this, getAudio());
     }
 
     public void loadCMTSData() {

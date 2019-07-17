@@ -96,8 +96,8 @@ public class MainActivity extends Activity implements EventListener {
 
         backgroundServiceClient.setGain(left, right);
 
-        profile.setVolumeLeft(left);
-        profile.setVolumeRight(right);
+        profile.getVolume().setLeft(left);
+        profile.getVolume().setRight(right);
     }
 
     @Override
@@ -257,11 +257,11 @@ public class MainActivity extends Activity implements EventListener {
         coolmic = new CoolMic(this, "default");
         profile = coolmic.getProfile();
 
-        controlVuMeterUI(profile.getVUMeterInterval() != 0);
+        controlVuMeterUI(profile.getVUMeter().getInterval() != 0);
 
         controlRecordingUI(currentState);
 
-        onBackgroundServiceGainUpdate(profile.getVolumeLeft(), profile.getVolumeRight());
+        onBackgroundServiceGainUpdate(profile.getVolume().getLeft(), profile.getVolume().getRight());
 
         start_button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -290,10 +290,10 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     public void onImageClick(View view) {
-        if (coolmic.getProfile().isServerSet()) {
+        if (coolmic.getProfile().getServer().isSet()) {
             ClipData myClip = null;
             try {
-                myClip = ClipData.newPlainText("text", coolmic.getProfile().getServerStreamURL().toString());
+                myClip = ClipData.newPlainText("text", coolmic.getProfile().getServer().getStreamURL().toString());
                 myClipboard.setPrimaryClip(myClip);
                 Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
             } catch (MalformedURLException e) {
@@ -305,11 +305,11 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     public void performShare() {
-        if (coolmic.getProfile().isServerSet()) {
+        if (coolmic.getProfile().getServer().isSet()) {
             try {
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, coolmic.getProfile().getServerStreamURL().toString());
+                shareIntent.putExtra(Intent.EXTRA_TEXT, coolmic.getProfile().getServer().getStreamURL().toString());
                 shareIntent.setType("text/plain");
                 startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.menu_action_share_title)));
             } catch (MalformedURLException e) {
@@ -330,7 +330,7 @@ public class MainActivity extends Activity implements EventListener {
         }
 
         if (coolmic != null) {
-            return coolmic.getProfile().getAudioChannels();
+            return coolmic.getProfile().getAudio().getChannels();
         }
 
         return 2; // default.
@@ -468,7 +468,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceStartRecording() {
-        controlVuMeterUI(coolmic.getProfile().getVUMeterInterval() != 0);
+        controlVuMeterUI(coolmic.getProfile().getVUMeter().getInterval() != 0);
         start_button.setClickable(true);
     }
 

@@ -45,7 +45,7 @@ public class CoolMic {
     }
 
     public boolean isCMTSConnection() {
-        String serverName = profile.getServerHostname();
+        String serverName = profile.getServer().getHostname();
 
         for (String cmtsHost : CMTSHosts) {
             if (serverName.endsWith(cmtsHost)) {
