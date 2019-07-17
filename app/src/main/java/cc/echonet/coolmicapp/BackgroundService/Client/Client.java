@@ -1,4 +1,4 @@
-package cc.echonet.coolmicapp.BackgroundServiceInterface.Client;
+package cc.echonet.coolmicapp.BackgroundService.Client;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,9 +15,9 @@ import android.widget.Toast;
 
 import java.io.Closeable;
 
-import cc.echonet.coolmicapp.BackgroundServiceInterface.Server.Server;
-import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
-import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
+import cc.echonet.coolmicapp.BackgroundService.Server.Server;
+import cc.echonet.coolmicapp.BackgroundService.Constants;
+import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 

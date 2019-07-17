@@ -1,6 +1,6 @@
-package cc.echonet.coolmicapp.BackgroundServiceInterface.Client;
+package cc.echonet.coolmicapp.BackgroundService.Client;
 
-import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
+import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
 public interface EventListener {

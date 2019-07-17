@@ -1,11 +1,10 @@
-package cc.echonet.coolmicapp.BackgroundServiceInterface;
+package cc.echonet.coolmicapp.BackgroundService;
 
 import android.util.Log;
 
 import java.io.Serializable;
 
 import cc.echonet.coolmicdspjava.WrapperConstants;
-import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
 
 /**
  * Created by stephan on 2/24/18.

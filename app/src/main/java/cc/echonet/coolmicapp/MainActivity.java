@@ -53,12 +53,12 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-import cc.echonet.coolmicapp.BackgroundServiceInterface.Server.Server;
-import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
-import cc.echonet.coolmicapp.BackgroundServiceInterface.Client.Client;
-import cc.echonet.coolmicapp.BackgroundServiceInterface.Client.EventListener;
+import cc.echonet.coolmicapp.BackgroundService.Server.Server;
+import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.BackgroundService.Client.Client;
+import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
 import cc.echonet.coolmicdspjava.VUMeterResult;
-import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
+import cc.echonet.coolmicapp.BackgroundService.Constants;
 
 /**
  * This activity demonstrates how to use JNI to encode and decode ogg/vorbis audio

@@ -1,4 +1,4 @@
-package cc.echonet.coolmicapp.BackgroundServiceInterface.Server;
+package cc.echonet.coolmicapp.BackgroundService.Server;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -42,7 +42,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
+import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicapp.CoolMic;
 import cc.echonet.coolmicapp.MainActivity;
 import cc.echonet.coolmicapp.R;
@@ -50,7 +50,7 @@ import cc.echonet.coolmicapp.Utils;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
-import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
+import cc.echonet.coolmicapp.BackgroundService.Constants;
 
 public class Server extends Service {
     private List<Messenger> clients = new ArrayList<>();

@@ -1,4 +1,4 @@
-package cc.echonet.coolmicapp.BackgroundServiceInterface;
+package cc.echonet.coolmicapp.BackgroundService;
 
 public class Constants {
     public static final int C2S_MSG_STATE = 1;
