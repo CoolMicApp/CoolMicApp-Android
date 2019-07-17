@@ -4,11 +4,9 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,6 +40,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicapp.CoolMic;
 import cc.echonet.coolmicapp.MainActivity;
@@ -50,7 +49,6 @@ import cc.echonet.coolmicapp.Utils;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
-import cc.echonet.coolmicapp.BackgroundService.Constants;
 
 public class Server extends Service {
     private List<Messenger> clients = new ArrayList<>();
