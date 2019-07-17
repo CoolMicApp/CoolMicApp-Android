@@ -116,11 +116,7 @@ public class Profile {
     }
 
     public boolean isServerSet() {
-        if (!getServerHostname().isEmpty() && !getServerMountpoint().isEmpty() && !getServerUsername().isEmpty() && !getServerPassword().isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return !getServerHostname().isEmpty() && !getServerMountpoint().isEmpty() && !getServerUsername().isEmpty() && !getServerPassword().isEmpty();
     }
 
     public URL getServerStreamURL() throws MalformedURLException {
