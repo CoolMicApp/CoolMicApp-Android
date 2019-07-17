@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
@@ -135,4 +136,42 @@ public class Utils {
         return cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
+
+
+    static int normalizeVUMeterPower(double power) {
+        int g_p = (int) ((60. + power) * (100. / 60.));
+
+        if (g_p > 100) {
+            g_p = 100;
+        }
+
+        if (g_p < 0) {
+            g_p = 0;
+        }
+
+        return g_p;
+    }
+
+    static String VUMeterPeakToString(int peak) {
+        if (peak == -32768 || peak == 32767) {
+            return "P";
+        } else if (peak < -30000 || peak > 30000) {
+            return "p";
+        } else if (peak < -8000 || peak > 8000) {
+            return "g";
+        } else {
+            return "";
+        }
+    }
+
+    @NonNull
+    static String VUMeterPowerToString(double power) {
+        if (power < -100) {
+            return "-100";
+        } else if (power > 0) {
+            return "0";
+        } else {
+            return String.format(Locale.ENGLISH, "%.2f", power);
+        }
+    }
 }
