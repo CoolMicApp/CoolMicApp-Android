@@ -92,6 +92,9 @@ public class Server extends Service {
         return sw.toString();
     }
 
+    private Message createMessage(int what) {
+        return Message.obtain(null, what);
+    }
 
     private Runnable fetchListeners() {
         final String url = coolmic.getStreamStatsURL();
@@ -256,7 +259,7 @@ public class Server extends Service {
     }
 
     private void sendGain(int left, int right) {
-        Message msgReply = Message.obtain(null, Constants.C2S_MSG_GAIN, 0, 0);
+        Message msgReply = createMessage(Constants.C2S_MSG_GAIN);
 
         Bundle bundle = msgReply.getData();
 
@@ -445,7 +448,7 @@ public class Server extends Service {
         }
 
         if (!Utils.checkRequiredPermissions(getApplicationContext())) {
-            Message msgReply = Message.obtain(null, Constants.S2C_MSG_PERMISSIONS_MISSING, 0, 0);
+            Message msgReply = createMessage(Constants.S2C_MSG_PERMISSIONS_MISSING);
 
             try {
                 replyTo.send(msgReply);
@@ -467,7 +470,7 @@ public class Server extends Service {
         }
 
         if (!coolmic.isConnectionSet()) {
-            Message msgReply = Message.obtain(null, Constants.S2C_MSG_CONNECTION_UNSET, 0, 0);
+            Message msgReply = createMessage(Constants.S2C_MSG_CONNECTION_UNSET);
 
             try {
                 replyTo.send(msgReply);
@@ -479,7 +482,7 @@ public class Server extends Service {
         }
 
         if (coolmic.isCMTSConnection() && !cmtsTOSAccepted) {
-            Message msgReply = Message.obtain(null, Constants.S2C_MSG_CMTS_TOS, 0, 0);
+            Message msgReply = createMessage(Constants.S2C_MSG_CMTS_TOS);
 
             try {
                 replyTo.send(msgReply);
@@ -495,7 +498,7 @@ public class Server extends Service {
 
 
     private void startStream(String profile, Messenger replyTo) {
-        Message msgReply = Message.obtain(null, Constants.S2C_MSG_STREAM_START_REPLY, 0, 0);
+        Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
 
         Bundle bundle = msgReply.getData();
 
@@ -613,7 +616,7 @@ public class Server extends Service {
         state.initialConnectPerformed = false;
 
         if (replyTo != null) {
-            Message msgReply = Message.obtain(null, Constants.S2C_MSG_STREAM_STOP_REPLY, 0, 0);
+            Message msgReply = createMessage(Constants.S2C_MSG_STREAM_STOP_REPLY);
 
             Bundle bundle = msgReply.getData();
             bundle.putBoolean("was_running", was_running);
@@ -671,7 +674,7 @@ public class Server extends Service {
 
                 */
 
-                Message msgReply = Message.obtain(null, Constants.S2C_MSG_ERROR, 0, 0);
+                Message msgReply = createMessage(Constants.S2C_MSG_ERROR);
 
                 Bundle bundle = msgReply.getData();
 
@@ -739,7 +742,7 @@ public class Server extends Service {
     private void callbackVUMeterHandler(VUMeterResult result) {
         Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
 
-        Message msgReply = Message.obtain(null, Constants.S2C_MSG_VUMETER, 0, 0);
+        Message msgReply = createMessage(Constants.S2C_MSG_VUMETER);
 
         Bundle bundle = msgReply.getData();
 
