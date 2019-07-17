@@ -53,6 +53,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+import cc.echonet.coolmicapp.BackgroundServiceInterface.Server.Server;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.Client.Client;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.Client.EventListener;
@@ -133,12 +134,12 @@ public class MainActivity extends Activity implements EventListener {
         backgroundServiceClient.stopRecording();
         backgroundServiceClient.disconnect();
 
-        stopService(new Intent(this, BackgroundService.class));
+        stopService(new Intent(this, Server.class));
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                stopService(new Intent(getApplicationContext(), BackgroundService.class));
+                stopService(new Intent(getApplicationContext(), Server.class));
             }
         }, 250);
 

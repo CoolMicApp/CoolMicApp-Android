@@ -30,7 +30,7 @@ public class Utils {
         return context.getString(resid);
     }
 
-    static String getStringByName(Context context, String name, int subid) {
+    public static String getStringByName(Context context, String name, int subid) {
         int resid;
 
         if (subid < 0) {
@@ -64,7 +64,7 @@ public class Utils {
         return Base64.encodeToString(digest, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING).substring(0, 20);
     }
 
-    static boolean checkRequiredPermissions(Context context) {
+    public static boolean checkRequiredPermissions(Context context) {
         int grantedCount = 0;
 
         for (String permission : Constants.REQUIRED_PERMISSIONS) {

@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import java.io.Closeable;
 
-import cc.echonet.coolmicapp.BackgroundService;
+import cc.echonet.coolmicapp.BackgroundServiceInterface.Server.Server;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
 import cc.echonet.coolmicapp.R;
@@ -193,7 +193,7 @@ public class Client implements Closeable {
         if (mBackgroundServiceBound)
             return;
 
-        Intent intent = new Intent(context, BackgroundService.class);
+        Intent intent = new Intent(context, Server.class);
         context.startService(intent);
         context.bindService(intent, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
     }

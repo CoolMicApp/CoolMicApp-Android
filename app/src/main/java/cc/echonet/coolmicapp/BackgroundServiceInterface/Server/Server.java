@@ -1,4 +1,4 @@
-package cc.echonet.coolmicapp;
+package cc.echonet.coolmicapp.BackgroundServiceInterface.Server;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -43,12 +43,16 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
+import cc.echonet.coolmicapp.CoolMic;
+import cc.echonet.coolmicapp.MainActivity;
+import cc.echonet.coolmicapp.R;
+import cc.echonet.coolmicapp.Utils;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
 
-public class BackgroundService extends Service {
+public class Server extends Service {
     private List<Messenger> clients = new ArrayList<>();
     /**
      * Target we publish for clients to send messages to IncomingHandler.
@@ -65,7 +69,7 @@ public class BackgroundService extends Service {
     private String oldNotificationTitle;
     private boolean oldNotificationFlashLed;
 
-    public BackgroundService() {
+    public Server() {
         mIncomingHandler = new IncomingHandler(this);
         mMessenger = new Messenger(mIncomingHandler);
 
@@ -171,9 +175,9 @@ public class BackgroundService extends Service {
      * Handler of incoming messages from clients.
      */
     static class IncomingHandler extends Handler {
-        private final BackgroundService service;
+        private final Server service;
 
-        IncomingHandler(BackgroundService service) {
+        IncomingHandler(Server service) {
             this.service = service;
         }
 
@@ -756,11 +760,11 @@ public class BackgroundService extends Service {
     public void onDestroy() {
         NotificationManager nm;
 
-        Log.v("BG", "BackgroundService.onDestroy()");
+        Log.v("BG", "Server.onDestroy()");
         stopStream(null);
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.cancelAll();
         super.onDestroy();
-        Log.v("BG", "BackgroundService.onDestroy() done");
+        Log.v("BG", "Server.onDestroy() done");
     }
 }
