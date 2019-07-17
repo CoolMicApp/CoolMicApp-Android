@@ -4,18 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Base64;
 import android.widget.Toast;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
-import java.util.UUID;
 
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;

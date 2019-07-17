@@ -2,17 +2,13 @@ package cc.echonet.coolmicapp.Configuration;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import cc.echonet.coolmicapp.R;
-import cc.echonet.coolmicapp.Utils;
 
 public class Profile extends ProfileBase {
     private static final int DEFAULT_VOLUME = 100;

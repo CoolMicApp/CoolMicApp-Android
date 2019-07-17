@@ -23,8 +23,6 @@
 package cc.echonet.coolmicapp;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
