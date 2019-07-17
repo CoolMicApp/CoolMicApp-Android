@@ -421,12 +421,6 @@ public class Server extends Service {
         return state.hasCore;
     }
 
-    private boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
-    }
-
     private void reloadParameters() {
         int ret;
 
@@ -469,7 +463,7 @@ public class Server extends Service {
             return;
         }
 
-        if (!isOnline()) {
+        if (!Utils.isOnline(this)) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_SHORT).show();
             return;
         }
