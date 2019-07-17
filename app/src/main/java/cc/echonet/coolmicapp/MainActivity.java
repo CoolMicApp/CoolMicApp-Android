@@ -399,7 +399,7 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     public void startRecording(View view, boolean cmtsTOSAccepted) {
-        backgroundServiceClient.startRecording(cmtsTOSAccepted);
+        backgroundServiceClient.startRecording(cmtsTOSAccepted, coolmic.getProfile().getName());
     }
 
     public void stopRecording() {
@@ -487,7 +487,7 @@ public class MainActivity extends Activity implements EventListener {
         AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(this);
         alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                Utils.loadCMTSData(MainActivity.this, "default");
+                Utils.loadCMTSData(MainActivity.this, coolmic.getProfile());
                 startRecording(null);
             }
         });

@@ -38,6 +38,9 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends PreferenceActivity {
+    private static final String DEFAULT_PROFILE = "default";
+
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -88,7 +91,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         // Trigger the listener immediately with the preference's
         // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences("default", Context.MODE_PRIVATE).getString(preference.getKey(), ""));
+        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences(DEFAULT_PROFILE, Context.MODE_PRIVATE).getString(preference.getKey(), ""));
     }
 
     @Override
@@ -150,7 +153,7 @@ public class SettingsActivity extends PreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            getPreferenceManager().setSharedPreferencesName("default");
+            getPreferenceManager().setSharedPreferencesName(DEFAULT_PROFILE);
             getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
 
             addPreferencesFromResource(R.xml.pref_all);
@@ -176,7 +179,7 @@ public class SettingsActivity extends PreferenceActivity {
 
             bindPreferenceSummaryToValue(findPreference("vumeter_interval"));
 
-            getPreferenceManager().setSharedPreferencesName("default");
+            getPreferenceManager().setSharedPreferencesName(DEFAULT_PROFILE);
             getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
 
             //Hardcode some required values for Opus
@@ -218,7 +221,7 @@ public class SettingsActivity extends PreferenceActivity {
                         AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(getActivity());
                         alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Utils.loadCMTSData(getActivity(), "default");
+                                Utils.loadCMTSData(getActivity(), DEFAULT_PROFILE);
 
                                 refreshSummaryForConnectionSettings();
                                 handleSampleRateEnabled();
@@ -275,7 +278,7 @@ public class SettingsActivity extends PreferenceActivity {
                     return;
                 }
 
-                SharedPreferences.Editor editor = getActivity().getSharedPreferences("default", Context.MODE_PRIVATE).edit();
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences(DEFAULT_PROFILE, Context.MODE_PRIVATE).edit();
 
                 if (u.getUserInfo() != null && u.getUserInfo().split(":").length >= 2) {
                     String authority[] = u.getUserInfo().split(":");
@@ -357,13 +360,13 @@ public class SettingsActivity extends PreferenceActivity {
             preferencesToUpdate.add(findPreference("audio_samplerate"));
 
             EditTextPreference passwordPref = (EditTextPreference) findPreference("connection_password");
-            String passwordValue = passwordPref.getContext().getSharedPreferences("default", Context.MODE_PRIVATE).getString(passwordPref.getKey(), "");
+            String passwordValue = passwordPref.getContext().getSharedPreferences(DEFAULT_PROFILE, Context.MODE_PRIVATE).getString(passwordPref.getKey(), "");
 
             passwordPref.setDefaultValue(passwordValue);
             passwordPref.setText(passwordValue);
 
             for (Preference preference : preferencesToUpdate) {
-                sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences("default", Context.MODE_PRIVATE).getString(preference.getKey(), ""));
+                sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences(DEFAULT_PROFILE, Context.MODE_PRIVATE).getString(preference.getKey(), ""));
             }
         }
     }

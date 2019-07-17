@@ -34,10 +34,10 @@ public class CoolMic {
 
     private Profile profile;
 
-    public CoolMic(Context context, String settingskey) {
+    public CoolMic(Context context, String profileName) {
         Manager manager = new Manager(context);
 
-        this.profile = manager.getProfile(settingskey);
+        this.profile = manager.getProfile(profileName);
     }
 
     public Profile getProfile() {

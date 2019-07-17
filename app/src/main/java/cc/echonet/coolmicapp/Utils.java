@@ -112,6 +112,10 @@ public class Utils {
         Manager manager = new Manager(context);
         Profile profile = manager.getProfile(profileName);
 
+        loadCMTSData(context, profile);
+    }
+
+    static void loadCMTSData(Context context, Profile profile) {
         profile.loadCMTSData();
 
         Toast.makeText(context, R.string.settings_conn_defaults_loaded, Toast.LENGTH_SHORT).show();

@@ -123,7 +123,7 @@ public class Server extends Service {
 
                 case Constants.C2S_MSG_STREAM_ACTION:
 
-                    String profile = data.getString("profile", "default");
+                    String profile = data.getString("profile");
                     Boolean cmtsTOSAccepted = data.getBoolean("cmtsTOSAccepted", false);
 
                     service.prepareStream(profile, cmtsTOSAccepted, msg.replyTo);

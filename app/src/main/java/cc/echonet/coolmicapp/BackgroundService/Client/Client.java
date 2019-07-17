@@ -161,11 +161,11 @@ public class Client implements Closeable {
         this.eventListener = eventListener;
     }
 
-    public void startRecording(boolean cmtsTOSAccepted) {
+    public void startRecording(boolean cmtsTOSAccepted, String profileName) {
         Message message = createMessage(Constants.C2S_MSG_STREAM_ACTION);
         Bundle bundle = message.getData();
 
-        bundle.putString("profile", "default");
+        bundle.putString("profile", profileName);
         bundle.putBoolean("cmtsTOSAccepted", cmtsTOSAccepted);
 
         sendMessage(message);
