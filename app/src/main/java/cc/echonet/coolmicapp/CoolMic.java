@@ -30,15 +30,11 @@ import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 
 public class CoolMic {
-    static final int defaultVolume = 100;
-
-    private Context context = null;
     private Profile profile;
 
     public CoolMic(Context context, String settingskey) {
         Manager manager = new Manager(context);
 
-        this.context = context;
         this.profile = manager.getProfile(settingskey);
     }
 
