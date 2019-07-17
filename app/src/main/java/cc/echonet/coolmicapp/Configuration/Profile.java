@@ -140,13 +140,13 @@ public class Profile {
         return getString("audio_codec", R.string.pref_default_audio_codec);
     }
 
-    public String getCodecQuality() {
-        return getString("audio_quality", R.string.pref_default_audio_quality);
+    public double getCodecQuality() {
+        return Double.parseDouble(getString("audio_quality", R.string.pref_default_audio_quality));
     }
 
 
-    public String getVUMeterInterval() {
-        return getString("audio_interval", R.string.pref_default_vumeter_interval);
+    public int getVUMeterInterval() {
+        return Integer.parseInt(getString("audio_interval", R.string.pref_default_vumeter_interval));
     }
 
 

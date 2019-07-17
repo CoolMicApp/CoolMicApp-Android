@@ -357,7 +357,7 @@ public class Server extends Service {
 
         profile = coolmic.getProfile();
 
-        ret = Wrapper.performMetaDataQualityUpdate(profile.getTrackTitle(), profile.getTrackArtist(), Double.parseDouble(profile.getCodecQuality()), 1);
+        ret = Wrapper.performMetaDataQualityUpdate(profile.getTrackTitle(), profile.getTrackArtist(), profile.getCodecQuality(), 1);
 
         if (profile.getServerReconnect()) {
             ret = Wrapper.setReconnectionProfile("enabled");
@@ -460,7 +460,7 @@ public class Server extends Service {
             String mountpoint = profile.getServerMountpoint();
             int sampleRate = profile.getAudioSampleRate();
             int channel = profile.getAudioChannels();
-            String quality_string = profile.getCodecQuality();
+            double quality = profile.getCodecQuality();
             String title = profile.getTrackTitle();
             String artist = profile.getTrackArtist();
             String codec_string = profile.getCodecType();
@@ -475,7 +475,7 @@ public class Server extends Service {
                 throw new Exception("Failed to init Core: " + String.valueOf(status));
             }
 
-            status = Wrapper.performMetaDataQualityUpdate(title, artist, Double.parseDouble(quality_string), 0);
+            status = Wrapper.performMetaDataQualityUpdate(title, artist, quality, 0);
 
             if (status != 0) {
                 throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
@@ -499,7 +499,7 @@ public class Server extends Service {
                 throw new Exception(getString(R.string.exception_start_failed, status));
             }
 
-            int interval = Integer.parseInt(profile.getVUMeterInterval());
+            int interval = profile.getVUMeterInterval();
 
             /* Normalize interval to a sample rate of 48kHz (as per Opus specs). */
             interval = (interval * sampleRate) / 48000;

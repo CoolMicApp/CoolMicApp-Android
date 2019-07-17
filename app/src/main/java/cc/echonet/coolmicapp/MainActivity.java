@@ -257,7 +257,7 @@ public class MainActivity extends Activity implements EventListener {
         coolmic = new CoolMic(this, "default");
         profile = coolmic.getProfile();
 
-        controlVuMeterUI(Integer.parseInt(profile.getVUMeterInterval()) != 0);
+        controlVuMeterUI(profile.getVUMeterInterval() != 0);
 
         controlRecordingUI(currentState);
 
@@ -468,7 +468,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceStartRecording() {
-        controlVuMeterUI(Integer.parseInt(coolmic.getProfile().getVUMeterInterval()) != 0);
+        controlVuMeterUI(coolmic.getProfile().getVUMeterInterval() != 0);
         start_button.setClickable(true);
     }
 
