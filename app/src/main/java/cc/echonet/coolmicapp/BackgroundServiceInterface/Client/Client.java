@@ -17,7 +17,7 @@ import java.io.Closeable;
 
 import cc.echonet.coolmicapp.BackgroundService;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.Constants;
-import cc.echonet.coolmicapp.BackgroundServiceState;
+import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
@@ -66,14 +66,14 @@ public class Client implements Closeable {
 
             switch (msg.what) {
                 case Constants.S2C_MSG_STATE_REPLY:
-                    BackgroundServiceState backgroundServiceState = (BackgroundServiceState) bundle.getSerializable("state");
+                    State state = (State) bundle.getSerializable("state");
 
-                    if (backgroundServiceState == null)
+                    if (state == null)
                         return;
 
-                    Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: State=" + backgroundServiceState.uiState);
+                    Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: State=" + state.uiState);
 
-                    client.eventListener.onBackgroundServiceState(backgroundServiceState);
+                    client.eventListener.onBackgroundServiceState(state);
                     break;
 
                 case Constants.S2C_MSG_ERROR:

@@ -53,6 +53,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.Client.Client;
 import cc.echonet.coolmicapp.BackgroundServiceInterface.Client.EventListener;
 import cc.echonet.coolmicdspjava.VUMeterResult;
@@ -65,7 +66,7 @@ public class MainActivity extends Activity implements EventListener {
     private Client backgroundServiceClient = new Client(this, this);
     Constants.CONTROL_UI currentState;
 
-    BackgroundServiceState backgroundServiceState;
+    State backgroundServiceState;
 
     CoolMic coolmic = null;
     Button start_button;
@@ -436,7 +437,7 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     @Override
-    public void onBackgroundServiceState(BackgroundServiceState state) {
+    public void onBackgroundServiceState(State state) {
         backgroundServiceState = state;
         controlRecordingUI(state.uiState);
 

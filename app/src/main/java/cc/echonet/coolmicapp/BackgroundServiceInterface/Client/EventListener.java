@@ -1,10 +1,10 @@
 package cc.echonet.coolmicapp.BackgroundServiceInterface.Client;
 
-import cc.echonet.coolmicapp.BackgroundServiceState;
+import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
 public interface EventListener {
-    void onBackgroundServiceState(BackgroundServiceState state);
+    void onBackgroundServiceState(State state);
     void onBackgroundServiceError(/*TODO*/);
     void onBackgroundServiceStartRecording();
     void onBackgroundServiceStopRecording();

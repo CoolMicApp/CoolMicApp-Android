@@ -42,6 +42,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import cc.echonet.coolmicapp.BackgroundServiceInterface.State;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
@@ -58,7 +59,7 @@ public class BackgroundService extends Service {
     private Notification notification = null;
     private CoolMic coolmic = null;
 
-    private BackgroundServiceState backgroundServiceState;
+    private State state;
 
     private String oldNotificationMessage;
     private String oldNotificationTitle;
@@ -68,9 +69,9 @@ public class BackgroundService extends Service {
         mIncomingHandler = new IncomingHandler(this);
         mMessenger = new Messenger(mIncomingHandler);
 
-        backgroundServiceState = new BackgroundServiceState();
+        state = new State();
 
-        backgroundServiceState.wrapperInitializationStatus = Wrapper.getState();
+        state.wrapperInitializationStatus = Wrapper.getState();
     }
 
     protected void addClient(Messenger messenger) {
@@ -80,7 +81,7 @@ public class BackgroundService extends Service {
     }
 
     synchronized private void updateListeners(int listeners_current, int listeners_peak) {
-        backgroundServiceState.listenersString = getApplicationContext().getString(R.string.formatListeners, listeners_current, listeners_peak);
+        state.listenersString = getApplicationContext().getString(R.string.formatListeners, listeners_current, listeners_peak);
     }
 
     private String exceptionToString(Exception ex) {
@@ -210,25 +211,25 @@ public class BackgroundService extends Service {
                     break;
 
                 case Constants.H2S_MSG_TIMER:
-                    if (service.backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
-                        service.backgroundServiceState.timerInMS = SystemClock.uptimeMillis() - service.backgroundServiceState.startTime;
+                    if (service.state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
+                        service.state.timerInMS = SystemClock.uptimeMillis() - service.state.startTime;
 
-                        int secs = (int) (service.backgroundServiceState.timerInMS / 1000);
+                        int secs = (int) (service.state.timerInMS / 1000);
                         int mins = secs / 60;
                         int hours = mins / 60;
                         secs = secs % 60;
                         mins = mins % 60;
 
-                        service.backgroundServiceState.timerString = service.getApplicationContext().getString(R.string.timer_format, hours, mins, secs);
+                        service.state.timerString = service.getApplicationContext().getString(R.string.timer_format, hours, mins, secs);
 
                         service.postNotification();
 
                         service.sendStateToAll();
 
-                        if (service.backgroundServiceState.lastStateFetch + 15 * 1000 < service.backgroundServiceState.timerInMS) {
+                        if (service.state.lastStateFetch + 15 * 1000 < service.state.timerInMS) {
                             new Thread(service.fetchListeners()).start();
 
-                            service.backgroundServiceState.lastStateFetch = service.backgroundServiceState.timerInMS;
+                            service.state.lastStateFetch = service.state.timerInMS;
                         }
 
                         service.mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
@@ -245,7 +246,7 @@ public class BackgroundService extends Service {
     }
 
     private void setGain(int left, int right) {
-        if (backgroundServiceState.channels != 2) {
+        if (state.channels != 2) {
             Wrapper.setMasterGainMono(100, left);
         } else {
             Wrapper.setMasterGainStereo(100, left, right);
@@ -270,9 +271,9 @@ public class BackgroundService extends Service {
      */
     @Override
     public IBinder onBind(Intent intent) {
-        backgroundServiceState.clientCount++;
+        state.clientCount++;
 
-        if (backgroundServiceState.bindCounts++ == 0) {
+        if (state.bindCounts++ == 0) {
             postNotification();
         }
 
@@ -281,7 +282,7 @@ public class BackgroundService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        backgroundServiceState.clientCount--;
+        state.clientCount--;
         if (!hasCore()) {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -304,10 +305,10 @@ public class BackgroundService extends Service {
     }
 
     private void postNotification() {
-        boolean flashLed = (backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
-        String title = String.format(Locale.ENGLISH, "State: %s", backgroundServiceState.txtState);
-        //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", backgroundServiceState.timerString, !flashLed ? "(Stopped)" : "", backgroundServiceState.listenersString);
-        String message = String.format(Locale.ENGLISH, "Listeners: %s", backgroundServiceState.listenersString);
+        boolean flashLed = (state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
+        String title = String.format(Locale.ENGLISH, "State: %s", state.txtState);
+        //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", state.timerString, !flashLed ? "(Stopped)" : "", state.listenersString);
+        String message = String.format(Locale.ENGLISH, "Listeners: %s", state.listenersString);
 
         postNotification(message, title, flashLed);
     }
@@ -355,13 +356,13 @@ public class BackgroundService extends Service {
     }
 
     private void checkWrapper() {
-        if (backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            if (backgroundServiceState.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED) {
+        if (state.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+            if (state.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED) {
                 if (Wrapper.init() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
                     Log.d("WrapperInit", Wrapper.getInitException().toString());
                     Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
                 }
-            } else if (backgroundServiceState.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
+            } else if (state.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
                 Log.d("WrapperInit", "INIT FAILED");
                 Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_previnit_error, Toast.LENGTH_SHORT).show();
             } else {
@@ -370,7 +371,7 @@ public class BackgroundService extends Service {
             }
         }
 
-        backgroundServiceState.wrapperInitializationStatus = Wrapper.getState();
+        state.wrapperInitializationStatus = Wrapper.getState();
     }
 
     private void checkWrapperState(Messenger replyTo) {
@@ -382,7 +383,7 @@ public class BackgroundService extends Service {
 
         Bundle bundle = msgReply.getData();
 
-        bundle.putSerializable("state", backgroundServiceState);
+        bundle.putSerializable("state", state);
 
         try {
             replyTo.send(msgReply);
@@ -411,9 +412,9 @@ public class BackgroundService extends Service {
     }
 
     private boolean hasCore() {
-        backgroundServiceState.hasCore = Wrapper.getState() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED && Wrapper.hasCore();
+        state.hasCore = Wrapper.getState() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED && Wrapper.hasCore();
 
-        return backgroundServiceState.hasCore;
+        return state.hasCore;
     }
 
     private boolean isOnline() {
@@ -459,7 +460,7 @@ public class BackgroundService extends Service {
             return;
         }
 
-        if (backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if (state.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -504,10 +505,10 @@ public class BackgroundService extends Service {
 
         boolean success;
 
-        backgroundServiceState.timerInMS = 0;
-        backgroundServiceState.timerString = "00:00:00";
-        backgroundServiceState.hadError = false;
-        backgroundServiceState.channels = Integer.parseInt(coolmic.getChannels());
+        state.timerInMS = 0;
+        state.timerString = "00:00:00";
+        state.hadError = false;
+        state.channels = Integer.parseInt(coolmic.getChannels());
 
         //setGain(100, 100);
         sendGain(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
@@ -613,7 +614,7 @@ public class BackgroundService extends Service {
 
         hasCore();
 
-        backgroundServiceState.initialConnectPerformed = false;
+        state.initialConnectPerformed = false;
 
         if (replyTo != null) {
             Message msgReply = Message.obtain(null, Constants.S2C_MSG_STREAM_STOP_REPLY, 0, 0);
@@ -635,21 +636,21 @@ public class BackgroundService extends Service {
     private void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
         Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
 
-        backgroundServiceState.oldState = backgroundServiceState.uiState;
+        state.oldState = state.uiState;
 
         switch (what) {
             case THREAD_POST_START:
-                backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
+                state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
 
-                backgroundServiceState.txtState = "Connecting";
+                state.txtState = "Connecting";
 
                 break;
             case THREAD_PRE_STOP:
-                backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
-                backgroundServiceState.txtState = "Disconnected";
+                state.txtState = "Disconnected";
 
-                if (backgroundServiceState.hadError) {
+                if (state.hadError) {
                     Wrapper.stop();
                     Wrapper.unref();
                 }
@@ -657,19 +658,19 @@ public class BackgroundService extends Service {
                 break;
             case THREAD_POST_STOP:
 
-                backgroundServiceState.txtState = "Disconnected(post thread stopped)";
+                state.txtState = "Disconnected(post thread stopped)";
 
-                backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
                 break;
             case ERROR:
                  /*
                 if(coolmic.getReconnect()) {
-                    backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTING;
+                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTING;
                 }
                 else
                 {
-                    backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
                 }
 
                 */
@@ -682,7 +683,7 @@ public class BackgroundService extends Service {
 
                 sendMessageToAll(msgReply);
 
-                backgroundServiceState.hadError = true;
+                state.hadError = true;
 
                 break;
             case STREAMSTATE:
@@ -694,19 +695,19 @@ public class BackgroundService extends Service {
 
                 /* connected */
                 if (arg0 == 2) {
-                    /*if(!backgroundServiceState.initialConnectPerformed || !coolmic.getReconnect()) {
+                    /*if(!state.initialConnectPerformed || !coolmic.getReconnect()) {
                      */
 
-                    backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
-                    backgroundServiceState.initialConnectPerformed = true;
-                    backgroundServiceState.startTime = SystemClock.uptimeMillis();
+                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
+                    state.initialConnectPerformed = true;
+                    state.startTime = SystemClock.uptimeMillis();
 
                     mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
                         /*
                     }
-                    else if(backgroundServiceState.initialConnectPerformed && coolmic.getReconnect())
+                    else if(state.initialConnectPerformed && coolmic.getReconnect())
                     {
-                        backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTED;
+                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTED;
                     }
                     */
                 }
@@ -714,21 +715,21 @@ public class BackgroundService extends Service {
                 else if (arg0 == 4 || arg0 == 5) {
                     mIncomingHandler.removeMessages(Constants.H2S_MSG_TIMER);
 
-                    if (!backgroundServiceState.initialConnectPerformed || !coolmic.getReconnect()) {
-                        backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                    if (!state.initialConnectPerformed || !coolmic.getReconnect()) {
+                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
                     } else {
-                        backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
+                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
                     }
                 }
 
-                backgroundServiceState.txtState = getString(R.string.txtStateFormat, Utils.getStringByName(this, "coolmic_cs", arg0), error);
+                state.txtState = getString(R.string.txtStateFormat, Utils.getStringByName(this, "coolmic_cs", arg0), error);
                 //Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
 
                 break;
             case RECONNECT:
-                backgroundServiceState.txtState = String.format(getString(R.string.reconnect_in), arg0);
+                state.txtState = String.format(getString(R.string.reconnect_in), arg0);
 
-                backgroundServiceState.hadError = false;
+                state.hadError = false;
 
                 break;
         }
