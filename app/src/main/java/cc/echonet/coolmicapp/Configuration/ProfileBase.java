@@ -8,14 +8,16 @@ import cc.echonet.coolmicapp.R;
 
 abstract class ProfileBase {
     Context context;
+    String profileName;
     SharedPreferences prefs;
 
-    ProfileBase(Context context, String profile) {
+    ProfileBase(Context context, String profileName) {
         this.context = context;
-        this.prefs = context.getSharedPreferences(profile, Context.MODE_PRIVATE);
+        this.profileName = profileName;
+        this.prefs = context.getSharedPreferences(profileName, Context.MODE_PRIVATE);
 
         if (!this.prefs.getBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, false)) {
-            PreferenceManager.setDefaultValues(context, profile, Context.MODE_PRIVATE, R.xml.pref_all, true);
+            PreferenceManager.setDefaultValues(context, profileName, Context.MODE_PRIVATE, R.xml.pref_all, true);
 
             this.prefs.edit().putBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true).apply();
         }
@@ -42,4 +44,7 @@ abstract class ProfileBase {
         return prefs.getBoolean(key, def);
     }
 
+    public String getName() {
+        return profileName;
+    }
 }
