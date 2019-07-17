@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -113,6 +115,17 @@ public class Profile {
         return getString("connection_mountpoint");
     }
 
+    public boolean isServerSet() {
+        if (!getServerHostname().isEmpty() && !getServerMountpoint().isEmpty() && !getServerUsername().isEmpty() && !getServerPassword().isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public URL getServerStreamURL() throws MalformedURLException {
+        return new URL(getServerProtocol(), getServerHostname(), getServerPort(), getServerMountpoint());
+    }
 
     public int getAudioSampleRate() {
         return Integer.parseInt(getString("audio_samplerate", R.string.pref_default_audio_samplerate));

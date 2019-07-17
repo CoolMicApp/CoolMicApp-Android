@@ -51,6 +51,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.MalformedURLException;
 import java.util.Locale;
 
 import cc.echonet.coolmicapp.BackgroundService.Client.Client;
@@ -58,6 +59,7 @@ import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.Server.Server;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
 /**
@@ -90,10 +92,12 @@ public class MainActivity extends Activity implements EventListener {
 
 
     private void sendGain(int left, int right) {
+        Profile profile = coolmic.getProfile();
+
         backgroundServiceClient.setGain(left, right);
 
-        coolmic.setVolumeLeft(left);
-        coolmic.setVolumeRight(right);
+        profile.setVolumeLeft(left);
+        profile.setVolumeRight(right);
     }
 
     @Override
@@ -189,6 +193,8 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Profile profile;
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.home);
@@ -249,12 +255,13 @@ public class MainActivity extends Activity implements EventListener {
         buttonColor = start_button.getBackground();
 
         coolmic = new CoolMic(this, "default");
+        profile = coolmic.getProfile();
 
-        controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
+        controlVuMeterUI(Integer.parseInt(profile.getVUMeterInterval()) != 0);
 
         controlRecordingUI(currentState);
 
-        onBackgroundServiceGainUpdate(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
+        onBackgroundServiceGainUpdate(profile.getVolumeLeft(), profile.getVolumeRight());
 
         start_button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -283,24 +290,31 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     public void onImageClick(View view) {
-        if (coolmic.isConnectionSet()) {
-            ClipData myClip = ClipData.newPlainText("text", coolmic.getStreamURL());
-            myClipboard.setPrimaryClip(myClip);
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
+        if (coolmic.getProfile().isServerSet()) {
+            ClipData myClip = null;
+            try {
+                myClip = ClipData.newPlainText("text", coolmic.getProfile().getServerStreamURL().toString());
+                myClipboard.setPrimaryClip(myClip);
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
+            } catch (MalformedURLException e) {
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_not_copied, Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void performShare() {
-        if (coolmic.isConnectionSet()) {
-            Intent shareIntent = new Intent();
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, coolmic.getStreamURL());
-            shareIntent.setType("text/plain");
-
-            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.menu_action_share_title)));
-
+        if (coolmic.getProfile().isServerSet()) {
+            try {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, coolmic.getProfile().getServerStreamURL().toString());
+                shareIntent.setType("text/plain");
+                startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.menu_action_share_title)));
+            } catch (MalformedURLException e) {
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_not_shared, Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
         }
@@ -316,7 +330,7 @@ public class MainActivity extends Activity implements EventListener {
         }
 
         if (coolmic != null) {
-            return Integer.parseInt(coolmic.getChannels());
+            return coolmic.getProfile().getAudioChannels();
         }
 
         return 2; // default.
@@ -454,7 +468,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceStartRecording() {
-        controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
+        controlVuMeterUI(Integer.parseInt(coolmic.getProfile().getVUMeterInterval()) != 0);
         start_button.setClickable(true);
     }
 

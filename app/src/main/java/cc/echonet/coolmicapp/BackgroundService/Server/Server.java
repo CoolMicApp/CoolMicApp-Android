@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.CoolMic;
 import cc.echonet.coolmicapp.Icecast.Icecast;
 import cc.echonet.coolmicapp.Icecast.Request.Stats;
@@ -80,7 +81,7 @@ public class Server extends Service {
             @Override
             public void run() {
                 try {
-                    Stats request = icecast.getStats(coolmic.getMountpoint());
+                    Stats request = icecast.getStats(coolmic.getProfile().getServerMountpoint());
                     cc.echonet.coolmicapp.Icecast.Response.Stats response;
 
                     request.finish();
@@ -346,15 +347,19 @@ public class Server extends Service {
     }
 
     private void reloadParameters() {
+        Profile profile;
+
         int ret;
 
         if (coolmic == null) {
             return;
         }
 
-        ret = Wrapper.performMetaDataQualityUpdate(coolmic.getTitle(), coolmic.getArtist(), Double.parseDouble(coolmic.getQuality()), 1);
+        profile = coolmic.getProfile();
 
-        if (coolmic.getReconnect()) {
+        ret = Wrapper.performMetaDataQualityUpdate(profile.getTrackTitle(), profile.getTrackArtist(), Double.parseDouble(profile.getCodecQuality()), 1);
+
+        if (profile.getServerReconnect()) {
             ret = Wrapper.setReconnectionProfile("enabled");
         } else {
             ret = Wrapper.setReconnectionProfile("disabled");
@@ -362,14 +367,15 @@ public class Server extends Service {
 
     }
 
-    private void prepareStream(final String profile, boolean cmtsTOSAccepted, final Messenger replyTo) {
-        coolmic = new CoolMic(this, profile);
+    private void prepareStream(final String profileName, boolean cmtsTOSAccepted, final Messenger replyTo) {
+        coolmic = new CoolMic(this, profileName);
+        Profile profile = coolmic.getProfile();
 
         if (icecast != null)
             icecast.close();
 
-        icecast = new Icecast(coolmic.getServerProtocol(), coolmic.getServerHostname(), coolmic.getServerPort());
-        icecast.setCredentials(coolmic.getUsername(), coolmic.getPassword());
+        icecast = new Icecast(profile.getServerProtocol(), profile.getServerHostname(), profile.getServerPort());
+        icecast.setCredentials(profile.getServerUsername(), profile.getServerPassword());
 
         if (hasCore()) {
             stopStream(replyTo);
@@ -398,7 +404,7 @@ public class Server extends Service {
             return;
         }
 
-        if (!coolmic.isConnectionSet()) {
+        if (!coolmic.getProfile().isServerSet()) {
             Message msgReply = createMessage(Constants.S2C_MSG_CONNECTION_UNSET);
 
             try {
@@ -422,11 +428,12 @@ public class Server extends Service {
             return;
         }
 
-        startStream(profile, replyTo);
+        startStream(profileName, replyTo);
     }
 
 
-    private void startStream(String profile, Messenger replyTo) {
+    private void startStream(String profileName, Messenger replyTo) {
+        Profile profile = coolmic.getProfile();
         Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
 
         Bundle bundle = msgReply.getData();
@@ -436,39 +443,31 @@ public class Server extends Service {
         state.timerInMS = 0;
         state.timerString = "00:00:00";
         state.hadError = false;
-        state.channels = Integer.parseInt(coolmic.getChannels());
+        state.channels = profile.getAudioChannels();
 
         //setGain(100, 100);
-        sendGain(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
+        sendGain(profile.getVolumeLeft(), profile.getVolumeRight());
 
         try {
-            String portnum;
-            String server = coolmic.getServerName();
-            int port_num = 8000;
-
-            if (server.indexOf(":") > 0) {
-                String[] split = server.split(":");
-                server = split[0];
-                portnum = split[1];
-                port_num = Integer.parseInt(portnum);
-            }
+            String server = profile.getServerHostname();
+            int port_num = profile.getServerPort();
 
             Log.d("VS", server);
             Log.d("VS", Integer.toString(port_num));
-            String username = coolmic.getUsername();
-            String password = coolmic.getPassword();
-            String mountpoint = coolmic.getMountpoint();
-            String sampleRate_string = coolmic.getSampleRate();
-            String channel_string = coolmic.getChannels();
-            String quality_string = coolmic.getQuality();
-            String title = coolmic.getTitle();
-            String artist = coolmic.getArtist();
-            String codec_string = coolmic.getCodec();
-            int sampleRate = Integer.parseInt(sampleRate_string);
 
-            Integer buffersize = AudioRecord.getMinBufferSize(Integer.parseInt(sampleRate_string), Integer.parseInt(channel_string) == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+            String username = profile.getServerUsername();
+            String password = profile.getServerPassword();
+            String mountpoint = profile.getServerMountpoint();
+            int sampleRate = profile.getAudioSampleRate();
+            int channel = profile.getAudioChannels();
+            String quality_string = profile.getCodecQuality();
+            String title = profile.getTrackTitle();
+            String artist = profile.getTrackArtist();
+            String codec_string = profile.getCodecType();
+
+            Integer buffersize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
             Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
-            int status = Wrapper.init(this, server, port_num, username, password, mountpoint, codec_string, sampleRate, Integer.parseInt(channel_string), buffersize);
+            int status = Wrapper.init(this, server, port_num, username, password, mountpoint, codec_string, sampleRate, channel, buffersize);
 
             hasCore();
 
@@ -482,7 +481,7 @@ public class Server extends Service {
                 throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
             }
 
-            if (coolmic.getReconnect()) {
+            if (profile.getServerReconnect()) {
                 status = Wrapper.setReconnectionProfile("enabled");
             } else {
                 status = Wrapper.setReconnectionProfile("disabled");
@@ -500,7 +499,7 @@ public class Server extends Service {
                 throw new Exception(getString(R.string.exception_start_failed, status));
             }
 
-            int interval = Integer.parseInt(coolmic.getVuMeterInterval());
+            int interval = Integer.parseInt(profile.getVUMeterInterval());
 
             /* Normalize interval to a sample rate of 48kHz (as per Opus specs). */
             interval = (interval * sampleRate) / 48000;
@@ -593,7 +592,7 @@ public class Server extends Service {
                 break;
             case ERROR:
                  /*
-                if(coolmic.getReconnect()) {
+                if(coolmic.getServerReconnect()) {
                     state.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTING;
                 }
                 else
@@ -623,7 +622,7 @@ public class Server extends Service {
 
                 /* connected */
                 if (arg0 == 2) {
-                    /*if(!state.initialConnectPerformed || !coolmic.getReconnect()) {
+                    /*if(!state.initialConnectPerformed || !coolmic.getServerReconnect()) {
                      */
 
                     state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
@@ -633,7 +632,7 @@ public class Server extends Service {
                     mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
                         /*
                     }
-                    else if(state.initialConnectPerformed && coolmic.getReconnect())
+                    else if(state.initialConnectPerformed && coolmic.getServerReconnect())
                     {
                         state.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTED;
                     }
@@ -643,7 +642,7 @@ public class Server extends Service {
                 else if (arg0 == 4 || arg0 == 5) {
                     mIncomingHandler.removeMessages(Constants.H2S_MSG_TIMER);
 
-                    if (!state.initialConnectPerformed || !coolmic.getReconnect()) {
+                    if (!state.initialConnectPerformed || !coolmic.getProfile().getServerReconnect()) {
                         state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
                     } else {
                         state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
