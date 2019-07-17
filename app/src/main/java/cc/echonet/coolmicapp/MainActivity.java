@@ -59,6 +59,7 @@ import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.Server.Server;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
@@ -71,7 +72,7 @@ public class MainActivity extends Activity implements EventListener {
 
     State backgroundServiceState;
 
-    CoolMic coolmic = null;
+    Profile profile = null;
     Button start_button;
     boolean start_button_debounce_active = false;
     SeekBar gainLeft;
@@ -92,8 +93,6 @@ public class MainActivity extends Activity implements EventListener {
 
 
     private void sendGain(int left, int right) {
-        Profile profile = coolmic.getProfile();
-
         backgroundServiceClient.setGain(left, right);
 
         profile.getVolume().setLeft(left);
@@ -193,7 +192,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Profile profile;
+        Manager manager;
 
         super.onCreate(savedInstanceState);
 
@@ -254,8 +253,8 @@ public class MainActivity extends Activity implements EventListener {
 
         buttonColor = start_button.getBackground();
 
-        coolmic = new CoolMic(this, "default");
-        profile = coolmic.getProfile();
+        manager = new Manager(this);
+        profile = manager.getProfile("default");
 
         controlVuMeterUI(profile.getVUMeter().getInterval() != 0);
 
@@ -290,10 +289,10 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     public void onImageClick(View view) {
-        if (coolmic.getProfile().getServer().isSet()) {
+        if (profile.getServer().isSet()) {
             ClipData myClip = null;
             try {
-                myClip = ClipData.newPlainText("text", coolmic.getProfile().getServer().getStreamURL().toString());
+                myClip = ClipData.newPlainText("text", profile.getServer().getStreamURL().toString());
                 myClipboard.setPrimaryClip(myClip);
                 Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
             } catch (MalformedURLException e) {
@@ -305,11 +304,11 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     public void performShare() {
-        if (coolmic.getProfile().getServer().isSet()) {
+        if (profile.getServer().isSet()) {
             try {
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, coolmic.getProfile().getServer().getStreamURL().toString());
+                shareIntent.putExtra(Intent.EXTRA_TEXT, profile.getServer().getStreamURL().toString());
                 shareIntent.setType("text/plain");
                 startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.menu_action_share_title)));
             } catch (MalformedURLException e) {
@@ -329,8 +328,8 @@ public class MainActivity extends Activity implements EventListener {
             return backgroundServiceState.channels;
         }
 
-        if (coolmic != null) {
-            return coolmic.getProfile().getAudio().getChannels();
+        if (profile != null) {
+            return profile.getAudio().getChannels();
         }
 
         return 2; // default.
@@ -399,7 +398,7 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     public void startRecording(View view, boolean cmtsTOSAccepted) {
-        backgroundServiceClient.startRecording(cmtsTOSAccepted, coolmic.getProfile().getName());
+        backgroundServiceClient.startRecording(cmtsTOSAccepted, profile.getName());
     }
 
     public void stopRecording() {
@@ -468,7 +467,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceStartRecording() {
-        controlVuMeterUI(coolmic.getProfile().getVUMeter().getInterval() != 0);
+        controlVuMeterUI(profile.getVUMeter().getInterval() != 0);
         start_button.setClickable(true);
     }
 
@@ -487,7 +486,7 @@ public class MainActivity extends Activity implements EventListener {
         AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(this);
         alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                Utils.loadCMTSData(MainActivity.this, coolmic.getProfile());
+                Utils.loadCMTSData(MainActivity.this, profile);
                 startRecording(null);
             }
         });
