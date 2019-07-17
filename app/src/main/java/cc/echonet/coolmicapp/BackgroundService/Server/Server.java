@@ -512,7 +512,7 @@ public class Server extends Service {
         try {
             String portnum;
             String server = coolmic.getServerName();
-            Integer port_num = 8000;
+            int port_num = 8000;
 
             if (server.indexOf(":") > 0) {
                 String[] split = server.split(":");
@@ -522,7 +522,7 @@ public class Server extends Service {
             }
 
             Log.d("VS", server);
-            Log.d("VS", port_num.toString());
+            Log.d("VS", Integer.toString(port_num));
             String username = coolmic.getUsername();
             String password = coolmic.getPassword();
             String mountpoint = coolmic.getMountpoint();
