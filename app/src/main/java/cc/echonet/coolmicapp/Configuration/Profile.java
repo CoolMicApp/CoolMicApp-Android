@@ -63,11 +63,11 @@ public class Profile {
         return Base64.encodeToString(digest, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING).substring(0, 20);
     }
 
-    public String getArtist() {
+    public String getTrackArtist() {
         return getString("general_artist");
     }
 
-    public String getTitle() {
+    public String getTrackTitle() {
         return getString("general_title");
     }
 
@@ -105,7 +105,7 @@ public class Profile {
         return getString("connection_password");
     }
 
-    public boolean getReconnect() {
+    public boolean getServerReconnect() {
         return getBoolean("connection_reconnect", false);
     }
 
