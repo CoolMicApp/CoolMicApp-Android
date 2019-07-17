@@ -133,13 +133,13 @@ public class CoolMic {
     }
 
     public String getStreamURL() {
-        String port = ":8000";
+        String port = "";
 
-        if (this.getServerName().indexOf(':') > 0) {
-            port = "";
+        if (!(this.getServerName().indexOf(':') > 0)) {
+            port = ":" + getServerPort();
         }
 
-        return String.format("http://%s%s/%s", this.getServerName(), port, this.getMountpoint());
+        return String.format("%s://%s%s/%s", getServerProtocol(), getServerName(), port, getMountpoint());
     }
 
     public boolean isConnectionSet() {
