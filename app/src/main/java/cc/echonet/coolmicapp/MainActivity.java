@@ -26,11 +26,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -38,10 +35,6 @@ import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
@@ -60,19 +53,21 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+import cc.echonet.coolmicapp.BackgroundService.Client.Client;
+import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
+import cc.echonet.coolmicapp.BackgroundService.Constants;
+import cc.echonet.coolmicapp.BackgroundService.Server.Server;
+import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
 /**
  * This activity demonstrates how to use JNI to encode and decode ogg/vorbis audio
  */
-public class MainActivity extends Activity {
-    Messenger mBackgroundService = null;
-    Messenger mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
-    boolean mBackgroundServiceBound = false;
+public class MainActivity extends Activity implements EventListener {
+    private Client backgroundServiceClient = new Client(this, this);
     Constants.CONTROL_UI currentState;
 
-    BackgroundServiceState backgroundServiceState;
-
+    State backgroundServiceState;
 
     CoolMic coolmic = null;
     Button start_button;
@@ -93,182 +88,9 @@ public class MainActivity extends Activity {
     ClipboardManager myClipboard;
 
 
-    private ServiceConnection mBackgroundServiceConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            // This is called when the connection with the service has been
-            // established, giving us the object we can use to
-            // interact with the service.  We are communicating with the
-            // service using a Messenger, so here we get a client-side
-            // representation of that from the raw IBinder object.
-            mBackgroundService = new Messenger(service);
-            mBackgroundServiceBound = true;
-
-            // Create and send a message to the service, using a supported 'what' value
-            Message msg = Message.obtain(null, Constants.C2S_MSG_STATE, 0, 0);
-
-            msg.replyTo = mBackgroundServiceClient;
-
-            try {
-                mBackgroundService.send(msg);
-                sendStreamReload();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            // This is called when the connection with the service has been
-            // unexpectedly disconnected -- that is, its process crashed.
-            mBackgroundService = null;
-            mBackgroundServiceBound = false;
-        }
-    };
-
-
-    /**
-     * Handler of incoming messages from clients.
-     */
-    static class IncomingHandler extends Handler {
-        private final MainActivity activity;
-
-        IncomingHandler(MainActivity activity) {
-            this.activity = activity;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            Bundle bundle = msg.getData();
-
-            switch (msg.what) {
-                case Constants.S2C_MSG_STATE_REPLY:
-                    activity.backgroundServiceState = (BackgroundServiceState) bundle.getSerializable("state");
-
-                    if (activity.backgroundServiceState == null) {
-                        return;
-                    }
-
-                    Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: State=" + activity.backgroundServiceState.uiState.toString());
-
-                    activity.controlRecordingUI(activity.backgroundServiceState.uiState);
-
-                    ((TextView) activity.findViewById(R.id.timerValue)).setText(activity.backgroundServiceState.timerString);
-                    ((TextView) activity.findViewById(R.id.txtState)).setText(activity.backgroundServiceState.txtState);
-                    ((TextView) activity.findViewById(R.id.txtListeners)).setText(activity.backgroundServiceState.listenersString);
-
-                    if (activity.backgroundServiceState.uiState.equals(Constants.CONTROL_UI.CONTROL_UI_CONNECTING)) {
-                        Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: X!");
-                    }
-
-                    break;
-
-                case Constants.S2C_MSG_ERROR:
-                    String error = bundle.getString("error");
-
-                    Log.v("IH", "In Handler: S2C_MSG_ERROR: State=" + activity.backgroundServiceState.uiState.toString());
-                    Log.v("IH", "In Handler: S2C_MSG_ERROR: error=" + error);
-
-                    Toast.makeText(activity, error, Toast.LENGTH_LONG).show();
-
-                    if (activity.backgroundServiceState.uiState.equals(Constants.CONTROL_UI.CONTROL_UI_CONNECTING)) {
-                        Log.v("IH", "In Handler: S2C_MSG_ERROR: X!");
-                    }
-
-                    break;
-                case Constants.S2C_MSG_STREAM_START_REPLY:
-                    activity.controlVuMeterUI(Integer.parseInt(activity.coolmic.getVuMeterInterval()) != 0);
-
-                    Log.v("IH", "In Handler: S2C_MSG_STREAM_START_REPLY: X!");
-                    activity.start_button.setClickable(true);
-                    break;
-
-                case Constants.S2C_MSG_STREAM_STOP_REPLY:
-                    boolean was_running = bundle.getBoolean("was_running");
-
-                    Log.v("IH", "In Handler: S2C_MSG_STREAM_STOP_REPLY: X!");
-
-                    if (was_running) {
-                        Toast.makeText(activity, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
-                    }
-
-                    activity.start_button.setClickable(true);
-                    break;
-
-                case Constants.S2C_MSG_PERMISSIONS_MISSING:
-                    Utils.requestPermissions(activity);
-
-                    break;
-
-                case Constants.S2C_MSG_CONNECTION_UNSET:
-                    AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(activity);
-                    alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Utils.loadCMTSData(activity, "default");
-                            activity.startRecording(null);
-                        }
-                    });
-
-                    alertDialog.show();
-
-                    break;
-
-                case Constants.S2C_MSG_CMTS_TOS:
-                    AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(activity);
-                    alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
-                    alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);
-                    alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    alertDialogCMTSTOS.setPositiveButton(R.string.coolmic_tos_accept, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            activity.startRecording(null, true);
-                        }
-                    });
-
-                    alertDialogCMTSTOS.show();
-
-                    break;
-                case Constants.S2C_MSG_VUMETER:
-                    Bundle bundleVUMeter = msg.getData();
-
-                    activity.handleVUMeterResult((VUMeterResult) bundleVUMeter.getSerializable("vumeterResult"));
-
-                    break;
-                case Constants.C2S_MSG_GAIN:
-                    Bundle bundleGain = msg.getData();
-
-                    activity.setGain(bundleGain.getInt("left"), bundleGain.getInt("right"));
-
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
-        }
-    }
-
-    private void setGain(int left, int right) {
-        gainLeft.setProgress(left);
-        gainRight.setProgress(right);
-    }
 
     private void sendGain(int left, int right) {
-        if (mBackgroundServiceBound) {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_GAIN, 0, 0);
-
-            msgReply.replyTo = mBackgroundServiceClient;
-
-            Bundle bundle = msgReply.getData();
-
-            bundle.putInt("left", left);
-            bundle.putInt("right", right);
-
-            try {
-                mBackgroundService.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
+        backgroundServiceClient.setGain(left, right);
 
         coolmic.setVolumeLeft(left);
         coolmic.setVolumeRight(right);
@@ -309,15 +131,15 @@ public class MainActivity extends Activity {
 
     private void exitApp() {
         stopRecording();
+        backgroundServiceClient.stopRecording();
+        backgroundServiceClient.disconnect();
 
-        disconnectService();
-
-        stopService(new Intent(this, BackgroundService.class));
+        stopService(new Intent(this, Server.class));
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                stopService(new Intent(getApplicationContext(), BackgroundService.class));
+                stopService(new Intent(getApplicationContext(), Server.class));
             }
         }, 250);
 
@@ -349,26 +171,11 @@ public class MainActivity extends Activity {
         this.exitApp();
     }
 
-    private void connectService() {
-        if (!mBackgroundServiceBound) {
-            Intent intent = new Intent(this, BackgroundService.class);
-            startService(intent);
-            bindService(intent, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
-        }
-    }
-
-    private void disconnectService() {
-        if (mBackgroundServiceBound) {
-            unbindService(mBackgroundServiceConnection);
-            mBackgroundServiceBound = false;
-        }
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
         // Bind to the service
-        connectService();
+        backgroundServiceClient.connect();
         controlRecordingUI(currentState);
     }
 
@@ -376,7 +183,7 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         // Unbind from the service
-        disconnectService();
+        backgroundServiceClient.disconnect();
     }
 
 
@@ -415,10 +222,10 @@ public class MainActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 if (b) {
-                    if (backgroundServiceState.channels != 2) {
+                    if (backgroundServiceState != null && backgroundServiceState.channels != 2) {
                         int value = seekBar.getProgress();
 
-                        setGain(value, value);
+                        onBackgroundServiceGainUpdate(value, value);
                     }
 
                     MainActivity.this.sendGain(gainLeft.getProgress(), gainRight.getProgress());
@@ -447,12 +254,12 @@ public class MainActivity extends Activity {
 
         controlRecordingUI(currentState);
 
-        setGain(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
+        onBackgroundServiceGainUpdate(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
 
         start_button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                sendStreamReload();
+                backgroundServiceClient.reloadParameters();
                 return true;
             }
         });
@@ -473,23 +280,6 @@ public class MainActivity extends Activity {
                 startRecording(v);
             }
         });
-    }
-
-    private void sendStreamReload() {
-        if (mBackgroundServiceBound) {
-            System.out.println("MainActivity.sendStreamReload: We have a background service!");
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_RELOAD, 0, 0);
-
-            msgReply.replyTo = mBackgroundServiceClient;
-
-            try {
-                mBackgroundService.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("MainActivity.sendStreamReload: No background service!");
-        }
     }
 
     public void onImageClick(View view) {
@@ -521,7 +311,7 @@ public class MainActivity extends Activity {
     }
 
     private long getChannels() {
-        if (currentState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
+        if (currentState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED && backgroundServiceState != null) {
             return backgroundServiceState.channels;
         }
 
@@ -595,36 +385,10 @@ public class MainActivity extends Activity {
     }
 
     public void startRecording(View view, boolean cmtsTOSAccepted) {
-        if (mBackgroundServiceBound) {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_ACTION, 0, 0);
-
-            msgReply.replyTo = mBackgroundServiceClient;
-
-            Bundle bundle = msgReply.getData();
-
-            bundle.putString("profile", "default");
-            bundle.putBoolean("cmtsTOSAccepted", cmtsTOSAccepted);
-
-            try {
-                mBackgroundService.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
+        backgroundServiceClient.startRecording(cmtsTOSAccepted);
     }
 
     public void stopRecording() {
-        if (mBackgroundServiceBound) {
-            Message msgReply = Message.obtain(null, Constants.C2S_MSG_STREAM_STOP, 0, 0);
-
-            msgReply.replyTo = mBackgroundServiceClient;
-
-            try {
-                mBackgroundService.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override
@@ -673,35 +437,104 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void handleVUMeterResult(VUMeterResult vuMeterResult) {
-        TextProgressBar pbVuMeterLeft = (TextProgressBar) this.findViewById(R.id.pbVuMeterLeft);
-        TextProgressBar pbVuMeterRight = (TextProgressBar) this.findViewById(R.id.pbVuMeterRight);
+    @Override
+    public void onBackgroundServiceState(State state) {
+        backgroundServiceState = state;
+        controlRecordingUI(state.uiState);
 
-        TextView rbPeakLeft = (TextView) this.findViewById(R.id.rbPeakLeft);
-        TextView rbPeakRight = (TextView) this.findViewById(R.id.rbPeakRight);
+        ((TextView) findViewById(R.id.timerValue)).setText(state.timerString);
+        ((TextView) findViewById(R.id.txtState)).setText(state.txtState);
+        ((TextView) findViewById(R.id.txtListeners)).setText(state.listenersString);
+    }
 
-        if (vuMeterResult.channels < 2) {
-            pbVuMeterLeft.setProgress(normalizeVUMeterPower(vuMeterResult.global_power));
-            pbVuMeterLeft.setTextColor(vuMeterResult.global_power_color);
-            pbVuMeterLeft.setText(normalizeVUMeterPowerString(vuMeterResult.global_power));
-            pbVuMeterRight.setProgress(normalizeVUMeterPower(vuMeterResult.global_power));
-            pbVuMeterRight.setTextColor(vuMeterResult.global_power_color);
-            pbVuMeterRight.setText(normalizeVUMeterPowerString(vuMeterResult.global_power));
-            rbPeakLeft.setText(normalizeVUMeterPeak(vuMeterResult.global_peak));
-            rbPeakLeft.setTextColor(vuMeterResult.global_peak_color);
-            rbPeakRight.setText(normalizeVUMeterPeak(vuMeterResult.global_peak));
-            rbPeakRight.setTextColor(vuMeterResult.global_peak_color);
+    @Override
+    public void onBackgroundServiceError() {
+        // TODO...
+    }
+
+    @Override
+    public void onBackgroundServiceStartRecording() {
+        controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
+        start_button.setClickable(true);
+    }
+
+    @Override
+    public void onBackgroundServiceStopRecording() {
+        start_button.setClickable(true);
+    }
+
+    @Override
+    public void onBackgroundServicePermissionsMissing() {
+        Utils.requestPermissions(this);
+    }
+
+    @Override
+    public void onBackgroundServiceConnectionUnset() {
+        AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(this);
+        alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Utils.loadCMTSData(MainActivity.this, "default");
+                startRecording(null);
+            }
+        });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onBackgroundServiceCMTSTOSAcceptMissing() {
+        AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(this);
+        alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
+        alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);
+        alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertDialogCMTSTOS.setPositiveButton(R.string.coolmic_tos_accept, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                startRecording(null, true);
+            }
+        });
+
+        alertDialogCMTSTOS.show();
+    }
+
+    @Override
+    public void onBackgroundServiceVUMeterUpdate(VUMeterResult result) {
+        TextProgressBar pbVuMeterLeft = findViewById(R.id.pbVuMeterLeft);
+        TextProgressBar pbVuMeterRight = findViewById(R.id.pbVuMeterRight);
+
+        TextView rbPeakLeft = findViewById(R.id.rbPeakLeft);
+        TextView rbPeakRight = findViewById(R.id.rbPeakRight);
+
+        if (result.channels < 2) {
+            pbVuMeterLeft.setProgress(normalizeVUMeterPower(result.global_power));
+            pbVuMeterLeft.setTextColor(result.global_power_color);
+            pbVuMeterLeft.setText(normalizeVUMeterPowerString(result.global_power));
+            pbVuMeterRight.setProgress(normalizeVUMeterPower(result.global_power));
+            pbVuMeterRight.setTextColor(result.global_power_color);
+            pbVuMeterRight.setText(normalizeVUMeterPowerString(result.global_power));
+            rbPeakLeft.setText(normalizeVUMeterPeak(result.global_peak));
+            rbPeakLeft.setTextColor(result.global_peak_color);
+            rbPeakRight.setText(normalizeVUMeterPeak(result.global_peak));
+            rbPeakRight.setTextColor(result.global_peak_color);
         } else {
-            pbVuMeterLeft.setProgress(normalizeVUMeterPower(vuMeterResult.channels_power[0]));
-            pbVuMeterLeft.setTextColor(vuMeterResult.channels_power_color[0]);
-            pbVuMeterLeft.setText(normalizeVUMeterPowerString(vuMeterResult.channels_power[0]));
-            pbVuMeterRight.setProgress(normalizeVUMeterPower(vuMeterResult.channels_power[1]));
-            pbVuMeterRight.setTextColor(vuMeterResult.channels_power_color[1]);
-            pbVuMeterRight.setText(normalizeVUMeterPowerString(vuMeterResult.channels_power[1]));
-            rbPeakLeft.setText(normalizeVUMeterPeak(vuMeterResult.channels_peak[0]));
-            rbPeakLeft.setTextColor(vuMeterResult.channels_peak_color[0]);
-            rbPeakRight.setText(normalizeVUMeterPeak(vuMeterResult.channels_peak[1]));
-            rbPeakRight.setTextColor(vuMeterResult.channels_peak_color[1]);
+            pbVuMeterLeft.setProgress(normalizeVUMeterPower(result.channels_power[0]));
+            pbVuMeterLeft.setTextColor(result.channels_power_color[0]);
+            pbVuMeterLeft.setText(normalizeVUMeterPowerString(result.channels_power[0]));
+            pbVuMeterRight.setProgress(normalizeVUMeterPower(result.channels_power[1]));
+            pbVuMeterRight.setTextColor(result.channels_power_color[1]);
+            pbVuMeterRight.setText(normalizeVUMeterPowerString(result.channels_power[1]));
+            rbPeakLeft.setText(normalizeVUMeterPeak(result.channels_peak[0]));
+            rbPeakLeft.setTextColor(result.channels_peak_color[0]);
+            rbPeakRight.setText(normalizeVUMeterPeak(result.channels_peak[1]));
+            rbPeakRight.setTextColor(result.channels_peak_color[1]);
         }
+    }
+
+    @Override
+    public void onBackgroundServiceGainUpdate(int left, int right) {
+        gainLeft.setProgress(left);
+        gainRight.setProgress(right);
     }
 }

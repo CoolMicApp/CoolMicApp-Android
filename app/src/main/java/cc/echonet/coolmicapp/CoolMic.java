@@ -55,6 +55,31 @@ public class CoolMic {
         return prefs.getString("connection_address", "");
     }
 
+    public String getServerProtocol() {
+        // TODO: This is static for now but may change in future.
+        return "http";
+    }
+
+    public String getServerHostname() {
+        String serverName = getServerName();
+
+        if (serverName.indexOf(':') > 0) {
+            serverName = serverName.split(":", 2)[0];
+        }
+
+        return serverName;
+    }
+
+    public int getServerPort() {
+        String serverName = getServerName();
+
+        if (serverName.indexOf(':') > 0) {
+            return  Integer.parseInt(serverName.split(":", 2)[1]);
+        }
+
+        return 8000;
+    }
+
     public String getMountpoint() {
         return prefs.getString("connection_mountpoint", "");
     }
@@ -107,18 +132,14 @@ public class CoolMic {
         prefs.edit().putInt("volume_right", volume).apply();
     }
 
-    public String getStreamStatsURL() {
-        return String.format("http://%s:%s@%s/admin/stats.xml?mount=/%s", this.getUsername(), this.getPassword(), this.getServerName(), this.getMountpoint());
-    }
-
     public String getStreamURL() {
-        String port = ":8000";
+        String port = "";
 
-        if (this.getServerName().indexOf(':') > 0) {
-            port = "";
+        if (!(this.getServerName().indexOf(':') > 0)) {
+            port = ":" + getServerPort();
         }
 
-        return String.format("http://%s%s/%s", this.getServerName(), port, this.getMountpoint());
+        return String.format("%s://%s%s/%s", getServerProtocol(), getServerName(), port, getMountpoint());
     }
 
     public boolean isConnectionSet() {

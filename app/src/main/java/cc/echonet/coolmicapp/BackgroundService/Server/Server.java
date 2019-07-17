@@ -1,15 +1,12 @@
-package cc.echonet.coolmicapp;
+package cc.echonet.coolmicapp.BackgroundService.Server;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -17,36 +14,26 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
+import cc.echonet.coolmicapp.BackgroundService.Constants;
+import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.CoolMic;
+import cc.echonet.coolmicapp.Icecast.Icecast;
+import cc.echonet.coolmicapp.Icecast.Request.Stats;
+import cc.echonet.coolmicapp.MainActivity;
+import cc.echonet.coolmicapp.R;
+import cc.echonet.coolmicapp.Utils;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 
-public class BackgroundService extends Service {
+public class Server extends Service {
     private List<Messenger> clients = new ArrayList<>();
     /**
      * Target we publish for clients to send messages to IncomingHandler.
@@ -57,19 +44,21 @@ public class BackgroundService extends Service {
     private Notification notification = null;
     private CoolMic coolmic = null;
 
-    private BackgroundServiceState backgroundServiceState;
+    private State state;
 
     private String oldNotificationMessage;
     private String oldNotificationTitle;
     private boolean oldNotificationFlashLed;
 
-    public BackgroundService() {
+    private Icecast icecast;
+
+    public Server() {
         mIncomingHandler = new IncomingHandler(this);
         mMessenger = new Messenger(mIncomingHandler);
 
-        backgroundServiceState = new BackgroundServiceState();
+        state = new State();
 
-        backgroundServiceState.wrapperInitializationStatus = Wrapper.getState();
+        state.wrapperInitializationStatus = Wrapper.getState();
     }
 
     protected void addClient(Messenger messenger) {
@@ -79,87 +68,28 @@ public class BackgroundService extends Service {
     }
 
     synchronized private void updateListeners(int listeners_current, int listeners_peak) {
-        backgroundServiceState.listenersString = getApplicationContext().getString(R.string.formatListeners, listeners_current, listeners_peak);
+        state.listenersString = getApplicationContext().getString(R.string.formatListeners, listeners_current, listeners_peak);
     }
 
-    private String exceptionToString(Exception ex) {
-        StringWriter sw = new StringWriter();
-        ex.printStackTrace(new PrintWriter(sw));
-        return sw.toString();
+    private Message createMessage(int what) {
+        return Message.obtain(null, what);
     }
-
 
     private Runnable fetchListeners() {
-        final String url = coolmic.getStreamStatsURL();
-
         return new Runnable() {
             @Override
             public void run() {
                 try {
-                    Uri u = Uri.parse(url);
+                    Stats request = icecast.getStats(coolmic.getMountpoint());
+                    cc.echonet.coolmicapp.Icecast.Response.Stats response;
 
-                    HttpURLConnection conn = (HttpURLConnection) new URL(u.toString()).openConnection();
-                    conn.setUseCaches(false);
+                    request.finish();
+                    response = request.getResponse();
 
-                    conn.setDoOutput(false);
-                    conn.setRequestMethod("GET");
-                    conn.setRequestProperty("Accept-Charset", "utf-8");
-                    conn.setRequestProperty("Accept-Encoding", "text/xml");
-                    conn.setRequestProperty("Accept-Language", "en-US");
-                    conn.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(u.getUserInfo().getBytes(), Base64.NO_WRAP));
-                    conn.connect();
+                    updateListeners(response.getListenerCurrent(), response.getListenerPeak());
 
-                    if (conn.getResponseCode() != 200) {
-                        Log.e("CM-StreamStatsService", "HTTP error, invalid server status code: " + conn.getResponseMessage());
-                    } else {
-                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder builder = factory.newDocumentBuilder();
-                        Document doc = builder.parse(conn.getInputStream());
-
-                        Log.d("CM-StreamStatsService", "Parsed Document " + doc.toString());
-
-                        XPathFactory xpathFactory = XPathFactory.newInstance();
-                        XPath xpath = xpathFactory.newXPath();
-
-                        Log.d("CM-StreamStatsService", "post xpath");
-
-                        XPathExpression expr_listeners = xpath.compile("/icestats/source/listeners/text()");
-                        XPathExpression expr_listeners_peak = xpath.compile("/icestats/source/listener_peak/text()");
-
-                        Log.d("CM-StreamStatsService", "post xpath compile");
-
-                        String listeners = (String) expr_listeners.evaluate(doc, XPathConstants.STRING);
-                        String listeners_peak = (String) expr_listeners_peak.evaluate(doc, XPathConstants.STRING);
-
-                        Log.d("CM-StreamStatsService", "post xpath eval " + listeners + " " + listeners_peak);
-
-                        int listenersCurrent = -1;
-                        int listenersPeak = -1;
-
-                        if (!listeners.isEmpty()) {
-                            listenersCurrent = Integer.valueOf(listeners);
-                        } else {
-                            Log.d("CM-StreamStatsService", "found no listeners");
-                        }
-
-                        if (!listeners_peak.isEmpty()) {
-                            listenersPeak = Integer.valueOf(listeners_peak);
-                        } else {
-                            Log.d("CM-StreamStatsService", "found no listeners peak");
-                        }
-
-                        updateListeners(listenersCurrent, listenersPeak);
-                    }
-                } catch (XPathExpressionException e) {
-                    Log.e("CM-StreamStatsService", "XPException while fetching Stats: " + exceptionToString(e));
-                } catch (SAXException e) {
-                    Log.e("CM-StreamStatsService", "SAXException while fetching Stats: " + exceptionToString(e));
-                } catch (ParserConfigurationException e) {
-                    Log.e("CM-StreamStatsService", "PCException while fetching Stats: " + exceptionToString(e));
-                } catch (IOException e) {
-                    Log.e("CM-StreamStatsService", "IOException while fetching Stats: " + exceptionToString(e));
                 } catch (Exception e) {
-                    Log.e("CM-StreamStatsService", "Exception while fetching Stats: " + exceptionToString(e));
+                    e.printStackTrace();
                 }
             }
         };
@@ -169,9 +99,9 @@ public class BackgroundService extends Service {
      * Handler of incoming messages from clients.
      */
     static class IncomingHandler extends Handler {
-        private final BackgroundService service;
+        private final Server service;
 
-        IncomingHandler(BackgroundService service) {
+        IncomingHandler(Server service) {
             this.service = service;
         }
 
@@ -209,25 +139,25 @@ public class BackgroundService extends Service {
                     break;
 
                 case Constants.H2S_MSG_TIMER:
-                    if (service.backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
-                        service.backgroundServiceState.timerInMS = SystemClock.uptimeMillis() - service.backgroundServiceState.startTime;
+                    if (service.state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
+                        service.state.timerInMS = SystemClock.uptimeMillis() - service.state.startTime;
 
-                        int secs = (int) (service.backgroundServiceState.timerInMS / 1000);
+                        int secs = (int) (service.state.timerInMS / 1000);
                         int mins = secs / 60;
                         int hours = mins / 60;
                         secs = secs % 60;
                         mins = mins % 60;
 
-                        service.backgroundServiceState.timerString = service.getApplicationContext().getString(R.string.timer_format, hours, mins, secs);
+                        service.state.timerString = service.getApplicationContext().getString(R.string.timer_format, hours, mins, secs);
 
                         service.postNotification();
 
                         service.sendStateToAll();
 
-                        if (service.backgroundServiceState.lastStateFetch + 15 * 1000 < service.backgroundServiceState.timerInMS) {
+                        if (service.state.lastStateFetch + 15 * 1000 < service.state.timerInMS) {
                             new Thread(service.fetchListeners()).start();
 
-                            service.backgroundServiceState.lastStateFetch = service.backgroundServiceState.timerInMS;
+                            service.state.lastStateFetch = service.state.timerInMS;
                         }
 
                         service.mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
@@ -244,7 +174,7 @@ public class BackgroundService extends Service {
     }
 
     private void setGain(int left, int right) {
-        if (backgroundServiceState.channels != 2) {
+        if (state.channels != 2) {
             Wrapper.setMasterGainMono(100, left);
         } else {
             Wrapper.setMasterGainStereo(100, left, right);
@@ -252,7 +182,7 @@ public class BackgroundService extends Service {
     }
 
     private void sendGain(int left, int right) {
-        Message msgReply = Message.obtain(null, Constants.C2S_MSG_GAIN, 0, 0);
+        Message msgReply = createMessage(Constants.C2S_MSG_GAIN);
 
         Bundle bundle = msgReply.getData();
 
@@ -269,9 +199,9 @@ public class BackgroundService extends Service {
      */
     @Override
     public IBinder onBind(Intent intent) {
-        backgroundServiceState.clientCount++;
+        state.clientCount++;
 
-        if (backgroundServiceState.bindCounts++ == 0) {
+        if (state.bindCounts++ == 0) {
             postNotification();
         }
 
@@ -280,7 +210,7 @@ public class BackgroundService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        backgroundServiceState.clientCount--;
+        state.clientCount--;
         if (!hasCore()) {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -303,10 +233,10 @@ public class BackgroundService extends Service {
     }
 
     private void postNotification() {
-        boolean flashLed = (backgroundServiceState.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
-        String title = String.format(Locale.ENGLISH, "State: %s", backgroundServiceState.txtState);
-        //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", backgroundServiceState.timerString, !flashLed ? "(Stopped)" : "", backgroundServiceState.listenersString);
-        String message = String.format(Locale.ENGLISH, "Listeners: %s", backgroundServiceState.listenersString);
+        boolean flashLed = (state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
+        String title = String.format(Locale.ENGLISH, "State: %s", state.txtState);
+        //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", state.timerString, !flashLed ? "(Stopped)" : "", state.listenersString);
+        String message = String.format(Locale.ENGLISH, "Listeners: %s", state.listenersString);
 
         postNotification(message, title, flashLed);
     }
@@ -354,13 +284,13 @@ public class BackgroundService extends Service {
     }
 
     private void checkWrapper() {
-        if (backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            if (backgroundServiceState.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED) {
+        if (state.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+            if (state.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED) {
                 if (Wrapper.init() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
                     Log.d("WrapperInit", Wrapper.getInitException().toString());
                     Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
                 }
-            } else if (backgroundServiceState.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
+            } else if (state.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
                 Log.d("WrapperInit", "INIT FAILED");
                 Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_previnit_error, Toast.LENGTH_SHORT).show();
             } else {
@@ -369,7 +299,7 @@ public class BackgroundService extends Service {
             }
         }
 
-        backgroundServiceState.wrapperInitializationStatus = Wrapper.getState();
+        state.wrapperInitializationStatus = Wrapper.getState();
     }
 
     private void checkWrapperState(Messenger replyTo) {
@@ -381,7 +311,7 @@ public class BackgroundService extends Service {
 
         Bundle bundle = msgReply.getData();
 
-        bundle.putSerializable("state", backgroundServiceState);
+        bundle.putSerializable("state", state);
 
         try {
             replyTo.send(msgReply);
@@ -410,15 +340,9 @@ public class BackgroundService extends Service {
     }
 
     private boolean hasCore() {
-        backgroundServiceState.hasCore = Wrapper.getState() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED && Wrapper.hasCore();
+        state.hasCore = Wrapper.getState() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED && Wrapper.hasCore();
 
-        return backgroundServiceState.hasCore;
-    }
-
-    private boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
+        return state.hasCore;
     }
 
     private void reloadParameters() {
@@ -441,13 +365,19 @@ public class BackgroundService extends Service {
     private void prepareStream(final String profile, boolean cmtsTOSAccepted, final Messenger replyTo) {
         coolmic = new CoolMic(this, profile);
 
+        if (icecast != null)
+            icecast.close();
+
+        icecast = new Icecast(coolmic.getServerProtocol(), coolmic.getServerHostname(), coolmic.getServerPort());
+        icecast.setCredentials(coolmic.getUsername(), coolmic.getPassword());
+
         if (hasCore()) {
             stopStream(replyTo);
             return;
         }
 
         if (!Utils.checkRequiredPermissions(getApplicationContext())) {
-            Message msgReply = Message.obtain(null, Constants.S2C_MSG_PERMISSIONS_MISSING, 0, 0);
+            Message msgReply = createMessage(Constants.S2C_MSG_PERMISSIONS_MISSING);
 
             try {
                 replyTo.send(msgReply);
@@ -458,18 +388,18 @@ public class BackgroundService extends Service {
             return;
         }
 
-        if (backgroundServiceState.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if (state.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (!isOnline()) {
+        if (!Utils.isOnline(this)) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_check_connection, Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!coolmic.isConnectionSet()) {
-            Message msgReply = Message.obtain(null, Constants.S2C_MSG_CONNECTION_UNSET, 0, 0);
+            Message msgReply = createMessage(Constants.S2C_MSG_CONNECTION_UNSET);
 
             try {
                 replyTo.send(msgReply);
@@ -481,7 +411,7 @@ public class BackgroundService extends Service {
         }
 
         if (coolmic.isCMTSConnection() && !cmtsTOSAccepted) {
-            Message msgReply = Message.obtain(null, Constants.S2C_MSG_CMTS_TOS, 0, 0);
+            Message msgReply = createMessage(Constants.S2C_MSG_CMTS_TOS);
 
             try {
                 replyTo.send(msgReply);
@@ -497,16 +427,16 @@ public class BackgroundService extends Service {
 
 
     private void startStream(String profile, Messenger replyTo) {
-        Message msgReply = Message.obtain(null, Constants.S2C_MSG_STREAM_START_REPLY, 0, 0);
+        Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
 
         Bundle bundle = msgReply.getData();
 
         boolean success;
 
-        backgroundServiceState.timerInMS = 0;
-        backgroundServiceState.timerString = "00:00:00";
-        backgroundServiceState.hadError = false;
-        backgroundServiceState.channels = Integer.parseInt(coolmic.getChannels());
+        state.timerInMS = 0;
+        state.timerString = "00:00:00";
+        state.hadError = false;
+        state.channels = Integer.parseInt(coolmic.getChannels());
 
         //setGain(100, 100);
         sendGain(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
@@ -514,7 +444,7 @@ public class BackgroundService extends Service {
         try {
             String portnum;
             String server = coolmic.getServerName();
-            Integer port_num = 8000;
+            int port_num = 8000;
 
             if (server.indexOf(":") > 0) {
                 String[] split = server.split(":");
@@ -524,7 +454,7 @@ public class BackgroundService extends Service {
             }
 
             Log.d("VS", server);
-            Log.d("VS", port_num.toString());
+            Log.d("VS", Integer.toString(port_num));
             String username = coolmic.getUsername();
             String password = coolmic.getPassword();
             String mountpoint = coolmic.getMountpoint();
@@ -612,10 +542,10 @@ public class BackgroundService extends Service {
 
         hasCore();
 
-        backgroundServiceState.initialConnectPerformed = false;
+        state.initialConnectPerformed = false;
 
         if (replyTo != null) {
-            Message msgReply = Message.obtain(null, Constants.S2C_MSG_STREAM_STOP_REPLY, 0, 0);
+            Message msgReply = createMessage(Constants.S2C_MSG_STREAM_STOP_REPLY);
 
             Bundle bundle = msgReply.getData();
             bundle.putBoolean("was_running", was_running);
@@ -634,21 +564,21 @@ public class BackgroundService extends Service {
     private void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
         Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
 
-        backgroundServiceState.oldState = backgroundServiceState.uiState;
+        state.oldState = state.uiState;
 
         switch (what) {
             case THREAD_POST_START:
-                backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
+                state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
 
-                backgroundServiceState.txtState = "Connecting";
+                state.txtState = "Connecting";
 
                 break;
             case THREAD_PRE_STOP:
-                backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
-                backgroundServiceState.txtState = "Disconnected";
+                state.txtState = "Disconnected";
 
-                if (backgroundServiceState.hadError) {
+                if (state.hadError) {
                     Wrapper.stop();
                     Wrapper.unref();
                 }
@@ -656,24 +586,24 @@ public class BackgroundService extends Service {
                 break;
             case THREAD_POST_STOP:
 
-                backgroundServiceState.txtState = "Disconnected(post thread stopped)";
+                state.txtState = "Disconnected(post thread stopped)";
 
-                backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
                 break;
             case ERROR:
                  /*
                 if(coolmic.getReconnect()) {
-                    backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTING;
+                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTING;
                 }
                 else
                 {
-                    backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
                 }
 
                 */
 
-                Message msgReply = Message.obtain(null, Constants.S2C_MSG_ERROR, 0, 0);
+                Message msgReply = createMessage(Constants.S2C_MSG_ERROR);
 
                 Bundle bundle = msgReply.getData();
 
@@ -681,7 +611,7 @@ public class BackgroundService extends Service {
 
                 sendMessageToAll(msgReply);
 
-                backgroundServiceState.hadError = true;
+                state.hadError = true;
 
                 break;
             case STREAMSTATE:
@@ -693,19 +623,19 @@ public class BackgroundService extends Service {
 
                 /* connected */
                 if (arg0 == 2) {
-                    /*if(!backgroundServiceState.initialConnectPerformed || !coolmic.getReconnect()) {
+                    /*if(!state.initialConnectPerformed || !coolmic.getReconnect()) {
                      */
 
-                    backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
-                    backgroundServiceState.initialConnectPerformed = true;
-                    backgroundServiceState.startTime = SystemClock.uptimeMillis();
+                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
+                    state.initialConnectPerformed = true;
+                    state.startTime = SystemClock.uptimeMillis();
 
                     mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
                         /*
                     }
-                    else if(backgroundServiceState.initialConnectPerformed && coolmic.getReconnect())
+                    else if(state.initialConnectPerformed && coolmic.getReconnect())
                     {
-                        backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTED;
+                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTED;
                     }
                     */
                 }
@@ -713,21 +643,21 @@ public class BackgroundService extends Service {
                 else if (arg0 == 4 || arg0 == 5) {
                     mIncomingHandler.removeMessages(Constants.H2S_MSG_TIMER);
 
-                    if (!backgroundServiceState.initialConnectPerformed || !coolmic.getReconnect()) {
-                        backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+                    if (!state.initialConnectPerformed || !coolmic.getReconnect()) {
+                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
                     } else {
-                        backgroundServiceState.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
+                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
                     }
                 }
 
-                backgroundServiceState.txtState = getString(R.string.txtStateFormat, Utils.getStringByName(this, "coolmic_cs", arg0), error);
+                state.txtState = getString(R.string.txtStateFormat, Utils.getStringByName(this, "coolmic_cs", arg0), error);
                 //Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
 
                 break;
             case RECONNECT:
-                backgroundServiceState.txtState = String.format(getString(R.string.reconnect_in), arg0);
+                state.txtState = String.format(getString(R.string.reconnect_in), arg0);
 
-                backgroundServiceState.hadError = false;
+                state.hadError = false;
 
                 break;
         }
@@ -741,7 +671,7 @@ public class BackgroundService extends Service {
     private void callbackVUMeterHandler(VUMeterResult result) {
         Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
 
-        Message msgReply = Message.obtain(null, Constants.S2C_MSG_VUMETER, 0, 0);
+        Message msgReply = createMessage(Constants.S2C_MSG_VUMETER);
 
         Bundle bundle = msgReply.getData();
 
@@ -754,11 +684,12 @@ public class BackgroundService extends Service {
     public void onDestroy() {
         NotificationManager nm;
 
-        Log.v("BG", "BackgroundService.onDestroy()");
+        Log.v("BG", "Server.onDestroy()");
         stopStream(null);
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.cancelAll();
+        icecast.close();
         super.onDestroy();
-        Log.v("BG", "BackgroundService.onDestroy() done");
+        Log.v("BG", "Server.onDestroy() done");
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
@@ -30,7 +31,7 @@ public class Utils {
         return context.getString(resid);
     }
 
-    static String getStringByName(Context context, String name, int subid) {
+    public static String getStringByName(Context context, String name, int subid) {
         int resid;
 
         if (subid < 0) {
@@ -64,7 +65,7 @@ public class Utils {
         return Base64.encodeToString(digest, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING).substring(0, 20);
     }
 
-    static boolean checkRequiredPermissions(Context context) {
+    public static boolean checkRequiredPermissions(Context context) {
         int grantedCount = 0;
 
         for (String permission : Constants.REQUIRED_PERMISSIONS) {
@@ -151,4 +152,11 @@ public class Utils {
 
         return alertDialogCMTSTOS;
     }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
 }
