@@ -51,17 +51,19 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Locale;
+import java.net.MalformedURLException;
 
 import cc.echonet.coolmicapp.BackgroundService.Client.Client;
 import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.Server.Server;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.Configuration.Manager;
+import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
 /**
- * This activity demonstrates how to use JNI to encode and decode ogg/vorbis audio
+ * This activity demonstrates how to use JNI to encode and decode Ogg/Vorbis audio
  */
 public class MainActivity extends Activity implements EventListener {
     private Client backgroundServiceClient = new Client(this, this);
@@ -69,7 +71,7 @@ public class MainActivity extends Activity implements EventListener {
 
     State backgroundServiceState;
 
-    CoolMic coolmic = null;
+    Profile profile = null;
     Button start_button;
     boolean start_button_debounce_active = false;
     SeekBar gainLeft;
@@ -92,8 +94,8 @@ public class MainActivity extends Activity implements EventListener {
     private void sendGain(int left, int right) {
         backgroundServiceClient.setGain(left, right);
 
-        coolmic.setVolumeLeft(left);
-        coolmic.setVolumeRight(right);
+        profile.getVolume().setLeft(left);
+        profile.getVolume().setRight(right);
     }
 
     @Override
@@ -130,7 +132,6 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     private void exitApp() {
-        stopRecording();
         backgroundServiceClient.stopRecording();
         backgroundServiceClient.disconnect();
 
@@ -189,11 +190,13 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Manager manager;
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.home);
 
-        imageView1 = (ImageView) findViewById(R.id.imageView1);
+        imageView1 = findViewById(R.id.imageView1);
 
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
 
@@ -248,13 +251,14 @@ public class MainActivity extends Activity implements EventListener {
 
         buttonColor = start_button.getBackground();
 
-        coolmic = new CoolMic(this, "default");
+        manager = new Manager(this);
+        profile = manager.getProfile("default");
 
-        controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
+        controlVuMeterUI(profile.getVUMeter().getInterval() != 0);
 
         controlRecordingUI(currentState);
 
-        onBackgroundServiceGainUpdate(coolmic.getVolumeLeft(), coolmic.getVolumeRight());
+        onBackgroundServiceGainUpdate(profile.getVolume().getLeft(), profile.getVolume().getRight());
 
         start_button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -277,30 +281,36 @@ public class MainActivity extends Activity implements EventListener {
                     }
                 }, 500);
                 start_button.setClickable(false);
-                startRecording(v);
+                startRecording();
             }
         });
     }
 
     public void onImageClick(View view) {
-        if (coolmic.isConnectionSet()) {
-            ClipData myClip = ClipData.newPlainText("text", coolmic.getStreamURL());
-            myClipboard.setPrimaryClip(myClip);
-            Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
+        if (profile.getServer().isSet()) {
+            try {
+                ClipData myClip = ClipData.newPlainText("text", profile.getServer().getStreamURL().toString());
+                myClipboard.setPrimaryClip(myClip);
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_copied, Toast.LENGTH_SHORT).show();
+            } catch (MalformedURLException e) {
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_not_copied, Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void performShare() {
-        if (coolmic.isConnectionSet()) {
-            Intent shareIntent = new Intent();
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, coolmic.getStreamURL());
-            shareIntent.setType("text/plain");
-
-            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.menu_action_share_title)));
-
+        if (profile.getServer().isSet()) {
+            try {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, profile.getServer().getStreamURL().toString());
+                shareIntent.setType("text/plain");
+                startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.menu_action_share_title)));
+            } catch (MalformedURLException e) {
+                Toast.makeText(getApplicationContext(), R.string.mainactivity_broadcast_url_not_shared, Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_connectiondetails_unset, Toast.LENGTH_SHORT).show();
         }
@@ -315,8 +325,8 @@ public class MainActivity extends Activity implements EventListener {
             return backgroundServiceState.channels;
         }
 
-        if (coolmic != null) {
-            return Integer.parseInt(coolmic.getChannels());
+        if (profile != null) {
+            return profile.getAudio().getChannels();
         }
 
         return 2; // default.
@@ -380,15 +390,9 @@ public class MainActivity extends Activity implements EventListener {
         findViewById(R.id.rbPeakRight).setVisibility(visibility);
     }
 
-    public void startRecording(View view) {
-        startRecording(view, true);
-    }
-
-    public void startRecording(View view, boolean cmtsTOSAccepted) {
-        backgroundServiceClient.startRecording(cmtsTOSAccepted);
-    }
-
-    public void stopRecording() {
+    public void startRecording() {
+        /* cmtsTOSAccepted is always true as the user accepted it on load. */
+        backgroundServiceClient.startRecording(true, profile.getName());
     }
 
     @Override
@@ -396,44 +400,7 @@ public class MainActivity extends Activity implements EventListener {
         if (!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         } else {
-            startRecording(null);
-        }
-    }
-
-
-    static int normalizeVUMeterPower(double power) {
-        int g_p = (int) ((60. + power) * (100. / 60.));
-
-        if (g_p > 100) {
-            g_p = 100;
-        }
-
-        if (g_p < 0) {
-            g_p = 0;
-        }
-
-        return g_p;
-    }
-
-    static String normalizeVUMeterPeak(int peak) {
-        if (peak == -32768 || peak == 32767) {
-            return "P";
-        } else if (peak < -30000 || peak > 30000) {
-            return "p";
-        } else if (peak < -8000 || peak > 8000) {
-            return "g";
-        } else {
-            return "";
-        }
-    }
-
-    static String normalizeVUMeterPowerString(double power) {
-        if (power < -100) {
-            return "-100";
-        } else if (power > 0) {
-            return "0";
-        } else {
-            return String.format(Locale.ENGLISH, "%.2f", power);
+            startRecording();
         }
     }
 
@@ -454,7 +421,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceStartRecording() {
-        controlVuMeterUI(Integer.parseInt(coolmic.getVuMeterInterval()) != 0);
+        controlVuMeterUI(profile.getVUMeter().getInterval() != 0);
         start_button.setClickable(true);
     }
 
@@ -473,8 +440,8 @@ public class MainActivity extends Activity implements EventListener {
         AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(this);
         alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                Utils.loadCMTSData(MainActivity.this, "default");
-                startRecording(null);
+                Utils.loadCMTSData(MainActivity.this, profile);
+                startRecording();
             }
         });
         alertDialog.show();
@@ -492,7 +459,7 @@ public class MainActivity extends Activity implements EventListener {
         });
         alertDialogCMTSTOS.setPositiveButton(R.string.coolmic_tos_accept, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                startRecording(null, true);
+                startRecording();
             }
         });
 
@@ -508,26 +475,26 @@ public class MainActivity extends Activity implements EventListener {
         TextView rbPeakRight = findViewById(R.id.rbPeakRight);
 
         if (result.channels < 2) {
-            pbVuMeterLeft.setProgress(normalizeVUMeterPower(result.global_power));
+            pbVuMeterLeft.setProgress(Utils.normalizeVUMeterPower(result.global_power));
             pbVuMeterLeft.setTextColor(result.global_power_color);
-            pbVuMeterLeft.setText(normalizeVUMeterPowerString(result.global_power));
-            pbVuMeterRight.setProgress(normalizeVUMeterPower(result.global_power));
+            pbVuMeterLeft.setText(Utils.VUMeterPowerToString(result.global_power));
+            pbVuMeterRight.setProgress(Utils.normalizeVUMeterPower(result.global_power));
             pbVuMeterRight.setTextColor(result.global_power_color);
-            pbVuMeterRight.setText(normalizeVUMeterPowerString(result.global_power));
-            rbPeakLeft.setText(normalizeVUMeterPeak(result.global_peak));
+            pbVuMeterRight.setText(Utils.VUMeterPowerToString(result.global_power));
+            rbPeakLeft.setText(Utils.VUMeterPeakToString(result.global_peak));
             rbPeakLeft.setTextColor(result.global_peak_color);
-            rbPeakRight.setText(normalizeVUMeterPeak(result.global_peak));
+            rbPeakRight.setText(Utils.VUMeterPeakToString(result.global_peak));
             rbPeakRight.setTextColor(result.global_peak_color);
         } else {
-            pbVuMeterLeft.setProgress(normalizeVUMeterPower(result.channels_power[0]));
+            pbVuMeterLeft.setProgress(Utils.normalizeVUMeterPower(result.channels_power[0]));
             pbVuMeterLeft.setTextColor(result.channels_power_color[0]);
-            pbVuMeterLeft.setText(normalizeVUMeterPowerString(result.channels_power[0]));
-            pbVuMeterRight.setProgress(normalizeVUMeterPower(result.channels_power[1]));
+            pbVuMeterLeft.setText(Utils.VUMeterPowerToString(result.channels_power[0]));
+            pbVuMeterRight.setProgress(Utils.normalizeVUMeterPower(result.channels_power[1]));
             pbVuMeterRight.setTextColor(result.channels_power_color[1]);
-            pbVuMeterRight.setText(normalizeVUMeterPowerString(result.channels_power[1]));
-            rbPeakLeft.setText(normalizeVUMeterPeak(result.channels_peak[0]));
+            pbVuMeterRight.setText(Utils.VUMeterPowerToString(result.channels_power[1]));
+            rbPeakLeft.setText(Utils.VUMeterPeakToString(result.channels_peak[0]));
             rbPeakLeft.setTextColor(result.channels_peak_color[0]);
-            rbPeakRight.setText(normalizeVUMeterPeak(result.channels_peak[1]));
+            rbPeakRight.setText(Utils.VUMeterPeakToString(result.channels_peak[1]));
             rbPeakRight.setTextColor(result.channels_peak_color[1]);
         }
     }

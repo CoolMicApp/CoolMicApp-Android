@@ -4,18 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Base64;
 import android.widget.Toast;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
-import java.util.UUID;
+
+import cc.echonet.coolmicapp.Configuration.Manager;
+import cc.echonet.coolmicapp.Configuration.Profile;
 
 /**
  * Created by stjauernick@de.loewenfelsen.net on 10/13/16.
@@ -46,24 +45,6 @@ public class Utils {
         return context.getString(resid);
     }
 
-
-    //Stolen from: http://stackoverflow.com/a/23704728 & http://stackoverflow.com/a/18879453 (removed the shortening because it did not work reliably)
-    private static String generateShortUuid() {
-        UUID uuid = UUID.randomUUID();
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return uuid.toString();
-        }
-
-
-        md.update(uuid.toString().getBytes());
-        byte[] digest = md.digest();
-
-        return Base64.encodeToString(digest, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING).substring(0, 20);
-    }
 
     public static boolean checkRequiredPermissions(Context context) {
         int grantedCount = 0;
@@ -124,18 +105,14 @@ public class Utils {
     }
 
     static void loadCMTSData(Context context, String profileName) {
-        SharedPreferences.Editor editor = new CoolMic(context, profileName).getPrefs().edit();
+        Manager manager = new Manager(context);
+        Profile profile = manager.getProfile(profileName);
 
-        String randomComponent = Utils.generateShortUuid();
+        loadCMTSData(context, profile);
+    }
 
-        editor.putString("connection_address", context.getString(R.string.pref_default_connection_address));
-        editor.putString("connection_username", context.getString(R.string.pref_default_connection_username));
-        editor.putString("connection_password", context.getString(R.string.pref_default_connection_password));
-        editor.putString("connection_mountpoint", context.getString(R.string.pref_default_connection_mountpoint, randomComponent));
-        editor.putString("audio_codec", context.getString(R.string.pref_default_audio_codec));
-        editor.putString("audio_samplerate", context.getString(R.string.pref_default_audio_samplerate));
-
-        editor.apply();
+    static void loadCMTSData(Context context, Profile profile) {
+        profile.loadCMTSData();
 
         Toast.makeText(context, R.string.settings_conn_defaults_loaded, Toast.LENGTH_SHORT).show();
     }
@@ -159,4 +136,42 @@ public class Utils {
         return cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
+
+
+    static int normalizeVUMeterPower(double power) {
+        int g_p = (int) ((60. + power) * (100. / 60.));
+
+        if (g_p > 100) {
+            g_p = 100;
+        }
+
+        if (g_p < 0) {
+            g_p = 0;
+        }
+
+        return g_p;
+    }
+
+    static String VUMeterPeakToString(int peak) {
+        if (peak == -32768 || peak == 32767) {
+            return "P";
+        } else if (peak < -30000 || peak > 30000) {
+            return "p";
+        } else if (peak < -8000 || peak > 8000) {
+            return "g";
+        } else {
+            return "";
+        }
+    }
+
+    @NonNull
+    static String VUMeterPowerToString(double power) {
+        if (power < -100) {
+            return "-100";
+        } else if (power > 0) {
+            return "0";
+        } else {
+            return String.format(Locale.ENGLISH, "%.2f", power);
+        }
+    }
 }

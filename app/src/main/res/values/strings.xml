@@ -147,6 +147,8 @@
     <string name="pref_title_vumeter_interval">Interval</string>
     <string name="pref_default_vumeter_interval">40</string>
     <string name="mainactivity_broadcast_url_copied">Livestream URL copied to clipboard</string>
+    <string name="mainactivity_broadcast_url_not_copied">Can not copy Livestream URL to clipboard</string>
+    <string name="mainactivity_broadcast_url_not_shared">Can not share Livestream URL</string>
     <string name="mainactivity_connectiondetails_unset">Set the connection details</string>
     <string name="mainactivity_callback_error">there was an error! Error: %1$s</string>
     <string name="mainactivity_callback_streamstate">Stream State: State: %1$d Error: %2$d</string>
