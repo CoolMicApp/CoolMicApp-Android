@@ -133,7 +133,7 @@ public class Client implements Closeable {
     }
 
     private Message createMessage(int what) {
-        Message message = Message.obtain(null, what, 0, 0);
+        Message message = Message.obtain(null, what);
 
         message.replyTo = mBackgroundServiceClient;
 
