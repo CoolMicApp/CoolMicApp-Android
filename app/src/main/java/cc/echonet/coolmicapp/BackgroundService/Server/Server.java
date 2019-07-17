@@ -686,9 +686,15 @@ public class Server extends Service {
 
         Log.v("BG", "Server.onDestroy()");
         stopStream(null);
+
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.cancelAll();
-        icecast.close();
+
+        if (icecast != null) {
+            icecast.close();
+            icecast = null;
+        }
+
         super.onDestroy();
         Log.v("BG", "Server.onDestroy() done");
     }
