@@ -67,28 +67,32 @@ import cc.echonet.coolmicdspjava.VUMeterResult;
  */
 public class MainActivity extends Activity implements EventListener {
     private Client backgroundServiceClient = new Client(this, this);
-    Constants.CONTROL_UI currentState;
+    private Constants.CONTROL_UI currentState;
 
-    State backgroundServiceState;
+    private State backgroundServiceState;
 
-    Profile profile = null;
-    Button start_button;
-    boolean start_button_debounce_active = false;
-    SeekBar gainLeft;
-    SeekBar gainRight;
+    private Profile profile = null;
+    private Button start_button;
+    private boolean start_button_debounce_active = false;
+    private SeekBar gainLeft;
+    private SeekBar gainRight;
 
-    Animation animation = new AlphaAnimation(1, 0);
+    private Animation animation = new AlphaAnimation(1, 0);
 
-    ColorDrawable transitionColorGrey = new ColorDrawable(Color.parseColor("#66999999"));
-    ColorDrawable transitionColorRed = new ColorDrawable(Color.RED);
-    ColorDrawable[] transitionColorDefault = {transitionColorGrey, transitionColorRed};
+    private TransitionDrawable transitionButton;
 
-    TransitionDrawable transitionButton = new TransitionDrawable(transitionColorDefault);
+    private Drawable buttonColor;
+    private ClipboardManager myClipboard;
 
-    Drawable buttonColor;
-    ImageView imageView1;
-    ClipboardManager myClipboard;
+    public MainActivity() {
+        super();
 
+        ColorDrawable transitionColorGrey = new ColorDrawable(Color.parseColor("#66999999"));
+        ColorDrawable transitionColorRed = new ColorDrawable(Color.RED);
+        ColorDrawable[] transitionColorDefault = {transitionColorGrey, transitionColorRed};
+
+        transitionButton = new TransitionDrawable(transitionColorDefault);
+    }
 
 
     private void sendGain(int left, int right) {
@@ -190,7 +194,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Manager manager;
+        ImageView imageView1;
 
         super.onCreate(savedInstanceState);
 
@@ -251,14 +255,9 @@ public class MainActivity extends Activity implements EventListener {
 
         buttonColor = start_button.getBackground();
 
-        manager = new Manager(this);
-        profile = manager.getProfile("default");
-
-        controlVuMeterUI(profile.getVUMeter().getInterval() != 0);
+        controlVuMeterUI(false);
 
         controlRecordingUI(currentState);
-
-        onBackgroundServiceGainUpdate(profile.getVolume().getLeft(), profile.getVolume().getRight());
 
         start_button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -406,12 +405,14 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceState(State state) {
+        profile = backgroundServiceClient.getProfile();
+
         backgroundServiceState = state;
         controlRecordingUI(state.uiState);
 
-        ((TextView) findViewById(R.id.timerValue)).setText(state.timerString);
-        ((TextView) findViewById(R.id.txtState)).setText(state.txtState);
-        ((TextView) findViewById(R.id.txtListeners)).setText(state.listenersString);
+        ((TextView) findViewById(R.id.timerValue)).setText(state.getTimerString(this));
+        ((TextView) findViewById(R.id.txtState)).setText(state.getTextState(this));
+        ((TextView) findViewById(R.id.txtListeners)).setText(state.getListenersString(this));
     }
 
     @Override

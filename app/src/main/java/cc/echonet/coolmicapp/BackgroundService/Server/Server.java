@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -23,9 +24,10 @@ import java.util.Locale;
 
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.CMTS;
+import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Track;
-import cc.echonet.coolmicapp.CoolMic;
 import cc.echonet.coolmicapp.Icecast.Icecast;
 import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import cc.echonet.coolmicapp.MainActivity;
@@ -44,7 +46,8 @@ public class Server extends Service {
     private final Messenger mMessenger;
     private final IncomingHandler mIncomingHandler;
     private Notification notification = null;
-    private CoolMic coolmic = null;
+    private Manager manager;
+    private Profile profile;
 
     private State state;
 
@@ -63,14 +66,23 @@ public class Server extends Service {
         state.wrapperInitializationStatus = Wrapper.getState();
     }
 
-    protected void addClient(Messenger messenger) {
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        manager = new Manager(this);
+        profile = manager.getCurrentProfile();
+    }
+
+    private void addClient(Messenger messenger) {
         if (!clients.contains(messenger)) {
             clients.add(messenger);
         }
     }
 
     synchronized private void updateListeners(int listeners_current, int listeners_peak) {
-        state.listenersString = getApplicationContext().getString(R.string.formatListeners, listeners_current, listeners_peak);
+        state.listeners_current = listeners_current;
+        state.listeners_peak = listeners_peak;
     }
 
     private Message createMessage(int what) {
@@ -82,7 +94,7 @@ public class Server extends Service {
             @Override
             public void run() {
                 try {
-                    Stats request = icecast.getStats(coolmic.getProfile().getServer().getMountpoint());
+                    Stats request = icecast.getStats(profile.getServer().getMountpoint());
                     cc.echonet.coolmicapp.Icecast.Response.Stats response;
 
                     request.finish();
@@ -143,14 +155,6 @@ public class Server extends Service {
                 case Constants.H2S_MSG_TIMER:
                     if (service.state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
                         service.state.timerInMS = SystemClock.uptimeMillis() - service.state.startTime;
-
-                        int secs = (int) (service.state.timerInMS / 1000);
-                        int mins = secs / 60;
-                        int hours = mins / 60;
-                        secs = secs % 60;
-                        mins = mins % 60;
-
-                        service.state.timerString = service.getApplicationContext().getString(R.string.timer_format, hours, mins, secs);
 
                         service.postNotification();
 
@@ -238,7 +242,7 @@ public class Server extends Service {
         boolean flashLed = (state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
         String title = String.format(Locale.ENGLISH, "State: %s", state.txtState);
         //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", state.timerString, !flashLed ? "(Stopped)" : "", state.listenersString);
-        String message = String.format(Locale.ENGLISH, "Listeners: %s", state.listenersString);
+        String message = String.format(Locale.ENGLISH, "Listeners: %s", state.getListenersString(getApplicationContext()));
 
         postNotification(message, title, flashLed);
     }
@@ -314,6 +318,7 @@ public class Server extends Service {
         Bundle bundle = msgReply.getData();
 
         bundle.putSerializable("state", state);
+        bundle.putString("profile", profile.getName());
 
         try {
             replyTo.send(msgReply);
@@ -348,16 +353,14 @@ public class Server extends Service {
     }
 
     private void reloadParameters() {
-        Profile profile;
         Track track;
 
         int ret;
 
-        if (coolmic == null) {
+        if (profile == null) {
             return;
         }
 
-        profile = coolmic.getProfile();
         track = profile.getTrack();
 
         ret = Wrapper.performMetaDataQualityUpdate(track.getTitle(), track.getArtist(), profile.getCodec().getQuality(), 1);
@@ -371,8 +374,9 @@ public class Server extends Service {
     }
 
     private void prepareStream(final String profileName, boolean cmtsTOSAccepted, final Messenger replyTo) {
-        coolmic = new CoolMic(this, profileName);
-        Profile profile = coolmic.getProfile();
+        manager.getGlobalConfiguration().setCurrentProfileName(profileName);
+        profile = manager.getCurrentProfile();
+
         cc.echonet.coolmicapp.Configuration.Server server = profile.getServer();
 
         if (icecast != null)
@@ -408,7 +412,7 @@ public class Server extends Service {
             return;
         }
 
-        if (!coolmic.getProfile().getServer().isSet()) {
+        if (!profile.getServer().isSet()) {
             Message msgReply = createMessage(Constants.S2C_MSG_CONNECTION_UNSET);
 
             try {
@@ -420,7 +424,7 @@ public class Server extends Service {
             return;
         }
 
-        if (coolmic.isCMTSConnection() && !cmtsTOSAccepted) {
+        if (CMTS.isCMTSConnection(profile) && !cmtsTOSAccepted) {
             Message msgReply = createMessage(Constants.S2C_MSG_CMTS_TOS);
 
             try {
@@ -432,12 +436,11 @@ public class Server extends Service {
             return;
         }
 
-        startStream(profileName, replyTo);
+        startStream(replyTo);
     }
 
 
-    private void startStream(String profileName, Messenger replyTo) {
-        Profile profile = coolmic.getProfile();
+    private void startStream(Messenger replyTo) {
         Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
 
         Bundle bundle = msgReply.getData();
@@ -445,7 +448,6 @@ public class Server extends Service {
         boolean success;
 
         state.timerInMS = 0;
-        state.timerString = "00:00:00";
         state.hadError = false;
         state.channels = profile.getAudio().getChannels();
 
@@ -469,8 +471,8 @@ public class Server extends Service {
             String artist = profile.getTrack().getArtist();
             String codec_string = profile.getCodec().getType();
 
-            Integer buffersize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-            Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
+            int buffersize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+            Log.d("VS", "Minimum Buffer Size: " + buffersize);
             int status = Wrapper.init(this, server, port_num, username, password, mountpoint, codec_string, sampleRate, channel, buffersize);
 
             hasCore();
@@ -646,7 +648,7 @@ public class Server extends Service {
                 else if (arg0 == 4 || arg0 == 5) {
                     mIncomingHandler.removeMessages(Constants.H2S_MSG_TIMER);
 
-                    if (!state.initialConnectPerformed || !coolmic.getProfile().getServer().getReconnect()) {
+                    if (!state.initialConnectPerformed || !profile.getServer().getReconnect()) {
                         state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
                     } else {
                         state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;

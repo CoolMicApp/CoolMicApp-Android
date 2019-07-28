@@ -1,5 +1,6 @@
 package cc.echonet.coolmicapp.Configuration;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -10,8 +11,16 @@ abstract class ProfileBase {
     Context context;
     String profileName;
     SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+
+    public static void assertValidProfileName(String profileName) {
+        if (profileName.startsWith("_"))
+            throw new IllegalArgumentException("Bad Profile name: "+profileName);
+    }
 
     ProfileBase(Context context, String profileName) {
+        assertValidProfileName(profileName);
+
         this.context = context;
         this.profileName = profileName;
         this.prefs = context.getSharedPreferences(profileName, Context.MODE_PRIVATE);
@@ -26,6 +35,7 @@ abstract class ProfileBase {
     ProfileBase(ProfileBase profile) {
         this.context = profile.context;
         this.prefs = profile.prefs;
+        this.editor = profile.editor;
     }
 
     String getString(String key) {
@@ -46,5 +56,18 @@ abstract class ProfileBase {
 
     public String getName() {
         return profileName;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    public void edit() {
+        editor = prefs.edit();
+    }
+
+    public void apply() {
+        editor.apply();
     }
 }

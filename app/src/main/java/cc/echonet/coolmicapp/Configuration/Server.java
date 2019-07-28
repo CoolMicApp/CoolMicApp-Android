@@ -2,6 +2,7 @@ package cc.echonet.coolmicapp.Configuration;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 
 public class Server extends ProfileBase {
     Server(ProfileBase profile) {
@@ -33,12 +34,50 @@ public class Server extends ProfileBase {
         return 8000;
     }
 
+    public void setAddress(String hostname, int port) {
+        if (hostname.indexOf(':') > 0)
+            throw new IllegalArgumentException("Bad Hostname");
+
+        if (port < 0 || port > 65535)
+            throw new IllegalArgumentException("Bad Port number");
+
+        if (port == 0) {
+            editor.putString("connection_address", hostname);
+        } else {
+            editor.putString("connection_address", String.format(Locale.ENGLISH, "%s:%d", hostname, port));
+        }
+    }
+
+    public void setAddress(String address) {
+        String hostname;
+        int port;
+
+        if (address.indexOf(':') > 0) {
+            String[] splitted = address.split(":", 2);
+            hostname = splitted[0];
+            port = Integer.parseInt(splitted[1]);
+        } else {
+            hostname = address;
+            port = 0;
+        }
+
+        setAddress(hostname, port);
+    }
+
     public String getUsername() {
         return getString("connection_username");
     }
 
+    public void setUsername(String username) {
+        editor.putString("connection_username", username);
+    }
+
     public String getPassword() {
         return getString("connection_password");
+    }
+
+    public void setPassword(String password) {
+        editor.putString("connection_password", password);
     }
 
     public boolean getReconnect() {
@@ -47,6 +86,10 @@ public class Server extends ProfileBase {
 
     public String getMountpoint() {
         return getString("connection_mountpoint");
+    }
+
+    public void setMountpoint(String mountpoint) {
+        editor.putString("connection_mountpoint", mountpoint);
     }
 
     public boolean isSet() {
