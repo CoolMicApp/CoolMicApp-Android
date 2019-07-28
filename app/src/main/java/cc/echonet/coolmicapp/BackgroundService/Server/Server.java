@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Track;
 import cc.echonet.coolmicapp.CoolMic;
@@ -55,6 +56,10 @@ public class Server extends Service {
     private Icecast icecast;
 
     public Server() {
+        Manager manager = new Manager(this);
+
+        profile = manager.getDefaultProfile();
+
         mIncomingHandler = new IncomingHandler(this);
         mMessenger = new Messenger(mIncomingHandler);
 
@@ -314,6 +319,7 @@ public class Server extends Service {
         Bundle bundle = msgReply.getData();
 
         bundle.putSerializable("state", state);
+        bundle.putString("profile", profile.getName());
 
         try {
             replyTo.send(msgReply);

@@ -18,6 +18,8 @@ import java.io.Closeable;
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.Server.Server;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.Configuration.Manager;
+import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
@@ -27,6 +29,7 @@ public class Client implements Closeable {
     private Messenger mBackgroundService = null;
     private Messenger mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
     private boolean mBackgroundServiceBound = false;
+    private Profile profile;
 
     private ServiceConnection mBackgroundServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -67,11 +70,20 @@ public class Client implements Closeable {
             switch (msg.what) {
                 case Constants.S2C_MSG_STATE_REPLY:
                     State state = (State) bundle.getSerializable("state");
+                    String profileName = bundle.getString("profile");
 
-                    if (state == null)
+                    if (state == null || profileName == null)
                         return;
 
-                    Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: State=" + state.uiState);
+                    Log.v("IH", "In Handler: S2C_MSG_STATE_REPLY: State=" + state.uiState + ", profileName=" + profileName);
+
+                    if (client.profile == null || !client.profile.getName().equals(profileName)) {
+                        /* We have a new profile */
+
+                        Manager manager = new Manager(client.context);
+
+                        client.profile = manager.getProfile(profileName);
+                    }
 
                     client.eventListener.onBackgroundServiceState(state);
                     break;
@@ -159,6 +171,10 @@ public class Client implements Closeable {
 
     public void setEventListener(EventListener eventListener) {
         this.eventListener = eventListener;
+    }
+
+    public Profile getProfile() {
+        return profile;
     }
 
     public void startRecording(boolean cmtsTOSAccepted, String profileName) {
