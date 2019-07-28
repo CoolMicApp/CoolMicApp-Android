@@ -7,7 +7,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
-import cc.echonet.coolmicapp.Configuration.Codec;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Server;
 

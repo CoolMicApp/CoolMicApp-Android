@@ -58,7 +58,6 @@ import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.Server.Server;
 import cc.echonet.coolmicapp.BackgroundService.State;
-import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 

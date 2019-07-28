@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 
 /**

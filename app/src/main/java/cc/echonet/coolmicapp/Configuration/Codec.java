@@ -1,7 +1,5 @@
 package cc.echonet.coolmicapp.Configuration;
 
-import android.content.SharedPreferences;
-
 import cc.echonet.coolmicapp.R;
 
 public class Codec extends ProfileBase {

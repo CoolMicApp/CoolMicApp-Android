@@ -1,14 +1,6 @@
 package cc.echonet.coolmicapp.Configuration;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Base64;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
-
-import cc.echonet.coolmicapp.R;
 
 public class Profile extends ProfileBase {
     private static final int DEFAULT_VOLUME = 100;
