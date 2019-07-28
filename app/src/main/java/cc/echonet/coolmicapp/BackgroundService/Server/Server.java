@@ -27,7 +27,6 @@ import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Track;
-import cc.echonet.coolmicapp.CoolMic;
 import cc.echonet.coolmicapp.Icecast.Icecast;
 import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import cc.echonet.coolmicapp.MainActivity;
@@ -381,12 +380,9 @@ public class Server extends Service {
     }
 
     private void prepareStream(final String profileName, boolean cmtsTOSAccepted, final Messenger replyTo) {
-        CoolMic coolmic;
-
         manager.getGlobalConfiguration().setCurrentProfileName(profileName);
         profile = manager.getCurrentProfile();
 
-        coolmic = new CoolMic(this, profile.getName());
         cc.echonet.coolmicapp.Configuration.Server server = profile.getServer();
 
         if (icecast != null)
@@ -434,7 +430,7 @@ public class Server extends Service {
             return;
         }
 
-        if (coolmic.isCMTSConnection() && !cmtsTOSAccepted) {
+        if (Utils.isCMTSConnection(profile) && !cmtsTOSAccepted) {
             Message msgReply = createMessage(Constants.S2C_MSG_CMTS_TOS);
 
             try {

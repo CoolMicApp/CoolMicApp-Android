@@ -28,8 +28,6 @@ import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 
 public class CoolMic {
-    private static final String[] CMTSHosts = {"coolmic.net", "echonet.cc", "64.142.100.248", "64.142.100.249", "46.165.219.118"};
-
     private Profile profile;
 
     public CoolMic(Context context, String profileName) {
@@ -42,15 +40,4 @@ public class CoolMic {
         return profile;
     }
 
-    public boolean isCMTSConnection() {
-        String serverName = profile.getServer().getHostname();
-
-        for (String cmtsHost : CMTSHosts) {
-            if (serverName.endsWith(cmtsHost)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
