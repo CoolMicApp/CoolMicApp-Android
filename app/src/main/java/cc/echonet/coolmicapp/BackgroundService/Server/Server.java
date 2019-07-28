@@ -46,6 +46,7 @@ public class Server extends Service {
     private final Messenger mMessenger;
     private final IncomingHandler mIncomingHandler;
     private Notification notification = null;
+    private Manager manager;
     private Profile profile;
 
     private State state;
@@ -69,9 +70,8 @@ public class Server extends Service {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
 
-        Manager manager = new Manager(this);
-
-        profile = manager.getDefaultProfile();
+        manager = new Manager(this);
+        profile = manager.getCurrentProfile();
     }
 
     protected void addClient(Messenger messenger) {
@@ -381,8 +381,12 @@ public class Server extends Service {
     }
 
     private void prepareStream(final String profileName, boolean cmtsTOSAccepted, final Messenger replyTo) {
-        CoolMic coolmic = new CoolMic(this, profileName);
-        profile = coolmic.getProfile();
+        CoolMic coolmic;
+
+        manager.getGlobalConfiguration().setCurrentProfileName(profileName);
+        profile = manager.getCurrentProfile();
+
+        coolmic = new CoolMic(this, profile.getName());
         cc.echonet.coolmicapp.Configuration.Server server = profile.getServer();
 
         if (icecast != null)
