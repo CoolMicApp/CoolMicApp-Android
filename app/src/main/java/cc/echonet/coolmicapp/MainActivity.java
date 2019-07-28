@@ -410,9 +410,9 @@ public class MainActivity extends Activity implements EventListener {
         backgroundServiceState = state;
         controlRecordingUI(state.uiState);
 
-        ((TextView) findViewById(R.id.timerValue)).setText(state.timerString);
-        ((TextView) findViewById(R.id.txtState)).setText(state.txtState);
-        ((TextView) findViewById(R.id.txtListeners)).setText(state.listenersString);
+        ((TextView) findViewById(R.id.timerValue)).setText(state.getTimerString(this));
+        ((TextView) findViewById(R.id.txtState)).setText(state.getTextState(this));
+        ((TextView) findViewById(R.id.txtListeners)).setText(state.getListenersString(this));
     }
 
     @Override

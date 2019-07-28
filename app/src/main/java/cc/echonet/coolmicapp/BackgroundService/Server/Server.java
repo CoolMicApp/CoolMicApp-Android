@@ -81,7 +81,8 @@ public class Server extends Service {
     }
 
     synchronized private void updateListeners(int listeners_current, int listeners_peak) {
-        state.listenersString = getApplicationContext().getString(R.string.formatListeners, listeners_current, listeners_peak);
+        state.listeners_current = listeners_current;
+        state.listeners_peak = listeners_peak;
     }
 
     private Message createMessage(int what) {
@@ -154,14 +155,6 @@ public class Server extends Service {
                 case Constants.H2S_MSG_TIMER:
                     if (service.state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
                         service.state.timerInMS = SystemClock.uptimeMillis() - service.state.startTime;
-
-                        int secs = (int) (service.state.timerInMS / 1000);
-                        int mins = secs / 60;
-                        int hours = mins / 60;
-                        secs = secs % 60;
-                        mins = mins % 60;
-
-                        service.state.timerString = service.getApplicationContext().getString(R.string.timer_format, hours, mins, secs);
 
                         service.postNotification();
 
@@ -249,7 +242,7 @@ public class Server extends Service {
         boolean flashLed = (state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
         String title = String.format(Locale.ENGLISH, "State: %s", state.txtState);
         //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", state.timerString, !flashLed ? "(Stopped)" : "", state.listenersString);
-        String message = String.format(Locale.ENGLISH, "Listeners: %s", state.listenersString);
+        String message = String.format(Locale.ENGLISH, "Listeners: %s", state.getListenersString(getApplicationContext()));
 
         postNotification(message, title, flashLed);
     }
@@ -455,7 +448,6 @@ public class Server extends Service {
         boolean success;
 
         state.timerInMS = 0;
-        state.timerString = "00:00:00";
         state.hadError = false;
         state.channels = profile.getAudio().getChannels();
 
