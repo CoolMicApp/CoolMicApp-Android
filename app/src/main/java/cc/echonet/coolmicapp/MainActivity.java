@@ -195,7 +195,6 @@ public class MainActivity extends Activity implements EventListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         ImageView imageView1;
-        Manager manager;
 
         super.onCreate(savedInstanceState);
 
@@ -256,14 +255,9 @@ public class MainActivity extends Activity implements EventListener {
 
         buttonColor = start_button.getBackground();
 
-        manager = new Manager(this);
-        profile = manager.getProfile("default");
-
-        controlVuMeterUI(profile.getVUMeter().getInterval() != 0);
+        controlVuMeterUI(false);
 
         controlRecordingUI(currentState);
-
-        onBackgroundServiceGainUpdate(profile.getVolume().getLeft(), profile.getVolume().getRight());
 
         start_button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -411,6 +405,8 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceState(State state) {
+        profile = backgroundServiceClient.getProfile();
+
         backgroundServiceState = state;
         controlRecordingUI(state.uiState);
 
