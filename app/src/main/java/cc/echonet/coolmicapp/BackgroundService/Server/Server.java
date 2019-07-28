@@ -471,8 +471,8 @@ public class Server extends Service {
             String artist = profile.getTrack().getArtist();
             String codec_string = profile.getCodec().getType();
 
-            Integer buffersize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-            Log.d("VS", "Minimum Buffer Size: " + String.valueOf(buffersize));
+            int buffersize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+            Log.d("VS", "Minimum Buffer Size: " + buffersize);
             int status = Wrapper.init(this, server, port_num, username, password, mountpoint, codec_string, sampleRate, channel, buffersize);
 
             hasCore();
