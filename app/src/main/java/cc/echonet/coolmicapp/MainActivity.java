@@ -254,7 +254,7 @@ public class MainActivity extends Activity implements EventListener {
 
         buttonColor = start_button.getBackground();
 
-        controlVuMeterUI(false);
+        controlVuMeterUI();
 
         controlRecordingUI(currentState);
 
@@ -372,9 +372,12 @@ public class MainActivity extends Activity implements EventListener {
         currentState = state;
     }
 
-    public void controlVuMeterUI(boolean visible) {
+    public void controlVuMeterUI() {
         View meter;
-        int visibility = visible ? View.VISIBLE : View.GONE;
+        int visibility = View.GONE;
+
+        if (profile != null && profile.getVUMeter().getInterval() != 0)
+            visibility = View.VISIBLE;
 
         meter = findViewById(R.id.llVuMeterLeft);
         if (meter != null) meter.setVisibility(visibility);
@@ -403,9 +406,18 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     @Override
-    public void onBackgroundServiceState(State state) {
+    public void onBackgroundServiceConnected() {
         profile = backgroundServiceClient.getProfile();
+        controlVuMeterUI();
+    }
 
+    @Override
+    public void onBackgroundServiceDisconnected() {
+        /* NOOP */
+    }
+
+    @Override
+    public void onBackgroundServiceState(State state) {
         backgroundServiceState = state;
         controlRecordingUI(state.uiState);
 
@@ -421,7 +433,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceStartRecording() {
-        controlVuMeterUI(profile.getVUMeter().getInterval() != 0);
+        controlVuMeterUI();
         start_button.setClickable(true);
     }
 
