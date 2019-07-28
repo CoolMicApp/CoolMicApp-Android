@@ -26,8 +26,10 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.echonet.coolmicapp.Configuration.Codec;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
+import cc.echonet.coolmicapp.Configuration.Server;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -41,9 +43,6 @@ import cc.echonet.coolmicapp.Configuration.Profile;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends PreferenceActivity {
-    private static final String DEFAULT_PROFILE = "default";
-
-
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -94,7 +93,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         // Trigger the listener immediately with the preference's
         // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences(DEFAULT_PROFILE, Context.MODE_PRIVATE).getString(preference.getKey(), ""));
+        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getPreferenceManager().getSharedPreferences().getString(preference.getKey(), ""));
     }
 
     @Override
@@ -156,7 +155,7 @@ public class SettingsActivity extends PreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            getPreferenceManager().setSharedPreferencesName(DEFAULT_PROFILE);
+            getPreferenceManager().setSharedPreferencesName((new Manager(getActivity())).getGlobalConfiguration().getCurrentProfileName());
             getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
 
             addPreferencesFromResource(R.xml.pref_all);
@@ -181,9 +180,6 @@ public class SettingsActivity extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("audio_quality"));
 
             bindPreferenceSummaryToValue(findPreference("vumeter_interval"));
-
-            getPreferenceManager().setSharedPreferencesName(DEFAULT_PROFILE);
-            getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
 
             //Hardcode some required values for Opus
             findPreference("audio_codec").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -274,6 +270,10 @@ public class SettingsActivity extends PreferenceActivity {
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
             if (scanResult != null) {
                 Uri u;
+                Profile profile;
+                Server server;
+                String mountpoint;
+
                 try {
                     u = Uri.parse(scanResult.getContents());
                 } catch (Exception e1) {
@@ -281,13 +281,15 @@ public class SettingsActivity extends PreferenceActivity {
                     return;
                 }
 
-                SharedPreferences.Editor editor = getActivity().getSharedPreferences(DEFAULT_PROFILE, Context.MODE_PRIVATE).edit();
+                profile = (new Manager(getActivity())).getCurrentProfile();
+                profile.edit();
+                server = profile.getServer();
 
                 if (u.getUserInfo() != null && u.getUserInfo().split(":").length >= 2) {
-                    String authority[] = u.getUserInfo().split(":");
+                    String[] authority = u.getUserInfo().split(":");
 
-                    editor.putString("connection_username", authority[0]);
-                    editor.putString("connection_password", authority[1]);
+                    server.setUsername(authority[0]);
+                    server.setPassword(authority[1]);
                 } else {
                     final Uri uf = u;
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
@@ -313,26 +315,20 @@ public class SettingsActivity extends PreferenceActivity {
                     return;
                 }
 
-                String host = u.getHost();
+                server.setAddress(u.getHost(), u.getPort());
 
-                if (u.getPort() != 8000) {
-                    host = host + ":" + u.getPort();
+                try {
+                    mountpoint = u.getPath().replaceAll("^/", "");
+
+                    if (mountpoint.endsWith(".opus")) {
+                        profile.getCodec().setType(Codec.TYPE_OPUS);
+                    }
+                    server.setMountpoint(mountpoint);
+                } catch (NullPointerException e) {
+                    Toast.makeText(getActivity(), "Can not get mountpoint, ignoring.", Toast.LENGTH_SHORT).show();
                 }
 
-                String mountpoint = u.getPath().replaceAll("^/", "");
-
-                if (mountpoint.endsWith(".opus")) {
-                    editor.putString("audio_codec", getString(R.string.pref_default_audio_codec));
-                    editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
-
-                }
-
-                editor.putString("connection_address", host);
-
-
-                editor.putString("connection_mountpoint", mountpoint);
-
-                editor.apply();
+                profile.apply();
 
                 handleSampleRateEnabled();
 
@@ -363,13 +359,13 @@ public class SettingsActivity extends PreferenceActivity {
             preferencesToUpdate.add(findPreference("audio_samplerate"));
 
             EditTextPreference passwordPref = (EditTextPreference) findPreference("connection_password");
-            String passwordValue = passwordPref.getContext().getSharedPreferences(DEFAULT_PROFILE, Context.MODE_PRIVATE).getString(passwordPref.getKey(), "");
+            String passwordValue = getPreferenceManager().getSharedPreferences().getString(passwordPref.getKey(), "");
 
             passwordPref.setDefaultValue(passwordValue);
             passwordPref.setText(passwordValue);
 
             for (Preference preference : preferencesToUpdate) {
-                sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, preference.getContext().getSharedPreferences(DEFAULT_PROFILE, Context.MODE_PRIVATE).getString(preference.getKey(), ""));
+                sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, getPreferenceManager().getSharedPreferences().getString(preference.getKey(), ""));
             }
         }
     }
