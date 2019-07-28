@@ -4,6 +4,8 @@ import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
 public interface EventListener {
+    void onBackgroundServiceConnected();
+    void onBackgroundServiceDisconnected();
     void onBackgroundServiceState(State state);
     void onBackgroundServiceError(/*TODO*/);
     void onBackgroundServiceStartRecording();

@@ -58,6 +58,7 @@ public class Client implements Closeable {
      */
     static class IncomingHandler extends Handler {
         private final Client client;
+        private boolean isConnected = false;
 
         IncomingHandler(Client client) {
             this.client = client;
@@ -83,6 +84,11 @@ public class Client implements Closeable {
                         Manager manager = new Manager(client.context);
 
                         client.profile = manager.getProfile(profileName);
+                    }
+
+                    if (!isConnected) {
+                        client.eventListener.onBackgroundServiceConnected();
+                        isConnected = true;
                     }
 
                     client.eventListener.onBackgroundServiceState(state);
@@ -220,6 +226,7 @@ public class Client implements Closeable {
 
         context.unbindService(mBackgroundServiceConnection);
         mBackgroundServiceBound = false;
+        eventListener.onBackgroundServiceDisconnected();
     }
 
     @Override
