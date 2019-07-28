@@ -26,6 +26,9 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.echonet.coolmicapp.Configuration.Manager;
+import cc.echonet.coolmicapp.Configuration.Profile;
+
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -221,7 +224,7 @@ public class SettingsActivity extends PreferenceActivity {
                         AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(getActivity());
                         alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Utils.loadCMTSData(getActivity(), DEFAULT_PROFILE);
+                                Utils.loadCMTSData(getActivity(), (new Manager(getActivity())).getCurrentProfile());
 
                                 refreshSummaryForConnectionSettings();
                                 handleSampleRateEnabled();

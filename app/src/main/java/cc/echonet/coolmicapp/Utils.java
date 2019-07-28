@@ -106,13 +106,6 @@ public class Utils {
         }
     }
 
-    static void loadCMTSData(Context context, String profileName) {
-        Manager manager = new Manager(context);
-        Profile profile = manager.getProfile(profileName);
-
-        loadCMTSData(context, profile);
-    }
-
     static void loadCMTSData(Context context, Profile profile) {
         profile.loadCMTSData();
 
