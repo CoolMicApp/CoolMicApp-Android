@@ -11,9 +11,13 @@ abstract class ProfileBase {
     String profileName;
     SharedPreferences prefs;
 
-    ProfileBase(Context context, String profileName) {
+    public static void assertValidProfileName(String profileName) {
         if (profileName.startsWith("_"))
             throw new IllegalArgumentException("Bad Profile name: "+profileName);
+    }
+
+    ProfileBase(Context context, String profileName) {
+        assertValidProfileName(profileName);
 
         this.context = context;
         this.profileName = profileName;

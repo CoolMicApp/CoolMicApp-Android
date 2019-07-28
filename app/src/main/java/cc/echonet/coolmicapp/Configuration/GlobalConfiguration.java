@@ -37,6 +37,7 @@ public class GlobalConfiguration {
     }
 
     public void setCurrentProfileName(String profileName) {
+        Profile.assertValidProfileName(profileName);
         prefs.edit().putString(KEY_PROFILE_CURRENT, profileName).apply();
     }
 }
