@@ -12,6 +12,9 @@ abstract class ProfileBase {
     SharedPreferences prefs;
 
     ProfileBase(Context context, String profileName) {
+        if (profileName.startsWith("_"))
+            throw new IllegalArgumentException("Bad Profile name: "+profileName);
+
         this.context = context;
         this.profileName = profileName;
         this.prefs = context.getSharedPreferences(profileName, Context.MODE_PRIVATE);

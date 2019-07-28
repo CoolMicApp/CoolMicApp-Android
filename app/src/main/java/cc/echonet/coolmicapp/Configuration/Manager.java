@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Manager {
-    private static final String DEFAULT_PROFILE = "default";
+    static final String DEFAULT_PROFILE = "default";
 
     private Context context;
+    private GlobalConfiguration globalConfiguration;
 
     public Manager(Context context) {
         this.context = context;
+        this.globalConfiguration = new GlobalConfiguration(context);
     }
 
     public List<String> getProfileNames() {
@@ -27,5 +29,9 @@ public class Manager {
 
     public Profile getProfile(String name) {
         return new Profile(context, name);
+    }
+
+    public GlobalConfiguration getGlobalConfiguration() {
+        return globalConfiguration;
     }
 }
