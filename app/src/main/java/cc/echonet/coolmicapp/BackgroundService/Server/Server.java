@@ -44,7 +44,7 @@ public class Server extends Service {
     private final Messenger mMessenger;
     private final IncomingHandler mIncomingHandler;
     private Notification notification = null;
-    private CoolMic coolmic = null;
+    private Profile profile;
 
     private State state;
 
@@ -82,7 +82,7 @@ public class Server extends Service {
             @Override
             public void run() {
                 try {
-                    Stats request = icecast.getStats(coolmic.getProfile().getServer().getMountpoint());
+                    Stats request = icecast.getStats(profile.getServer().getMountpoint());
                     cc.echonet.coolmicapp.Icecast.Response.Stats response;
 
                     request.finish();
@@ -348,16 +348,14 @@ public class Server extends Service {
     }
 
     private void reloadParameters() {
-        Profile profile;
         Track track;
 
         int ret;
 
-        if (coolmic == null) {
+        if (profile == null) {
             return;
         }
 
-        profile = coolmic.getProfile();
         track = profile.getTrack();
 
         ret = Wrapper.performMetaDataQualityUpdate(track.getTitle(), track.getArtist(), profile.getCodec().getQuality(), 1);
@@ -371,8 +369,8 @@ public class Server extends Service {
     }
 
     private void prepareStream(final String profileName, boolean cmtsTOSAccepted, final Messenger replyTo) {
-        coolmic = new CoolMic(this, profileName);
-        Profile profile = coolmic.getProfile();
+        CoolMic coolmic = new CoolMic(this, profileName);
+        profile = coolmic.getProfile();
         cc.echonet.coolmicapp.Configuration.Server server = profile.getServer();
 
         if (icecast != null)
@@ -408,7 +406,7 @@ public class Server extends Service {
             return;
         }
 
-        if (!coolmic.getProfile().getServer().isSet()) {
+        if (!profile.getServer().isSet()) {
             Message msgReply = createMessage(Constants.S2C_MSG_CONNECTION_UNSET);
 
             try {
@@ -437,7 +435,6 @@ public class Server extends Service {
 
 
     private void startStream(String profileName, Messenger replyTo) {
-        Profile profile = coolmic.getProfile();
         Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
 
         Bundle bundle = msgReply.getData();
@@ -646,7 +643,7 @@ public class Server extends Service {
                 else if (arg0 == 4 || arg0 == 5) {
                     mIncomingHandler.removeMessages(Constants.H2S_MSG_TIMER);
 
-                    if (!state.initialConnectPerformed || !coolmic.getProfile().getServer().getReconnect()) {
+                    if (!state.initialConnectPerformed || !profile.getServer().getReconnect()) {
                         state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
                     } else {
                         state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
