@@ -74,7 +74,7 @@ public class Server extends Service {
         profile = manager.getCurrentProfile();
     }
 
-    protected void addClient(Messenger messenger) {
+    private void addClient(Messenger messenger) {
         if (!clients.contains(messenger)) {
             clients.add(messenger);
         }
