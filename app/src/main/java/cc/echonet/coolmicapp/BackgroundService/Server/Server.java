@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -56,16 +57,21 @@ public class Server extends Service {
     private Icecast icecast;
 
     public Server() {
-        Manager manager = new Manager(this);
-
-        profile = manager.getDefaultProfile();
-
         mIncomingHandler = new IncomingHandler(this);
         mMessenger = new Messenger(mIncomingHandler);
 
         state = new State();
 
         state.wrapperInitializationStatus = Wrapper.getState();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        Manager manager = new Manager(this);
+
+        profile = manager.getDefaultProfile();
     }
 
     protected void addClient(Messenger messenger) {
