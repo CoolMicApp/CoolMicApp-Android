@@ -21,8 +21,6 @@ import cc.echonet.coolmicapp.Configuration.Profile;
  */
 
 public class Utils {
-    private static final String[] CMTSHosts = {"coolmic.net", "echonet.cc", "64.142.100.248", "64.142.100.249", "46.165.219.118"};
-
     public static String getStringByName(Context context, String name) {
         int resid = context.getResources().getIdentifier(name, "string", context.getPackageName());
 
@@ -107,7 +105,7 @@ public class Utils {
     }
 
     static void loadCMTSData(Context context, Profile profile) {
-        profile.loadCMTSData();
+        CMTS.loadCMTSData(profile);
 
         Toast.makeText(context, R.string.settings_conn_defaults_loaded, Toast.LENGTH_SHORT).show();
     }
@@ -123,18 +121,6 @@ public class Utils {
         });
 
         return alertDialogCMTSTOS;
-    }
-
-    public static boolean isCMTSConnection(Profile profile) {
-        String serverName = profile.getServer().getHostname();
-
-        for (String cmtsHost : CMTSHosts) {
-            if (serverName.endsWith(cmtsHost)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static boolean isOnline(Context context) {

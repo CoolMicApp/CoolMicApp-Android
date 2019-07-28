@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.CMTS;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Track;
@@ -430,7 +431,7 @@ public class Server extends Service {
             return;
         }
 
-        if (Utils.isCMTSConnection(profile) && !cmtsTOSAccepted) {
+        if (CMTS.isCMTSConnection(profile) && !cmtsTOSAccepted) {
             Message msgReply = createMessage(Constants.S2C_MSG_CMTS_TOS);
 
             try {
