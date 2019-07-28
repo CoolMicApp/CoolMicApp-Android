@@ -12,6 +12,6 @@ LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog
 #-lshout -L$(LOCAL_PATH)/../libshout/src/.libs/
 
 LOCAL_SRC_FILES := \
-	wrapper.c
+	wrapper.c InputStreamAdapter.c
 
 include $(BUILD_SHARED_LIBRARY)
