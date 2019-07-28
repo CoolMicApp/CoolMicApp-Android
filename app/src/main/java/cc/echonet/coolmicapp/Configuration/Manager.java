@@ -31,6 +31,10 @@ public class Manager {
         return new Profile(context, name);
     }
 
+    public Profile getCurrentProfile() {
+        return getProfile(globalConfiguration.getCurrentProfileName());
+    }
+
     public GlobalConfiguration getGlobalConfiguration() {
         return globalConfiguration;
     }
