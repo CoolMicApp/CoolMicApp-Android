@@ -436,11 +436,11 @@ public class Server extends Service {
             return;
         }
 
-        startStream(profileName, replyTo);
+        startStream(replyTo);
     }
 
 
-    private void startStream(String profileName, Messenger replyTo) {
+    private void startStream(Messenger replyTo) {
         Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
 
         Bundle bundle = msgReply.getData();
