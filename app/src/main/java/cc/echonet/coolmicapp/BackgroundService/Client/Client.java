@@ -42,7 +42,6 @@ public class Client implements Closeable {
             mBackgroundServiceBound = true;
 
             sendMessage(Constants.C2S_MSG_STATE);
-            reloadParameters();
         }
 
         public void onServiceDisconnected(ComponentName className) {
