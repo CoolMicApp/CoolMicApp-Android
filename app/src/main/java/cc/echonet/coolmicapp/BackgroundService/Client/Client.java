@@ -24,6 +24,8 @@ import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
 public class Client implements Closeable {
+    private static final String TAG = "BGS/Client";
+
     private Context context;
     private EventListener eventListener;
     private Messenger mBackgroundService = null;
@@ -41,21 +43,21 @@ public class Client implements Closeable {
             // service using a Messenger, so here we get a client-side
             // representation of that from the raw IBinder object.
 
-            Log.d("BGS/Client", "onServiceConnected(): Client.this = " + Client.this);
+            Log.d(TAG, "onServiceConnected(): Client.this = " + Client.this);
             synchronized (Client.this) {
-                Log.d("BGS/Client", "onServiceConnected(): sync outer in");
+                Log.d(TAG, "onServiceConnected(): sync outer in");
 
                 synchronized (Client.this) {
                     mBackgroundService = new Messenger(service);
                     mBackgroundServiceBound = true;
 
-                    Log.d("BGS/Client", "onServiceConnected: Client.context = " + Client.this.context + ", Client.this = " + Client.this + ", ready=" + ready);
+                    Log.d(TAG, "onServiceConnected: Client.context = " + Client.this.context + ", Client.this = " + Client.this + ", ready=" + ready);
 
                     synchronized (Client.this) {
                         ready.ready();
                     }
 
-                    Log.d("BGS/Client", "onServiceConnected(): sync outer out");
+                    Log.d(TAG, "onServiceConnected(): sync outer out");
                 }
             }
 
@@ -66,7 +68,7 @@ public class Client implements Closeable {
             // This is called when the connection with the service has been
             // unexpectedly disconnected -- that is, its process crashed.
 
-            Log.d("BGS/Client", "onServiceDisconnected: className=" + className + ", Client.this=" + Client.this);
+            Log.d(TAG, "onServiceDisconnected: className=" + className + ", Client.this=" + Client.this);
 
             synchronized (Client.this) {
                 ready = new SyncOnce();
@@ -78,7 +80,7 @@ public class Client implements Closeable {
 
         @Override
         public void onBindingDied(ComponentName className) {
-            Log.d("BGS/Client", "onBindingDied: className=" + className + ", Client.this=" + Client.this);
+            Log.d(TAG, "onBindingDied: className=" + className + ", Client.this=" + Client.this);
         }
     };
 
@@ -198,13 +200,13 @@ public class Client implements Closeable {
         if (mBackgroundServiceBound)
             return;
 
-        Log.d("BGS/Client", "sync(): sync in, this=" + this + ", context=" + context + ", ready=" + ready);
+        Log.d(TAG, "sync(): sync in, this=" + this + ", context=" + context + ", ready=" + ready);
         ready.sync();
-        Log.d("BGS/Client", "sync(): sync out, this=" + this + ", context=" + context + ", ready=" + ready);
+        Log.d(TAG, "sync(): sync out, this=" + this + ", context=" + context + ", ready=" + ready);
     }
 
     private synchronized void sendMessage(Message message) {
-        Log.d("BGS/Client", "sendMessage(): this = " + this + ", mBackgroundServiceBound = " + mBackgroundServiceBound);
+        Log.d(TAG, "sendMessage(): this = " + this + ", mBackgroundServiceBound = " + mBackgroundServiceBound);
 
         try {
             sync();
@@ -227,7 +229,7 @@ public class Client implements Closeable {
     }
 
     public Client(Context context, EventListener eventListener) {
-        Log.d("BGS/Client", "Client: this=" + this + ", context=" + context + ", eventListener=" + eventListener);
+        Log.d(TAG, "Client: this=" + this + ", context=" + context + ", eventListener=" + eventListener);
         this.context = context;
         this.eventListener = eventListener;
     }
@@ -278,19 +280,19 @@ public class Client implements Closeable {
     public void connect() {
         Intent intent;
 
-        Log.d("BGS/Client", "connect() called");
+        Log.d(TAG, "connect() called");
 
         if (mBackgroundServiceBound) {
-            Log.d("BGS/Client", "connect() = (void)");
+            Log.d(TAG, "connect() = (void)");
             return;
         }
 
         connectRequested = true;
 
-        Log.d("BGS/Client", "connect() tries to bind.");
+        Log.d(TAG, "connect() tries to bind.");
         intent = doStartService(Constants.A2A_MSG_NONE);
         context.bindService(intent, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
-        Log.d("BGS/Client", "connect() = (void)");
+        Log.d(TAG, "connect() = (void)");
     }
 
     public void disconnect() {
