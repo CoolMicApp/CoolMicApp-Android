@@ -1,6 +1,7 @@
 package cc.echonet.coolmicapp.BackgroundService.Server;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -269,6 +270,17 @@ public class Server extends Service {
 
         Notification.Builder builder = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.notification_id_channel);
+            String description = getString(R.string.notification_id_channel);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            NotificationChannel channel = new NotificationChannel(name.toString(), name, importance);
+
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            notificationManager.createNotificationChannel(channel);
+
             builder = new Notification.Builder(getApplicationContext(), getApplicationContext().getResources().getString(R.string.notification_id_channel));
         }
         else {
