@@ -39,6 +39,8 @@ import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 
 public class Server extends Service {
+    private static final String TAG = "BGS/Server";
+
     private List<Messenger> clients = new ArrayList<>();
     /**
      * Target we publish for clients to send messages to IncomingHandler.
@@ -199,6 +201,20 @@ public class Server extends Service {
         sendMessageToAll(msgReply);
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        int ret = super.onStartCommand(intent, flags, startId);
+        int what = intent.getExtras().getInt("what");
+        Message message = Message.obtain(null, what);
+
+        Log.d(TAG, "onStartCommand() called with: intent = [" + intent + "], flags = [" + flags + "], startId = [" + startId + "]");
+
+        Log.d(TAG, "onStartCommand: what:" + what);
+
+        mIncomingHandler.handleMessage(message);
+
+        return ret;
+    }
 
     /**
      * When binding to the service, we return an interface to our messenger
