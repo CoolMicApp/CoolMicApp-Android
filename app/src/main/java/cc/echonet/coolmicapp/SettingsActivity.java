@@ -25,6 +25,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.echonet.coolmicapp.BackgroundService.Client.Client;
 import cc.echonet.coolmicapp.Configuration.Codec;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
@@ -101,6 +102,17 @@ public class SettingsActivity extends PreferenceActivity {
         setupActionBar();
 
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment()).commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Client client;
+
+        super.onDestroy();
+
+        client = new Client(this, null);
+        client.reloadParameters();
+        client.disconnect();
     }
 
     /**
