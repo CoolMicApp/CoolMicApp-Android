@@ -30,6 +30,8 @@ public class Client implements Closeable {
     private Messenger mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
     private boolean mBackgroundServiceBound = false;
     private Profile profile;
+    private SyncOnce ready = new SyncOnce();
+    private boolean connectRequested = false;
 
     private ServiceConnection mBackgroundServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -38,8 +40,24 @@ public class Client implements Closeable {
             // interact with the service.  We are communicating with the
             // service using a Messenger, so here we get a client-side
             // representation of that from the raw IBinder object.
-            mBackgroundService = new Messenger(service);
-            mBackgroundServiceBound = true;
+
+            Log.d("BGS/Client", "onServiceConnected(): Client.this = " + Client.this);
+            synchronized (Client.this) {
+                Log.d("BGS/Client", "onServiceConnected(): sync outer in");
+
+                synchronized (Client.this) {
+                    mBackgroundService = new Messenger(service);
+                    mBackgroundServiceBound = true;
+
+                    Log.d("BGS/Client", "onServiceConnected: Client.context = " + Client.this.context + ", Client.this = " + Client.this + ", ready=" + ready);
+
+                    synchronized (Client.this) {
+                        ready.ready();
+                    }
+
+                    Log.d("BGS/Client", "onServiceConnected(): sync outer out");
+                }
+            }
 
             sendMessage(Constants.C2S_MSG_STATE);
         }
@@ -47,8 +65,20 @@ public class Client implements Closeable {
         public void onServiceDisconnected(ComponentName className) {
             // This is called when the connection with the service has been
             // unexpectedly disconnected -- that is, its process crashed.
+
+            Log.d("BGS/Client", "onServiceDisconnected: className=" + className + ", Client.this=" + Client.this);
+
+            synchronized (Client.this) {
+                ready = new SyncOnce();
+            }
+
             mBackgroundService = null;
             mBackgroundServiceBound = false;
+        }
+
+        @Override
+        public void onBindingDied(ComponentName className) {
+            Log.d("BGS/Client", "onBindingDied: className=" + className + ", Client.this=" + Client.this);
         }
     };
 
@@ -65,7 +95,14 @@ public class Client implements Closeable {
 
         @Override
         public void handleMessage(Message msg) {
-            Bundle bundle = msg.getData();
+            Bundle bundle;
+
+            if (client.eventListener == null) {
+                super.handleMessage(msg);
+                return;
+            }
+
+            bundle = msg.getData();
 
             switch (msg.what) {
                 case Constants.S2C_MSG_STATE_REPLY:
@@ -157,7 +194,23 @@ public class Client implements Closeable {
         return message;
     }
 
-    private void sendMessage(Message message) {
+    private synchronized void sync() throws InterruptedException {
+        if (mBackgroundServiceBound)
+            return;
+
+        Log.d("BGS/Client", "sync(): sync in, this=" + this + ", context=" + context + ", ready=" + ready);
+        ready.sync();
+        Log.d("BGS/Client", "sync(): sync out, this=" + this + ", context=" + context + ", ready=" + ready);
+    }
+
+    private synchronized void sendMessage(Message message) {
+        Log.d("BGS/Client", "sendMessage(): this = " + this + ", mBackgroundServiceBound = " + mBackgroundServiceBound);
+
+        try {
+            sync();
+        } catch (InterruptedException ignored) {
+        }
+
         try {
             mBackgroundService.send(message);
         } catch (RemoteException e) {
@@ -166,10 +219,15 @@ public class Client implements Closeable {
     }
 
     private void sendMessage(int what) {
-        sendMessage(createMessage(what));
+        if (connectRequested) {
+            sendMessage(createMessage(what));
+        } else {
+            doStartService(what);
+        }
     }
 
     public Client(Context context, EventListener eventListener) {
+        Log.d("BGS/Client", "Client: this=" + this + ", context=" + context + ", eventListener=" + eventListener);
         this.context = context;
         this.eventListener = eventListener;
     }
@@ -210,13 +268,29 @@ public class Client implements Closeable {
         sendMessage(Constants.C2S_MSG_STREAM_RELOAD);
     }
 
-    public void connect() {
-        if (mBackgroundServiceBound)
-            return;
-
+    private Intent doStartService(int what) {
         Intent intent = new Intent(context, Server.class);
+        intent.putExtra("what", what);
         context.startService(intent);
+        return intent;
+    }
+
+    public void connect() {
+        Intent intent;
+
+        Log.d("BGS/Client", "connect() called");
+
+        if (mBackgroundServiceBound) {
+            Log.d("BGS/Client", "connect() = (void)");
+            return;
+        }
+
+        connectRequested = true;
+
+        Log.d("BGS/Client", "connect() tries to bind.");
+        intent = doStartService(Constants.A2A_MSG_NONE);
         context.bindService(intent, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
+        Log.d("BGS/Client", "connect() = (void)");
     }
 
     public void disconnect() {
