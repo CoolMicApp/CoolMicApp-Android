@@ -291,6 +291,8 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jstring title, jstring artist, jdouble quality, jint restart)
 {
+    int ret;
+
     LOGI("performMetaDataQualityUpdate start");
 
     if(coolmic_simple_obj == NULL)
@@ -305,8 +307,10 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
 
     LOGI("performMetaDataQualityUpdate(%s, %s, %g)", titleNative, artistNative, quality);
 
-    coolmic_simple_set_meta(coolmic_simple_obj, "TITLE", titleNative, 1);
-    coolmic_simple_set_meta(coolmic_simple_obj, "ARTIST", artistNative, 1);
+    ret = coolmic_simple_set_meta(coolmic_simple_obj, "TITLE", titleNative, 1);
+    LOGI("performMetaDataQualityUpdate(): set TITLE -> %i", ret);
+    ret = coolmic_simple_set_meta(coolmic_simple_obj, "ARTIST", artistNative, 1);
+    LOGI("performMetaDataQualityUpdate(): set ARTIST -> %i", ret);
     coolmic_simple_set_quality(coolmic_simple_obj, quality);
 
     if(restart)
