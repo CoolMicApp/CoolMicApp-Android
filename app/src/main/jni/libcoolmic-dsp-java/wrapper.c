@@ -230,9 +230,11 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
                 (*env)->CallVoidMethod(env, obj, vumeterResultChannelValues, (jint) i, (jint) vumeter_result->channel_peak[i], (jdouble) vumeter_result->channel_power[i], (jint) coolmic_util_ahsv2argb(1, coolmic_util_peak2hue(vumeter_result->channel_peak[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75), (jint) coolmic_util_ahsv2argb(1, coolmic_util_power2hue(vumeter_result->channel_power[i], COOLMIC_UTIL_PROFILE_DEFAULT), 1.0, 0.75));
             }
 
-            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerVUMeterMethod, (*env)->NewGlobalRef(env, obj));
+            jobject ref = (*env)->NewGlobalRef(env, obj);
 
+            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerVUMeterMethod, ref);
 
+            (*env)->DeleteGlobalRef(env, ref);
             (*env)->DeleteLocalRef(env, obj);
 
             LOGI("VUM: c%d c0 %f c1 %f c2 %f g %f", vumeter_result->channels, vumeter_result->channel_power[0],
