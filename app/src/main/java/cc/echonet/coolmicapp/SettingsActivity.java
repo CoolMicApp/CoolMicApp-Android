@@ -99,6 +99,9 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setTheme(R.style.AppTheme);
+
         setupActionBar();
 
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment()).commit();
