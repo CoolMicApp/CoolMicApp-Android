@@ -72,6 +72,9 @@ static int callback(InputStreamAdapter_t *self, const char *task, void *buf, siz
         (*env)->ReleaseByteArrayElements(env, jbuf, jnbuf, 0);
     }
 
+    (*env)->DeleteLocalRef(env, jbuf);
+    (*env)->DeleteLocalRef(env, jtask);
+
     return ret;
 }
 
