@@ -333,12 +333,12 @@ public class MainActivity extends Activity implements EventListener {
     public void controlRecordingUI(Constants.CONTROL_UI state) {
         View sb;
 
-        sb = findViewById(R.id.pbGainMeterLeft);
-        if (this.getChannels() == 2) {
-            sb.setVisibility(View.VISIBLE);
-        } else {
-            sb.setVisibility(View.GONE);
-        }
+//        sb = findViewById(R.id.pbGainMeterLeft);
+//        if (this.getChannels() == 2) {
+//            sb.setVisibility(View.VISIBLE);
+//        } else {
+//            sb.setVisibility(View.GONE);
+//        }
 
         if (state == currentState) {
             return;
@@ -378,12 +378,6 @@ public class MainActivity extends Activity implements EventListener {
 
         if (profile != null && profile.getVUMeter().getInterval() != 0)
             visibility = View.VISIBLE;
-
-        meter = findViewById(R.id.llVuMeterLeft);
-        if (meter != null) meter.setVisibility(visibility);
-
-        meter = findViewById(R.id.llVuMeterRight);
-        if (meter != null) meter.setVisibility(visibility);
 
         findViewById(R.id.pbVuMeterLeft).setVisibility(visibility);
         findViewById(R.id.pbVuMeterRight).setVisibility(visibility);
