@@ -23,6 +23,16 @@
         app:layout_constraintStart_toStartOf="@id/barrierLeftControls"
         app:layout_constraintTop_toBottomOf="@id/imageView1" />
 
+    <Button
+        android:id="@+id/next_segment_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="@string/next_segment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/barrieRightControls"
+        app:layout_constraintStart_toStartOf="@id/barrierLeftControls"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout" />
 
     <GridLayout
         android:id="@+id/gridLayout"

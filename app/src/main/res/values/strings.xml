@@ -249,4 +249,5 @@
     <string name="reconnect_in">Reconnecting in %d Sec</string>
     <string name="input_gain">Input Gain:</string>
     <string name="notification_id_channel">CoolMic Notifications</string>
+    <string name="next_segment">Play Audio Clip</string>
 </resources>
