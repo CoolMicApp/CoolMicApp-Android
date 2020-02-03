@@ -79,6 +79,8 @@ public class Wrapper {
 
     public static native int resetMasterGain();
 
+    public static native int nextSegment(InputStreamAdapter inputStreamAdapter);
+
     public static native void initNative();
 
     public static native int init(Object handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);

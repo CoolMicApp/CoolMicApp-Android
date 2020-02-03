@@ -7,6 +7,7 @@ public class Constants {
     public static final int C2S_MSG_STREAM_RELOAD = 3;
     public static final int C2S_MSG_GAIN = 4;
     public static final int C2S_MSG_STREAM_STOP = 5;
+    public static final int C2S_MSG_NEXT_SEGMENT = 6;
 
     /* server-to-client */
     public static final int S2C_MSG_STATE_REPLY = 52;
@@ -24,6 +25,8 @@ public class Constants {
 
     /* any-to-any */
     public static final int A2A_MSG_NONE = 1000;
+
+    public static final int NEXTSEGMENT_REQUEST_CODE = 33;
 
     public static final int NOTIFICATION_ID_LED = 0;
 

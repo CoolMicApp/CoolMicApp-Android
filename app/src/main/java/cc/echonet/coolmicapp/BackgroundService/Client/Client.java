@@ -270,6 +270,15 @@ public class Client implements Closeable {
         sendMessage(Constants.C2S_MSG_STREAM_RELOAD);
     }
 
+    public void nextSegment(String path) {
+        Message message = createMessage(Constants.C2S_MSG_NEXT_SEGMENT);
+        Bundle bundle = message.getData();
+
+        bundle.putString("path", path);
+
+        sendMessage(message);
+    }
+
     private Intent doStartService(int what) {
         Intent intent = new Intent(context, Server.class);
         intent.putExtra("what", what);

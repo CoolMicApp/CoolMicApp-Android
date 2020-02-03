@@ -282,6 +282,30 @@ public class MainActivity extends Activity implements EventListener {
                 startRecording();
             }
         });
+
+
+        findViewById(R.id.next_segment_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent fc = new Intent(Intent.ACTION_GET_CONTENT);
+                fc.setType("*/*");
+                startActivityForResult(fc, Constants.NEXTSEGMENT_REQUEST_CODE);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case Constants.NEXTSEGMENT_REQUEST_CODE:
+                    final Uri uri = data.getData();
+                    backgroundServiceClient.nextSegment(uri.toString());
+                    break;
+            }
+        }
     }
 
     public void onImageClick(View view) {

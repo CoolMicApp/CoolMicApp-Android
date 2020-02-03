@@ -24,10 +24,12 @@
 #include <jni.h>
 #include "coolmic-dsp/coolmic-dsp.h"
 #include "coolmic-dsp/simple.h"
+#include "coolmic-dsp/simple-segment.h"
 #include "coolmic-dsp/shout.h"
 #include "coolmic-dsp/vumeter.h"
 #include "coolmic-dsp/util.h"
 #include "coolmic-dsp/logging.h"
+#include "InputStreamAdapter.h"
 #include <igloo/types.h>
 #include <android/log.h>
 #include <igloo/ro.h>
@@ -507,6 +509,40 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainMono(JNIEnv *env, jclass typ
 
     return __setMasterGain(1, (uint16_t)scale, cgain);
 }
+
+JNIEXPORT jint JNICALL
+Java_cc_echonet_coolmicdspjava_Wrapper_nextSegment(JNIEnv *env, jclass clazz,
+                                                   jobject input_stream_adapter) {
+    coolmic_iohandle_t *io;
+    coolmic_simple_segment_t *segment;
+
+    if (coolmic_simple_obj == NULL)
+    {
+        LOGI("nextSegment bailing - no core obj");
+        return -999666;
+    }
+
+    if (input_stream_adapter) {
+        io = inputStreamAdapter_new_iohandle(env, input_stream_adapter);
+
+        LOGI("XXX new FILE_SIMPLE");
+        segment = coolmic_simple_segment_new(NULL, igloo_RO_NULL, COOLMIC_SIMPLE_SP_FILE_SIMPLE, NULL, NULL, io);
+
+        igloo_ro_unref(io);
+    } else {
+        LOGI("XXX new LIVE");
+        segment = coolmic_simple_segment_new(NULL, igloo_RO_NULL, COOLMIC_SIMPLE_SP_LIVE, NULL, NULL, NULL);
+    }
+
+    coolmic_simple_queue_segment(coolmic_simple_obj, segment);
+
+    igloo_ro_unref(segment);
+
+    coolmic_simple_switch_segment(coolmic_simple_obj);
+
+    return 0;
+}
+
 #pragma clang diagnostic pop
 
 #ifdef __cplusplus

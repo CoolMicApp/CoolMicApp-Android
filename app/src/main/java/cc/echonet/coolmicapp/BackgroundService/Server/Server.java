@@ -7,8 +7,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -19,6 +21,8 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +38,7 @@ import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import cc.echonet.coolmicapp.MainActivity;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicapp.Utils;
+import cc.echonet.coolmicdspjava.InputStreamAdapter;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
@@ -152,6 +157,27 @@ public class Server extends Service {
 
                 case Constants.C2S_MSG_STREAM_STOP:
                     service.stopStream(msg.replyTo);
+
+                    break;
+
+                case Constants.C2S_MSG_NEXT_SEGMENT:
+                    String path = data.getString("path");
+
+                    Log.d(TAG, "handleMessage: XXX: C2S_MSG_NEXT_SEGMENT: path="+path);
+
+                    try {
+                        InputStreamAdapter inputStreamAdapter = null;
+
+                        if (path != null) {
+                            InputStream inputStream = service.getContentResolver().openInputStream(Uri.parse(path));
+                            inputStreamAdapter = new InputStreamAdapter(inputStream);
+                        }
+
+                        Wrapper.nextSegment(inputStreamAdapter);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
                     break;
 
