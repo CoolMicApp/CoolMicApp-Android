@@ -204,14 +204,17 @@ public class Server extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int ret = super.onStartCommand(intent, flags, startId);
-        int what = intent.getExtras().getInt("what");
-        Message message = Message.obtain(null, what);
 
-        Log.d(TAG, "onStartCommand() called with: intent = [" + intent + "], flags = [" + flags + "], startId = [" + startId + "]");
+        if (intent != null) {
+            int what = intent.getExtras().getInt("what");
+            Message message = Message.obtain(null, what);
 
-        Log.d(TAG, "onStartCommand: what:" + what);
+            Log.d(TAG, "onStartCommand() called with: intent = [" + intent + "], flags = [" + flags + "], startId = [" + startId + "]");
 
-        mIncomingHandler.handleMessage(message);
+            Log.d(TAG, "onStartCommand: what:" + what);
+
+            mIncomingHandler.handleMessage(message);
+        }
 
         return ret;
     }
