@@ -77,8 +77,11 @@ public class MainActivity extends Activity implements EventListener {
     private SeekBar gainRight;
 
     private Animation animation = new AlphaAnimation(1, 0);
-
     private TransitionDrawable transitionButton;
+
+    private Animation clipAnimation = new AlphaAnimation(1, 0);
+    private TransitionDrawable clipTransitionButton;
+    private boolean isLive = true;
 
     private Drawable buttonColor;
     private ClipboardManager myClipboard;
@@ -91,6 +94,7 @@ public class MainActivity extends Activity implements EventListener {
         ColorDrawable[] transitionColorDefault = {transitionColorGrey, transitionColorRed};
 
         transitionButton = new TransitionDrawable(transitionColorDefault);
+        clipTransitionButton = new TransitionDrawable(transitionColorDefault);
     }
 
 
@@ -218,6 +222,12 @@ public class MainActivity extends Activity implements EventListener {
         animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
         animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
         animation.setRepeatMode(Animation.REVERSE);
+
+        clipAnimation.setDuration(500); // duration - half a second
+        clipAnimation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
+        clipAnimation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
+        clipAnimation.setRepeatMode(Animation.REVERSE);
+
         start_button = findViewById(R.id.start_recording_button);
 
         gainLeft = findViewById(R.id.pbGainMeterLeft);
@@ -436,12 +446,30 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceState(State state) {
+        Button clipButton = findViewById(R.id.next_segment_button);
+        boolean isLive = state.isLive || state.uiState == Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
+
         backgroundServiceState = state;
         controlRecordingUI(state.uiState);
 
         ((TextView) findViewById(R.id.timerValue)).setText(state.getTimerString(this));
         ((TextView) findViewById(R.id.txtState)).setText(state.getTextState(this));
         ((TextView) findViewById(R.id.txtListeners)).setText(state.getListenersString(this));
+
+        if (this.isLive != isLive) {
+            this.isLive = isLive;
+
+            if (isLive) {
+                clipButton.clearAnimation();
+                clipButton.setBackground(buttonColor);
+                clipButton.setText(R.string.next_segment);
+            } else {
+                clipButton.startAnimation(clipAnimation);
+                clipButton.setBackground(clipTransitionButton);
+                clipTransitionButton.startTransition(5000);
+                clipButton.setText(R.string.next_segment_active);
+            }
+        }
     }
 
     @Override

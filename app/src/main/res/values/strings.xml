@@ -250,4 +250,5 @@
     <string name="input_gain">Input Gain:</string>
     <string name="notification_id_channel">CoolMic Notifications</string>
     <string name="next_segment">Play Audio Clip</string>
+    <string name="next_segment_active">Playing Audio Clip</string>
 </resources>

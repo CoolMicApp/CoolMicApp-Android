@@ -138,6 +138,7 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 {
     coolmic_vumeter_result_t * vumeter_result;
     coolmic_simple_connectionstate_t * connection_state;
+    coolmic_simple_segment_pipeline_t pipeline;
     struct timespec * timespecPtr;
     const int * error_code;
 
@@ -175,6 +176,10 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
     jobject STREAMSTATE = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidSTREAMSTATE);
     jfieldID fidRECONNECT    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "RECONNECT", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
     jobject RECONNECT = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidRECONNECT);
+    jfieldID fidSEGMENT_CONNECT    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "SEGMENT_CONNECT", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject SEGMENT_CONNECT = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidSEGMENT_CONNECT);
+    jfieldID fidSEGMENT_DISCONNECT    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "SEGMENT_DISCONNECT", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject SEGMENT_DISCONNECT = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidSEGMENT_DISCONNECT);
 
     switch (event) {
         case COOLMIC_SIMPLE_EVENT_THREAD_START:
@@ -267,6 +272,14 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
             
             (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, RECONNECT, (int) timespecPtr->tv_sec, NULL);
 
+            break;
+        case COOLMIC_SIMPLE_EVENT_SEGMENT_CONNECT:
+            pipeline = *(coolmic_simple_segment_pipeline_t*)arg0;
+            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, SEGMENT_CONNECT, pipeline == COOLMIC_SIMPLE_SP_LIVE, NULL);
+            break;
+        case COOLMIC_SIMPLE_EVENT_SEGMENT_DISCONNECT:
+            pipeline = *(coolmic_simple_segment_pipeline_t*)arg0;
+            (*env)->CallVoidMethod(env, callbackHandlerObject, callbackHandlerMethod, SEGMENT_DISCONNECT, pipeline == COOLMIC_SIMPLE_SP_LIVE, NULL);
             break;
         default:
             LOGI("UNKNOWN EVENT: %d %p %p", event, arg0, arg1);

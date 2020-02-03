@@ -722,6 +722,12 @@ public class Server extends Service {
                 state.hadError = false;
 
                 break;
+            case SEGMENT_CONNECT:
+                state.isLive = arg0 != 0;
+                break;
+            case SEGMENT_DISCONNECT:
+                state.isLive = arg0 != 0;
+                break;
         }
 
         postNotification();

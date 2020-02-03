@@ -29,6 +29,7 @@ public class State implements Serializable {
     public long lastStateFetch = 0L;
     public boolean hadError = false;
     public long channels = 1;
+    public boolean isLive = true;
 
     public State() {
         Log.v("State", "BSS constructed");
