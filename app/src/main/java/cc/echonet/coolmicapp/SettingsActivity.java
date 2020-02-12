@@ -339,7 +339,7 @@ public class SettingsActivity extends PreferenceActivity {
                     }
                     server.setMountpoint(mountpoint);
                 } catch (NullPointerException e) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Can not get mountpoint, ignoring.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.settingsactivity_cannot_get_mountpoint, Toast.LENGTH_SHORT).show();
                 }
 
                 profile.apply();
