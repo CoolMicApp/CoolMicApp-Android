@@ -52,7 +52,7 @@ jmethodID callbackHandlerVUMeterMethod;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env, jobject obj)
+JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env, jclass obj)
 {
     LOGI("start start");
 
@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env, jobject obj)
+JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env, jclass obj)
 {
     LOGI("start stop");
 
@@ -85,7 +85,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env,
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_ref(JNIEnv * env, jobject obj)
+JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_ref(JNIEnv * env, jclass obj)
 {
     LOGI("start ref");
 
@@ -101,7 +101,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_ref(JNIEnv * env, 
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env, jobject obj)
+JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env, jclass obj)
 {
     LOGI("start unref");
 
@@ -124,7 +124,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jboolean JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_hasCore(JNIEnv * env, jobject obj)
+JNIEXPORT jboolean JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_hasCore(JNIEnv * env, jclass obj)
 {
     LOGI("hasCore %p %d", coolmic_simple_obj,  (coolmic_simple_obj == NULL ? 0 : 1));
 
@@ -306,7 +306,7 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jstring title, jstring artist, jdouble quality, jint restart)
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jclass obj, jstring title, jstring artist, jdouble quality, jint restart)
 {
     int ret;
 
@@ -353,7 +353,7 @@ static int logging_callback(coolmic_logging_level_t level, const char *msg)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jclass obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
 {
     LOGI("start init");
 
@@ -421,7 +421,7 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(JNIEnv * env, jobject obj, jint interval)
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(JNIEnv * env, jclass obj, jint interval)
 {
     LOGI("setVuMeterInterval start");
 
@@ -437,7 +437,7 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic pop
-JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_initNative(JNIEnv * env, jobject obj)
+JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_initNative(JNIEnv * env, jclass obj)
 {
     vumeter_result_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/VUMeterResult"));
     wrapper_callback_events_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents"));

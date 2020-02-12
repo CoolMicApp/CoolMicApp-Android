@@ -48,16 +48,16 @@ import cc.echonet.coolmicdspjava.VUMeterResult;
 public class Client implements Closeable {
     private static final String TAG = "BGS/Client";
 
-    private Context context;
+    private final Context context;
     private EventListener eventListener;
     private Messenger mBackgroundService = null;
-    private Messenger mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
+    private final Messenger mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
     private boolean mBackgroundServiceBound = false;
     private Profile profile;
     private SyncOnce ready = new SyncOnce();
     private boolean connectRequested = false;
 
-    private ServiceConnection mBackgroundServiceConnection = new ServiceConnection() {
+    private final ServiceConnection mBackgroundServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             // This is called when the connection with the service has been
             // established, giving us the object we can use to

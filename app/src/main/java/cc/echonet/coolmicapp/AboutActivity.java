@@ -38,7 +38,7 @@ import android.widget.Toast;
 
 public class AboutActivity extends Activity {
 
-    ClipboardManager myClipboard;
+    private ClipboardManager myClipboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class AboutActivity extends Activity {
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
-        cmdAboutCopy = (Button) findViewById(R.id.cmdAboutCopy);
+        cmdAboutCopy = findViewById(R.id.cmdAboutCopy);
         cmdAboutCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +70,7 @@ public class AboutActivity extends Activity {
             }
         });
 
-        cmdOpenPrivacyPolicy = (Button) findViewById(R.id.cmdOpenPrivacyPolicy);
+        cmdOpenPrivacyPolicy = findViewById(R.id.cmdOpenPrivacyPolicy);
         cmdOpenPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,7 +78,7 @@ public class AboutActivity extends Activity {
             }
         });
 
-        cmdOpenLicenses = (Button) findViewById(R.id.cmdOpenLicenses);
+        cmdOpenLicenses = findViewById(R.id.cmdOpenLicenses);
         cmdOpenLicenses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,14 +111,7 @@ public class AboutActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
-
-        super.onBackPressed();
-
-    }
-
-    public void onCMDAboutCopy(View view) {
+    private void onCMDAboutCopy(View view) {
         ClipData myClip = ClipData.newPlainText("text", getString(
                 R.string.aboutactivity_copy_string,
                 BuildConfig.VERSION_NAME,
@@ -133,12 +126,12 @@ public class AboutActivity extends Activity {
         Toast.makeText(getApplicationContext(), R.string.aboutactivity_copied_string, Toast.LENGTH_SHORT).show();
     }
 
-    public void onCMDAboutOpenPP(View view) {
+    private void onCMDAboutOpenPP(View view) {
         Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_privacy_policy)));
         startActivity(helpIntent);
     }
 
-    public void onCMDAboutOpenLicenses(View view) {
+    private void onCMDAboutOpenLicenses(View view) {
         Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_licenses)));
         startActivity(helpIntent);
     }

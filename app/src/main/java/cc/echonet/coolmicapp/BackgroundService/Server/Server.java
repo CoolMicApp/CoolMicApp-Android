@@ -29,7 +29,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.net.Uri;
@@ -557,7 +556,7 @@ public class Server extends Service {
             hasCore();
 
             if (status != 0) {
-                throw new Exception("Failed to init Core: " + String.valueOf(status));
+                throw new Exception("Failed to init Core: " + status);
             }
 
             status = Wrapper.performMetaDataQualityUpdate(title, artist, quality, 0);
@@ -647,8 +646,6 @@ public class Server extends Service {
     @SuppressWarnings("unused")
     private void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
         Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
-
-        state.oldState = state.uiState;
 
         switch (what) {
             case THREAD_POST_START:

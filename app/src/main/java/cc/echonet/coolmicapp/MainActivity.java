@@ -65,7 +65,7 @@ import cc.echonet.coolmicdspjava.VUMeterResult;
  * This activity demonstrates how to use JNI to encode and decode Ogg/Vorbis audio
  */
 public class MainActivity extends Activity implements EventListener {
-    private Client backgroundServiceClient = new Client(this, this);
+    private final Client backgroundServiceClient = new Client(this, this);
     private Constants.CONTROL_UI currentState;
 
     private State backgroundServiceState;
@@ -76,11 +76,11 @@ public class MainActivity extends Activity implements EventListener {
     private SeekBar gainLeft;
     private SeekBar gainRight;
 
-    private Animation animation = new AlphaAnimation(1, 0);
-    private TransitionDrawable transitionButton;
+    private final Animation animation = new AlphaAnimation(1, 0);
+    private final TransitionDrawable transitionButton;
 
-    private Animation clipAnimation = new AlphaAnimation(1, 0);
-    private TransitionDrawable clipTransitionButton;
+    private final Animation clipAnimation = new AlphaAnimation(1, 0);
+    private final TransitionDrawable clipTransitionButton;
     private boolean isLive = true;
 
     private Drawable buttonColor;
@@ -318,7 +318,7 @@ public class MainActivity extends Activity implements EventListener {
         }
     }
 
-    public void onImageClick(View view) {
+    private void onImageClick(View view) {
         if (profile.getServer().isSet()) {
             try {
                 ClipData myClip = ClipData.newPlainText("text", profile.getServer().getStreamURL().toString());
@@ -332,7 +332,7 @@ public class MainActivity extends Activity implements EventListener {
         }
     }
 
-    public void performShare() {
+    private void performShare() {
         if (profile.getServer().isSet()) {
             try {
                 Intent shareIntent = new Intent();
@@ -364,16 +364,7 @@ public class MainActivity extends Activity implements EventListener {
         return 2; // default.
     }
 
-    public void controlRecordingUI(Constants.CONTROL_UI state) {
-        View sb;
-
-//        sb = findViewById(R.id.pbGainMeterLeft);
-//        if (this.getChannels() == 2) {
-//            sb.setVisibility(View.VISIBLE);
-//        } else {
-//            sb.setVisibility(View.GONE);
-//        }
-
+    private void controlRecordingUI(Constants.CONTROL_UI state) {
         if (state == currentState) {
             return;
         }
@@ -406,8 +397,7 @@ public class MainActivity extends Activity implements EventListener {
         currentState = state;
     }
 
-    public void controlVuMeterUI() {
-        View meter;
+    private void controlVuMeterUI() {
         int visibility = View.GONE;
 
         if (profile != null && profile.getVUMeter().getInterval() != 0)
@@ -419,7 +409,7 @@ public class MainActivity extends Activity implements EventListener {
         findViewById(R.id.rbPeakRight).setVisibility(visibility);
     }
 
-    public void startRecording() {
+    private void startRecording() {
         /* cmtsTOSAccepted is always true as the user accepted it on load. */
         backgroundServiceClient.startRecording(true, profile.getName());
     }

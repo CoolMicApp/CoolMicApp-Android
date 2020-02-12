@@ -67,6 +67,7 @@ public class Utils {
     }
 
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkRequiredPermissions(Context context) {
         int grantedCount = 0;
 

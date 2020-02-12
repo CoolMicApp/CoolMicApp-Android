@@ -30,7 +30,7 @@ import android.preference.PreferenceManager;
 import cc.echonet.coolmicapp.R;
 
 abstract class ProfileBase {
-    Context context;
+    final Context context;
     String profileName;
     SharedPreferences prefs;
     SharedPreferences.Editor editor;

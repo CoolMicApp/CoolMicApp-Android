@@ -35,7 +35,6 @@ import cc.echonet.coolmicdspjava.WrapperConstants;
  */
 
 public class State implements Serializable {
-    public Constants.CONTROL_UI oldState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
     public Constants.CONTROL_UI uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
     public String txtState = "Disconnected";
 

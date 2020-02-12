@@ -81,6 +81,7 @@ public class VerticalSeekBar extends SeekBar {
 	/*
 	 * (non-Javadoc) ${see_to_overridden}
 	 */
+	@SuppressWarnings("SuspiciousNameCombination")
 	@Override
 	protected final synchronized void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
 		super.onMeasure(heightMeasureSpec, widthMeasureSpec);

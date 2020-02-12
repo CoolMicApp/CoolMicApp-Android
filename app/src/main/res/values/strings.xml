@@ -21,6 +21,7 @@
   ~
   -->
 
+<!--suppress CheckTagEmptyBody -->
 <resources>
     <!-- ??? -->
     <string name="app_name">Cool Mic</string>
@@ -226,7 +227,7 @@
     <string name="coolmic_cs_p5">Con. Error</string>
     <string name="broadcast_stop_message">Livestream stopped</string>
     <string name="coolmic_help_url">http://coolmic.net/help</string>
-    <string name="coolmic_back_message">Tap [ Ok ] to stop Livestream.</string>
+    <string name="coolmic_back_message">Tap [ OK ] to stop Livestream.</string>
     <string name="aboutactivity_cmd_about_copy">Copy to Clipboard</string>
     <string name="settingsactivity_toast_permission_denied">Cool Mic needs the requested permissions for recording and streaming. Without them it is quite useless</string>
     <string name="settingsactivity_url_invalid">Please scan a valid URI</string>
@@ -239,7 +240,7 @@
     <string name="mainactivity_native_components_previnit_error">Previous problem detected with native components :( Blocking controls</string>
     <string name="mainactivity_native_components_unknown_state">Native components in unknown state</string>
     <string name="mainactivity_quit_cancel">Cancel</string>
-    <string name="mainactivity_quit_ok">Ok</string>
+    <string name="mainactivity_quit_ok">OK</string>
     <string name="mainactivity_toast_permissions_missing">Missing Permissions. Please request them in the Settings.</string>
     <string name="mainactivity_toast_native_components_not_ready">Native components not ready.</string>
     <string name="mainactivity_toast_check_connection">Check Internet Connection</string>
@@ -248,7 +249,7 @@
     <string name="popup_about_lbl_buildts">Build TS:</string>
     <string name="menu_action_share">Share Stream</string>
     <string name="menu_action_share_default">Cool Mic unconfigured! Please set Connection Info!</string>
-    <string name="menu_action_share_title">Share Stream URL to...</string>
+    <string name="menu_action_share_title">Share Stream URL to…</string>
     <string name="settings_qrcode_invalid_noauth_message">This is a Listen URL (no source credentials): %1$s. Open in external app?</string>
     <string name="settings_qrcode_invalid_noauth_title">QRCode based configuration</string>
 

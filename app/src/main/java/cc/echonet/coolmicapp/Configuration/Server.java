@@ -31,6 +31,7 @@ public class Server extends ProfileBase {
         super(profile);
     }
 
+    @SuppressWarnings("SameReturnValue")
     public String getProtocol() {
         // TODO: This is static for now but may change in future.
         return "http";

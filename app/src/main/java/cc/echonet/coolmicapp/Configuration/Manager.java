@@ -30,7 +30,7 @@ import java.util.List;
 public class Manager {
     static final String DEFAULT_PROFILE = "default";
 
-    private Context context;
+    private final Context context;
     private GlobalConfiguration globalConfiguration;
 
     public Manager(Context context) {
