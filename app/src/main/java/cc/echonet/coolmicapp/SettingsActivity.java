@@ -234,7 +234,7 @@ public class SettingsActivity extends PreferenceActivity {
                         AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(getActivity());
                         alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Utils.loadCMTSData(getActivity(), (new Manager(getActivity())).getCurrentProfile());
+                                Utils.loadCMTSData(getActivity().getApplicationContext(), (new Manager(getActivity())).getCurrentProfile());
 
                                 refreshSummaryForConnectionSettings();
                                 handleSampleRateEnabled();
@@ -291,7 +291,7 @@ public class SettingsActivity extends PreferenceActivity {
                 try {
                     u = Uri.parse(scanResult.getContents());
                 } catch (Exception e1) {
-                    Toast.makeText(getActivity(), R.string.settingsactivity_url_invalid, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.settingsactivity_url_invalid, Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -339,7 +339,7 @@ public class SettingsActivity extends PreferenceActivity {
                     }
                     server.setMountpoint(mountpoint);
                 } catch (NullPointerException e) {
-                    Toast.makeText(getActivity(), "Can not get mountpoint, ignoring.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Can not get mountpoint, ignoring.", Toast.LENGTH_SHORT).show();
                 }
 
                 profile.apply();
@@ -348,7 +348,7 @@ public class SettingsActivity extends PreferenceActivity {
 
                 refreshSummaryForConnectionSettings();
 
-                Toast.makeText(getActivity(), R.string.settingsactivity_qrcode_loaded, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), R.string.settingsactivity_qrcode_loaded, Toast.LENGTH_LONG).show();
             }
         }
 
