@@ -1,10 +1,8 @@
 /*
- *      Copyright (C) Jordan Erickson                     - 2014-2016,
- *      Copyright (C) Löwenfelsen UG (haftungsbeschränkt) - 2015-2016
+ *      Copyright (C) Jordan Erickson                     - 2014-2020,
+ *      Copyright (C) Löwenfelsen UG (haftungsbeschränkt) - 2015-2020
  *       on behalf of Jordan Erickson.
- */
-
-/*
+ *
  * This file is part of Cool Mic.
  *
  * Cool Mic is free software: you can redistribute it and/or modify
@@ -19,7 +17,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Cool Mic.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
+
 package cc.echonet.coolmicapp;
 
 import android.app.Activity;
