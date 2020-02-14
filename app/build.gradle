@@ -139,10 +139,9 @@ static def buildTimeStamp() {
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.zxing:android-integration:3.2.1'
-
+    api 'androidx.annotation:annotation:1.1.0'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
     // Optional -- Hamcrest library
