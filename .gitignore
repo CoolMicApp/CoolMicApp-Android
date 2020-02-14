@@ -55,3 +55,5 @@ local.properties
 # Sandbox stuff
 _sandbox
 app/.externalNativeBuild 
+app/.cxx/
+app/defaultConfig/
