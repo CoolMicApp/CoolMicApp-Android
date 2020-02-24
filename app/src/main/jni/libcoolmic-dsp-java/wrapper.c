@@ -202,6 +202,8 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
             (*env)->DeleteLocalRef(env, THREAD_POST_STOP);
             (*env)->DeleteLocalRef(env, STREAMSTATE);
             (*env)->DeleteLocalRef(env, RECONNECT);
+            (*env)->DeleteLocalRef(env, SEGMENT_CONNECT);
+            (*env)->DeleteLocalRef(env, SEGMENT_DISCONNECT);
             (*env)->DeleteLocalRef(env, ERROR);
 
             if (getEnvStat == JNI_OK) {
@@ -292,6 +294,8 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
     (*env)->DeleteLocalRef(env, THREAD_POST_STOP);
     (*env)->DeleteLocalRef(env, STREAMSTATE);
     (*env)->DeleteLocalRef(env, RECONNECT);
+    (*env)->DeleteLocalRef(env, SEGMENT_CONNECT);
+    (*env)->DeleteLocalRef(env, SEGMENT_DISCONNECT);
     (*env)->DeleteLocalRef(env, ERROR);
 
     if ((*env)->ExceptionCheck(env)) {
