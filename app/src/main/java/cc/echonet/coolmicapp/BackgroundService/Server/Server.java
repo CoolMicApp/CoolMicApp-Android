@@ -54,6 +54,7 @@ import cc.echonet.coolmicapp.CMTS;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Track;
+import cc.echonet.coolmicapp.Configuration.Volume;
 import cc.echonet.coolmicapp.Icecast.Icecast;
 import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import cc.echonet.coolmicapp.MainActivity;
@@ -159,6 +160,7 @@ public class Server extends Service {
                     }
 
                     service.checkWrapperState(msg.replyTo);
+                    service.sendGain();
 
                     break;
 
@@ -237,13 +239,14 @@ public class Server extends Service {
         }
     }
 
-    private void sendGain(int left, int right) {
+    private void sendGain() {
         Message msgReply = createMessage(Constants.C2S_MSG_GAIN);
+        Volume volume = profile.getVolume();
 
         Bundle bundle = msgReply.getData();
 
-        bundle.putInt("left", left);
-        bundle.putInt("right", right);
+        bundle.putInt("left", volume.getLeft());
+        bundle.putInt("right", volume.getRight());
 
         sendMessageToAll(msgReply);
     }
@@ -530,7 +533,7 @@ public class Server extends Service {
         state.channels = profile.getAudio().getChannels();
 
         //setGain(100, 100);
-        sendGain(profile.getVolume().getLeft(), profile.getVolume().getRight());
+        sendGain();
 
         try {
             String server = profile.getServer().getHostname();
