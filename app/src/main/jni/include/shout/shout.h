@@ -85,6 +85,11 @@ extern "C" {
 #define SHOUT_TLS_RFC2818           ( 11) /* Use TLS for transport layer like HTTPS [RFC2818] does. */
 #define SHOUT_TLS_RFC2817           ( 12) /* Use TLS via HTTP Upgrade:-header [RFC2817]. */
 
+/* Possible values for blocking */
+#define SHOUT_BLOCKING_DEFAULT      (255) /* Use the default blocking setting. */
+#define SHOUT_BLOCKING_FULL         (  0) /* Block in all I/O related functions */
+#define SHOUT_BLOCKING_NONE         (  1) /* Do not block in I/O related functions */
+
 #define SHOUT_AI_BITRATE            "bitrate"
 #define SHOUT_AI_SAMPLERATE         "samplerate"
 #define SHOUT_AI_CHANNELS           "channels"
