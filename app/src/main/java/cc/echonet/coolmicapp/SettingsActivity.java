@@ -304,6 +304,7 @@ public class SettingsActivity extends PreferenceActivity {
                         for (DialogIdentifier dialogIdentifier : DialogIdentifier.values()) {
                             profile.getDialogState(dialogIdentifier).reset();
                         }
+                        Toast.makeText(getActivity().getApplicationContext(), R.string.pref_title_utility_reset_dialogs_done, Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
