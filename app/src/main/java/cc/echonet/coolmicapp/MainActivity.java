@@ -58,6 +58,7 @@ import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.Server.Server;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
@@ -427,6 +428,9 @@ public class MainActivity extends Activity implements EventListener {
     public void onBackgroundServiceConnected() {
         profile = backgroundServiceClient.getProfile();
         controlVuMeterUI();
+
+        new Dialog(DialogIdentifier.FIRST_TIME, this, profile).showIfNecessary();
+        new Dialog(DialogIdentifier.NEW_VERSION, this, profile).showIfNecessary();
     }
 
     @Override

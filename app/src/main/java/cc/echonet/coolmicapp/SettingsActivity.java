@@ -49,6 +49,8 @@ import java.util.List;
 
 import cc.echonet.coolmicapp.BackgroundService.Client.Client;
 import cc.echonet.coolmicapp.Configuration.Codec;
+import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
+import cc.echonet.coolmicapp.Configuration.DialogState;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Server;
@@ -288,6 +290,20 @@ public class SettingsActivity extends PreferenceActivity {
                     public boolean onPreferenceClick(Preference arg0) {
                         Utils.requestPermissions(getActivity());
 
+                        return true;
+                    }
+                });
+            }
+
+            Preference util_reset_dialogs = getPreferenceManager().findPreference("util_reset_dialogs");
+            if (util_reset_dialogs != null) {
+                util_reset_dialogs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        Profile profile = (new Manager(getActivity())).getCurrentProfile();
+                        for (DialogIdentifier dialogIdentifier : DialogIdentifier.values()) {
+                            profile.getDialogState(dialogIdentifier).reset();
+                        }
                         return true;
                     }
                 });

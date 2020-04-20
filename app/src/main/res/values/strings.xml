@@ -275,4 +275,22 @@
     <string name="notification_id_channel">CoolMic Notifications</string>
     <string name="next_segment">Play Audio Clip</string>
     <string name="next_segment_active">Playing Audio Clip</string>
+
+    <string name="popup_first_time_title">Welcome to Cool Mic</string>
+    <string name="popup_first_time_message"><![CDATA[
+        Welcome! Cool Mic is an open source Icecast source client. It livestreams audio captured by your Android device’s microphone/line-in jack or internal microphone.
+        Cool Mic can stream to any Icecast server in the open-source audio formats Ogg/Opus and Ogg/Vorbis. You can also stream Opus and Vorbis audio files alongside your live audio stream.
+        To configure Cool Mic for your existing Icecast server, go to “Settings” from the main menu (upper-right).
+        If you are testing Cool Mic, you may use the Cool Mic test servers (CMTS). Please note that limitations may apply to using CMTS as they are for testing purposes only.
+        Enjoy! If you have feedback, questions or problems using Cool Mic, please contact us first: https://coolmic.net/contact/ - we’re here to help! Thank you for using Cool Mic.
+
+        Sincerely, The Cool Mic Team
+    ]]></string>
+    <string name="popup_first_time_url">https://coolmic.net/</string>
+    <string name="popup_new_version_title">What’s New</string>
+    <string name="popup_new_version_message">blubb</string>
+    <string name="popup_new_version_url">https://coolmic.net/news/</string>
+
+    <string name="popup_any_more">More Info</string>
+    <string name="pref_title_utility_reset_dialogs">Reset Hidden Dialogs</string>
 </resources>

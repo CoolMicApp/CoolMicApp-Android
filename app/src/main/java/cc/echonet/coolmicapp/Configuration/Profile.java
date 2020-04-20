@@ -59,4 +59,8 @@ public class Profile extends ProfileBase {
     public Volume getVolume() {
         return new Volume(this, getAudio());
     }
+
+    public DialogState getDialogState(DialogIdentifier dialogIdentifier) {
+        return new DialogState(this, dialogIdentifier);
+    }
 }
