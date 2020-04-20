@@ -24,9 +24,9 @@ package cc.echonet.coolmicapp;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.Html;
 
 import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.DialogState;
@@ -54,7 +54,7 @@ public class Dialog {
     public void show() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(getString(KEY_TITLE));
-        builder.setMessage(getString(KEY_MESSAGE));
+        builder.setMessage(Html.fromHtml(getString(KEY_MESSAGE)));
         builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
         builder.setNeutralButton(R.string.popup_any_more, ((dialogInterface, i) -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(KEY_URL)));
