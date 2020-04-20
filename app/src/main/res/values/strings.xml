@@ -311,5 +311,5 @@
     <string name="popup_new_version_url">https://coolmic.net/news/</string>
 
     <string name="popup_any_more">More Info</string>
-    <string name="pref_title_utility_reset_dialogs">Reset Hidden Dialogs</string>
+    <string name="pref_title_utility_reset_dialogs">Restore Hidden Dialogs</string>
 </resources>
