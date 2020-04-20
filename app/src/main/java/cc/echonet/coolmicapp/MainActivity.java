@@ -429,8 +429,8 @@ public class MainActivity extends Activity implements EventListener {
         profile = backgroundServiceClient.getProfile();
         controlVuMeterUI();
 
-        new Dialog(DialogIdentifier.FIRST_TIME, this, profile).showIfNecessary();
         new Dialog(DialogIdentifier.NEW_VERSION, this, profile).showIfNecessary();
+        new Dialog(DialogIdentifier.FIRST_TIME, this, profile).showIfNecessary();
     }
 
     @Override
