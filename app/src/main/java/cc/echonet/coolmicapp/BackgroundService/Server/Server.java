@@ -310,11 +310,6 @@ public class Server extends Service implements CallbackHandler {
         String title = String.format(Locale.ENGLISH, "State: %s", state.txtState);
         String message = String.format(Locale.ENGLISH, "Listeners: %s", state.getListenersString(getApplicationContext()));
 
-        postNotification(message, title, flashLed);
-    }
-
-    private void postNotification(String message, String title, boolean flashLed) {
-
         if (message.equals(oldNotificationMessage) && title.equals(oldNotificationTitle) && flashLed == oldNotificationFlashLed) {
             return;
         }
