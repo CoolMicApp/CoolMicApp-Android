@@ -68,7 +68,7 @@ import cc.echonet.coolmicdspjava.WrapperConstants;
 public class Server extends Service {
     private static final String TAG = "BGS/Server";
 
-    private List<Messenger> clients = new ArrayList<>();
+    private final List<Messenger> clients = new ArrayList<>();
     /**
      * Target we publish for clients to send messages to IncomingHandler.
      */
@@ -79,7 +79,7 @@ public class Server extends Service {
     private Manager manager;
     private Profile profile;
 
-    private State state;
+    private final State state;
 
     private String oldNotificationMessage;
     private String oldNotificationTitle;
@@ -120,21 +120,18 @@ public class Server extends Service {
     }
 
     private Runnable fetchListeners() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Stats request = icecast.getStats(profile.getServer().getMountpoint());
-                    cc.echonet.coolmicapp.Icecast.Response.Stats response;
+        return () -> {
+            try {
+                Stats request = icecast.getStats(profile.getServer().getMountpoint());
+                cc.echonet.coolmicapp.Icecast.Response.Stats response;
 
-                    request.finish();
-                    response = request.getResponse();
+                request.finish();
+                response = request.getResponse();
 
-                    updateListeners(response.getListenerCurrent(), response.getListenerPeak());
+                updateListeners(response.getListenerCurrent(), response.getListenerPeak());
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         };
     }
