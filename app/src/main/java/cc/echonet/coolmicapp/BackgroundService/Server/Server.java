@@ -308,7 +308,6 @@ public class Server extends Service implements CallbackHandler {
     private void postNotification() {
         boolean flashLed = (state.uiState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED);
         String title = String.format(Locale.ENGLISH, "State: %s", state.txtState);
-        //String message = String.format(Locale.ENGLISH, "Timer: %s%s Listeners: %s", state.timerString, !flashLed ? "(Stopped)" : "", state.listenersString);
         String message = String.format(Locale.ENGLISH, "Listeners: %s", state.getListenersString(getApplicationContext()));
 
         postNotification(message, title, flashLed);
@@ -478,7 +477,6 @@ public class Server extends Service implements CallbackHandler {
         state.hadError = false;
         state.channels = profile.getAudio().getChannels();
 
-        //setGain(100, 100);
         sendGain();
 
         try {
@@ -559,17 +557,6 @@ public class Server extends Service implements CallbackHandler {
 
                 break;
             case ERROR:
-                 /*
-                if(coolmic.getServerReconnect()) {
-                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTING;
-                }
-                else
-                {
-                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
-                }
-
-                */
-
                 Message msgReply = createMessage(Constants.S2C_MSG_ERROR);
 
                 Bundle bundle = msgReply.getData();
@@ -590,21 +577,11 @@ public class Server extends Service implements CallbackHandler {
 
                 /* connected */
                 if (arg0 == 2) {
-                    /*if(!state.initialConnectPerformed || !coolmic.getServerReconnect()) {
-                     */
-
                     state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
                     state.initialConnectPerformed = true;
                     state.startTime = SystemClock.uptimeMillis();
 
                     mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
-                        /*
-                    }
-                    else if(state.initialConnectPerformed && coolmic.getServerReconnect())
-                    {
-                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_RECONNECTED;
-                    }
-                    */
                 }
                 /* disconnected || connectionerror */
                 else if (arg0 == 4 || arg0 == 5) {
@@ -618,7 +595,6 @@ public class Server extends Service implements CallbackHandler {
                 }
 
                 state.txtState = getString(R.string.txtStateFormat, Utils.getStringByName(this, "coolmic_cs", arg0), error);
-                //Toast.makeText(MainActivity.this, getString(R.string.mainactivity_callback_streamstate, arg0_final, arg1_final), Toast.LENGTH_SHORT).show();
 
                 break;
             case RECONNECT:
