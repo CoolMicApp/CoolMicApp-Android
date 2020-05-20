@@ -38,6 +38,7 @@ public class Dialog {
     private static final String KEY_TITLE = "title";
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_URL = "url";
+    private static final int CONTENT_PADDING = 50;
 
     private final DialogIdentifier dialogIdentifier;
     private final Context context;
@@ -60,6 +61,7 @@ public class Dialog {
         builder.setTitle(getString(KEY_TITLE));
         tv.setText(Html.fromHtml(getString(KEY_MESSAGE)));
         tv.setMovementMethod(LinkMovementMethod.getInstance());
+        tv.setPaddingRelative(CONTENT_PADDING, tv.getPaddingTop(), CONTENT_PADDING, tv.getPaddingBottom());
         builder.setView(tv);
         builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
         builder.setNeutralButton(R.string.popup_any_more, ((dialogInterface, i) -> {
