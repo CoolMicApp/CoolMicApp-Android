@@ -41,8 +41,6 @@ public class State implements Serializable {
     public int bindCounts = 0;
     public int clientCount = 0;
     public boolean initialConnectPerformed = false;
-    public boolean hasCore = false;
-    public WrapperConstants.WrapperInitializationStatus wrapperInitializationStatus;
     public long timerInMS = 0L;
     public long startTime = 0L;
     public int listeners_current;

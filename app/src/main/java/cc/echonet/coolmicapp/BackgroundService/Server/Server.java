@@ -29,8 +29,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +41,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,6 @@ import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicapp.CMTS;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
-import cc.echonet.coolmicapp.Configuration.Track;
 import cc.echonet.coolmicapp.Configuration.Volume;
 import cc.echonet.coolmicapp.Icecast.Icecast;
 import cc.echonet.coolmicapp.Icecast.Request.Stats;
@@ -61,9 +59,7 @@ import cc.echonet.coolmicapp.MainActivity;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicapp.Utils;
 import cc.echonet.coolmicdspjava.CallbackHandler;
-import cc.echonet.coolmicdspjava.InputStreamAdapter;
 import cc.echonet.coolmicdspjava.VUMeterResult;
-import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 
 public class Server extends Service implements CallbackHandler {
@@ -81,6 +77,7 @@ public class Server extends Service implements CallbackHandler {
     private Profile profile;
 
     private final State state;
+    private Driver driver;
 
     private String oldNotificationMessage;
     private String oldNotificationTitle;
@@ -93,8 +90,10 @@ public class Server extends Service implements CallbackHandler {
         mMessenger = new Messenger(mIncomingHandler);
 
         state = new State();
+    }
 
-        state.wrapperInitializationStatus = Wrapper.getState();
+    private Driver getDriver() {
+        return driver;
     }
 
     @Override
@@ -103,6 +102,7 @@ public class Server extends Service implements CallbackHandler {
 
         manager = new Manager(this);
         profile = manager.getCurrentProfile();
+        driver = new Driver(this, profile, this);
     }
 
     private void addClient(Messenger messenger) {
@@ -172,7 +172,7 @@ public class Server extends Service implements CallbackHandler {
                     break;
 
                 case Constants.C2S_MSG_STREAM_RELOAD:
-                    service.reloadParameters();
+                    service.getDriver().reloadParameters();
 
                     break;
 
@@ -187,14 +187,13 @@ public class Server extends Service implements CallbackHandler {
                     Log.d(TAG, "handleMessage: XXX: C2S_MSG_NEXT_SEGMENT: path="+path);
 
                     try {
-                        InputStreamAdapter inputStreamAdapter = null;
+                        InputStream inputStream = null;
 
                         if (path != null) {
-                            InputStream inputStream = service.getContentResolver().openInputStream(Uri.parse(path));
-                            inputStreamAdapter = new InputStreamAdapter(inputStream);
+                            inputStream = service.getContentResolver().openInputStream(Uri.parse(path));
                         }
 
-                        Wrapper.nextSegment(inputStreamAdapter);
+                        service.getDriver().nextSegment(inputStream);
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -231,9 +230,9 @@ public class Server extends Service implements CallbackHandler {
 
     private void setGain(int left, int right) {
         if (state.channels != 2) {
-            Wrapper.setMasterGainMono(100, left);
+            driver.setGain(100, left);
         } else {
-            Wrapper.setMasterGainStereo(100, left, right);
+            driver.setGain(100, left, right);
         }
     }
 
@@ -285,7 +284,7 @@ public class Server extends Service implements CallbackHandler {
     @Override
     public boolean onUnbind(Intent intent) {
         state.clientCount--;
-        if (!hasCore()) {
+        if (driver.hasCore()) {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
             if (nm != null) {
@@ -368,30 +367,7 @@ public class Server extends Service implements CallbackHandler {
         }
     }
 
-    private void checkWrapper() {
-        if (state.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
-            if (state.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED) {
-                if (Wrapper.init() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
-                    Log.d("WrapperInit", Wrapper.getInitException().toString());
-                    Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
-                }
-            } else if (state.wrapperInitializationStatus == WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR) {
-                Log.d("WrapperInit", "INIT FAILED");
-                Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_previnit_error, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.mainactivity_native_components_unknown_state, Toast.LENGTH_SHORT).show();
-                Log.d("WrapperInit", "INIT STATE UNKNOWN");
-            }
-        }
-
-        state.wrapperInitializationStatus = Wrapper.getState();
-    }
-
     private void checkWrapperState(Messenger replyTo) {
-
-        checkWrapper();
-
-
         Message msgReply = Message.obtain(null, Constants.S2C_MSG_STATE_REPLY, 0, 0);
 
         Bundle bundle = msgReply.getData();
@@ -425,36 +401,10 @@ public class Server extends Service implements CallbackHandler {
         }
     }
 
-    private boolean hasCore() {
-        state.hasCore = Wrapper.getState() == WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED && Wrapper.hasCore();
-
-        return state.hasCore;
-    }
-
-    private void reloadParameters() {
-        Track track;
-
-        int ret;
-
-        if (profile == null) {
-            return;
-        }
-
-        track = profile.getTrack();
-
-        ret = Wrapper.performMetaDataQualityUpdate(track.getTitle(), track.getArtist(), profile.getCodec().getQuality(), 1);
-
-        if (profile.getServer().getReconnect()) {
-            ret = Wrapper.setReconnectionProfile("enabled");
-        } else {
-            ret = Wrapper.setReconnectionProfile("disabled");
-        }
-
-    }
-
     private void prepareStream(final String profileName, boolean cmtsTOSAccepted, final Messenger replyTo) {
         manager.getGlobalConfiguration().setCurrentProfileName(profileName);
         profile = manager.getCurrentProfile();
+        driver.setProfile(profile);
 
         cc.echonet.coolmicapp.Configuration.Server server = profile.getServer();
 
@@ -464,7 +414,7 @@ public class Server extends Service implements CallbackHandler {
         icecast = new Icecast(server.getProtocol(), server.getHostname(), server.getPort());
         icecast.setCredentials(server.getUsername(), server.getPassword());
 
-        if (hasCore()) {
+        if (driver.hasCore()) {
             stopStream(replyTo);
             return;
         }
@@ -481,7 +431,7 @@ public class Server extends Service implements CallbackHandler {
             return;
         }
 
-        if (state.wrapperInitializationStatus != WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED) {
+        if (!driver.isReady()) {
             Toast.makeText(getApplicationContext(), R.string.mainactivity_toast_native_components_not_ready, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -521,9 +471,7 @@ public class Server extends Service implements CallbackHandler {
 
     private void startStream(Messenger replyTo) {
         Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
-
         Bundle bundle = msgReply.getData();
-
         boolean success;
 
         state.timerInMS = 0;
@@ -534,65 +482,9 @@ public class Server extends Service implements CallbackHandler {
         sendGain();
 
         try {
-            String server = profile.getServer().getHostname();
-            int port_num = profile.getServer().getPort();
-
-            Log.d("VS", server);
-            Log.d("VS", Integer.toString(port_num));
-
-            String username = profile.getServer().getUsername();
-            String password = profile.getServer().getPassword();
-            String mountpoint = profile.getServer().getMountpoint();
-            int sampleRate = profile.getAudio().getSampleRate();
-            int channel = profile.getAudio().getChannels();
-            double quality = profile.getCodec().getQuality();
-            String title = profile.getTrack().getTitle();
-            String artist = profile.getTrack().getArtist();
-            String codec_string = profile.getCodec().getType();
-
-            int buffersize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-            Log.d("VS", "Minimum Buffer Size: " + buffersize);
-            int status = Wrapper.init(this, server, port_num, username, password, mountpoint, codec_string, sampleRate, channel, buffersize);
-
-            hasCore();
-
-            if (status != 0) {
-                throw new Exception("Failed to init Core: " + status);
-            }
-
-            status = Wrapper.performMetaDataQualityUpdate(title, artist, quality, 0);
-
-            if (status != 0) {
-                throw new Exception(getString(R.string.exception_failed_metadata_quality, status));
-            }
-
-            if (profile.getServer().getReconnect()) {
-                status = Wrapper.setReconnectionProfile("enabled");
-            } else {
-                status = Wrapper.setReconnectionProfile("disabled");
-            }
-
-            if (status != 0) {
-                throw new Exception(getString(R.string.exception_failed_reconnect, status));
-            }
-
-            status = Wrapper.start();
-
-            Log.d("VS", "Status:" + status);
-
-            if (status != 0) {
-                throw new Exception(getString(R.string.exception_start_failed, status));
-            }
-
-            int interval = profile.getVUMeter().getInterval();
-
-            /* Normalize interval to a sample rate of 48kHz (as per Opus specs). */
-            interval = (interval * sampleRate) / 48000;
-
-            Wrapper.setVuMeterInterval(interval);
-
+            driver.startStream();
             success = true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
 
             Log.e("VS", "Livestream Start: Exception: ", e);
@@ -616,15 +508,8 @@ public class Server extends Service implements CallbackHandler {
         boolean was_running = false;
 
         Log.d("BS", "Stop Stream");
-        if (hasCore()) {
-            Wrapper.stop();
-            Wrapper.unref();
-            was_running = true;
-        }
-
+        was_running = driver.stopStream();
         Log.d("BS", "Past Core Check");
-
-        hasCore();
 
         state.initialConnectPerformed = false;
 
@@ -644,6 +529,7 @@ public class Server extends Service implements CallbackHandler {
         sendStateToAll();
     }
 
+    @Override
     @SuppressWarnings("unused")
     public void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
         Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
@@ -661,8 +547,7 @@ public class Server extends Service implements CallbackHandler {
                 state.txtState = "Disconnected";
 
                 if (state.hadError) {
-                    Wrapper.stop();
-                    Wrapper.unref();
+                    driver.stopStream();
                 }
 
                 break;
@@ -755,6 +640,7 @@ public class Server extends Service implements CallbackHandler {
         sendStateToAll();
     }
 
+    @Override
     @SuppressWarnings("unused")
     public void callbackVUMeterHandler(VUMeterResult result) {
         Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
@@ -770,13 +656,12 @@ public class Server extends Service implements CallbackHandler {
 
     @Override
     public void onDestroy() {
-        NotificationManager nm;
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         Log.v("BG", "Server.onDestroy()");
         stopStream(null);
 
-        nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancelAll();
+        nm.cancel(Constants.NOTIFICATION_ID_LED);
 
         if (icecast != null) {
             icecast.close();
