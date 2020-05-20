@@ -369,20 +369,22 @@ public class Server extends Service implements CallbackHandler {
         bundle.putSerializable("state", state);
         bundle.putString("profile", profile.getName());
 
+        sendMessage(replyTo, msgReply);
+    }
+
+    private static boolean sendMessage(Messenger messenger, Message message) {
         try {
-            replyTo.send(msgReply);
+            messenger.send(message);
+            return true;
         } catch (RemoteException e) {
-            e.printStackTrace();
+            Log.d(TAG, "sendMessage: failed to send message to " + messenger + ": " + e.toString());
+            return false;
         }
     }
 
     private void sendMessageToAll(Message message) {
         for (Messenger client : clients) {
-            try {
-                client.send(message);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-
+            if (!sendMessage(client, message)) {
                 clients.remove(client);
             }
         }
@@ -416,12 +418,7 @@ public class Server extends Service implements CallbackHandler {
         if (!Utils.checkRequiredPermissions(getApplicationContext())) {
             Message msgReply = createMessage(Constants.S2C_MSG_PERMISSIONS_MISSING);
 
-            try {
-                replyTo.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-
+            sendMessage(replyTo, msgReply);
             return;
         }
 
@@ -438,11 +435,7 @@ public class Server extends Service implements CallbackHandler {
         if (!profile.getServer().isSet()) {
             Message msgReply = createMessage(Constants.S2C_MSG_CONNECTION_UNSET);
 
-            try {
-                replyTo.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            sendMessage(replyTo, msgReply);
 
             return;
         }
@@ -450,11 +443,7 @@ public class Server extends Service implements CallbackHandler {
         if (CMTS.isCMTSConnection(profile) && !cmtsTOSAccepted) {
             Message msgReply = createMessage(Constants.S2C_MSG_CMTS_TOS);
 
-            try {
-                replyTo.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            sendMessage(replyTo, msgReply);
 
             return;
         }
@@ -490,11 +479,7 @@ public class Server extends Service implements CallbackHandler {
 
         bundle.putBoolean("success", success);
 
-        try {
-            replyTo.send(msgReply);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        sendMessage(replyTo, msgReply);
     }
 
     public void stopStream(Messenger replyTo) {
@@ -512,11 +497,7 @@ public class Server extends Service implements CallbackHandler {
             Bundle bundle = msgReply.getData();
             bundle.putBoolean("was_running", was_running);
 
-            try {
-                replyTo.send(msgReply);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            sendMessage(replyTo, msgReply);
         }
 
         sendStateToAll();
