@@ -485,7 +485,7 @@ public class Server extends Service implements CallbackHandler {
         } catch (IOException e) {
             e.printStackTrace();
 
-            Log.e("VS", "Livestream Start: Exception: ", e);
+            Log.e(TAG, "Livestream Start: Exception: ", e);
 
             success = false;
 
@@ -503,11 +503,11 @@ public class Server extends Service implements CallbackHandler {
     }
 
     public void stopStream(Messenger replyTo) {
-        boolean was_running = false;
+        final boolean was_running;
 
-        Log.d("BS", "Stop Stream");
+        Log.d(TAG, "Stop Stream");
         was_running = driver.stopStream();
-        Log.d("BS", "Past Core Check");
+        Log.d(TAG, "Past Core Check");
 
         state.initialConnectPerformed = false;
 
@@ -530,7 +530,7 @@ public class Server extends Service implements CallbackHandler {
     @Override
     @SuppressWarnings("unused")
     public void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
-        Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
+        Log.d(TAG, String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
 
         switch (what) {
             case THREAD_POST_START:
@@ -619,7 +619,7 @@ public class Server extends Service implements CallbackHandler {
     @Override
     @SuppressWarnings("unused")
     public void callbackVUMeterHandler(VUMeterResult result) {
-        Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
+        Log.d(TAG, String.valueOf(result.global_power));
 
         Message msgReply = createMessage(Constants.S2C_MSG_VUMETER);
 
@@ -634,7 +634,7 @@ public class Server extends Service implements CallbackHandler {
     public void onDestroy() {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        Log.v("BG", "Server.onDestroy()");
+        Log.v(TAG, "Server.onDestroy()");
         stopStream(null);
 
         nm.cancel(Constants.NOTIFICATION_ID_LED);
@@ -645,6 +645,6 @@ public class Server extends Service implements CallbackHandler {
         }
 
         super.onDestroy();
-        Log.v("BG", "Server.onDestroy() done");
+        Log.v(TAG, "Server.onDestroy() done");
     }
 }
