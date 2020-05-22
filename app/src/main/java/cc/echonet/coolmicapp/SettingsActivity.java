@@ -215,98 +215,81 @@ public class SettingsActivity extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("vumeter_interval"));
 
             //Hardcode some required values for Opus
-            findPreference("audio_codec").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object value) {
-                    String stringValue = value.toString();
-                    SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
+            findPreference("audio_codec").setOnPreferenceChangeListener((preference, value) -> {
+                String stringValue = value.toString();
+                SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
 
-                    String mountpoint = getPreferenceManager().getSharedPreferences().getString("connection_mountpoint", getString(R.string.pref_default_connection_mountpoint));
+                String mountpoint = getPreferenceManager().getSharedPreferences().getString("connection_mountpoint", getString(R.string.pref_default_connection_mountpoint));
 
-                    //Opus Codec name is supposed to be static
-                    if (stringValue.equals("audio/ogg; codec=opus")) {
-                        handleSampleRateEnabled(false);
-                        mountpoint = mountpoint.replace("ogg", "opus");
-                        editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
-                    } else {
-                        handleSampleRateEnabled(true);
-                        mountpoint = mountpoint.replace("opus", "ogg");
-                    }
-
-                    editor.putString("connection_mountpoint", mountpoint);
-
-                    editor.apply();
-
-                    refreshSummaryForConnectionSettings();
-
-                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, stringValue);
-
-                    return true;
+                //Opus Codec name is supposed to be static
+                if (stringValue.equals("audio/ogg; codec=opus")) {
+                    handleSampleRateEnabled(false);
+                    mountpoint = mountpoint.replace("ogg", "opus");
+                    editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
+                } else {
+                    handleSampleRateEnabled(true);
+                    mountpoint = mountpoint.replace("opus", "ogg");
                 }
+
+                editor.putString("connection_mountpoint", mountpoint);
+
+                editor.apply();
+
+                refreshSummaryForConnectionSettings();
+
+                sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, stringValue);
+
+                return true;
             });
 
             Preference button_util_conn_default = getPreferenceManager().findPreference("util_conn_default");
             if (button_util_conn_default != null) {
-                button_util_conn_default.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference arg0) {
-                        AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(getActivity());
-                        alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Utils.loadCMTSData(getActivity().getApplicationContext(), (new Manager(getActivity())).getCurrentProfile());
+                button_util_conn_default.setOnPreferenceClickListener(arg0 -> {
+                    AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(getActivity());
+                    alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, (dialog, which) -> {
+                        Utils.loadCMTSData(getActivity().getApplicationContext(), (new Manager(getActivity())).getCurrentProfile());
 
-                                refreshSummaryForConnectionSettings();
-                                handleSampleRateEnabled();
-                            }
-                        });
+                        refreshSummaryForConnectionSettings();
+                        handleSampleRateEnabled();
+                    });
 
-                        alertDialog.show();
+                    alertDialog.show();
 
 
-                        return true;
-                    }
+                    return true;
                 });
             }
 
             Preference button_util_qr_scan = getPreferenceManager().findPreference("util_qr_scan");
             if (button_util_qr_scan != null) {
-                button_util_qr_scan.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference arg0) {
+                button_util_qr_scan.setOnPreferenceClickListener(arg0 -> {
 
-                        IntentIntegrator integrator = new IntentIntegrator(PrefsFragment.this);
-                        integrator.setTitle("Please scan a fully qualified URI");
-                        integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
+                    IntentIntegrator integrator = new IntentIntegrator(PrefsFragment.this);
+                    integrator.setTitle("Please scan a fully qualified URI");
+                    integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
 
-                        return true;
-                    }
+                    return true;
                 });
             }
 
             Preference util_permission_check = getPreferenceManager().findPreference("util_permission_check");
             if (util_permission_check != null) {
-                util_permission_check.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference arg0) {
-                        Utils.requestPermissions(getActivity());
+                util_permission_check.setOnPreferenceClickListener(arg0 -> {
+                    Utils.requestPermissions(getActivity());
 
-                        return true;
-                    }
+                    return true;
                 });
             }
 
             Preference util_reset_dialogs = getPreferenceManager().findPreference("util_reset_dialogs");
             if (util_reset_dialogs != null) {
-                util_reset_dialogs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        Profile profile = (new Manager(getActivity())).getCurrentProfile();
-                        for (DialogIdentifier dialogIdentifier : DialogIdentifier.values()) {
-                            profile.getDialogState(dialogIdentifier).reset();
-                        }
-                        Toast.makeText(getActivity().getApplicationContext(), R.string.pref_title_utility_reset_dialogs_done, Toast.LENGTH_SHORT).show();
-                        return true;
+                util_reset_dialogs.setOnPreferenceClickListener(preference -> {
+                    Profile profile = (new Manager(getActivity())).getCurrentProfile();
+                    for (DialogIdentifier dialogIdentifier : DialogIdentifier.values()) {
+                        profile.getDialogState(dialogIdentifier).reset();
                     }
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.pref_title_utility_reset_dialogs_done, Toast.LENGTH_SHORT).show();
+                    return true;
                 });
             }
 
@@ -344,18 +327,12 @@ public class SettingsActivity extends PreferenceActivity {
                     alertDialog.setTitle(R.string.settings_qrcode_invalid_noauth_title);
                     alertDialog.setMessage(getString(R.string.settings_qrcode_invalid_noauth_message, u.toString()));
 
-                    alertDialog.setNegativeButton(R.string.mainactivity_quit_cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
+                    alertDialog.setNegativeButton(R.string.mainactivity_quit_cancel, (dialog, which) -> dialog.cancel());
 
-                    alertDialog.setPositiveButton(R.string.mainactivity_quit_ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent i = new Intent(Intent.ACTION_VIEW);
-                            i.setData(uf);
-                            startActivity(i);
-                        }
+                    alertDialog.setPositiveButton(R.string.mainactivity_quit_ok, (dialog, which) -> {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(uf);
+                        startActivity(i);
                     });
 
                     alertDialog.show();
