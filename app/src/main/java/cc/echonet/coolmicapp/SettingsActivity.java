@@ -165,7 +165,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
+        if (!Utils.onRequestPermissionsResult(getApplicationContext(), requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }

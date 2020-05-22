@@ -105,19 +105,19 @@ public class Utils {
         }
     }
 
-    static boolean onRequestPermissionsResult(Activity activity, int requestCode, String[] permissions, int[] grantResults) {
+    static boolean onRequestPermissionsResult(Context context, int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == Constants.PERMISSION_CHECK_REQUEST_CODE) {
             boolean permissions_ok = true;
 
             for (int i = 0; i < grantResults.length; i++) {
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                     permissions_ok = false;
-                    Toast.makeText(activity, activity.getString(R.string.settingsactivity_permission_not_granted, permissions[i]), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, context.getString(R.string.settingsactivity_permission_not_granted, permissions[i]), Toast.LENGTH_LONG).show();
                 }
             }
 
             if (permissions_ok) {
-                Toast.makeText(activity, R.string.settingsactivity_permissions_all_granted, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.settingsactivity_permissions_all_granted, Toast.LENGTH_LONG).show();
             }
 
             return true;
