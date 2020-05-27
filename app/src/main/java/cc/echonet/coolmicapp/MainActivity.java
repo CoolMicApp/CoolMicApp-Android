@@ -87,6 +87,8 @@ public class MainActivity extends Activity implements EventListener {
     private Drawable buttonColor;
     private ClipboardManager myClipboard;
 
+    private boolean isRecording = false;
+
     public MainActivity() {
         super();
 
@@ -142,6 +144,7 @@ public class MainActivity extends Activity implements EventListener {
     private void exitApp() {
         backgroundServiceClient.stopRecording();
         backgroundServiceClient.disconnect();
+        isRecording = false;
 
         stopService(new Intent(this, Server.class));
 
@@ -184,15 +187,19 @@ public class MainActivity extends Activity implements EventListener {
     protected void onStart() {
         super.onStart();
         // Bind to the service
-        backgroundServiceClient.connect();
-        controlRecordingUI(currentState);
+        if (!isRecording){
+            backgroundServiceClient.connect();
+            controlRecordingUI(currentState);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // Unbind from the service
-        backgroundServiceClient.disconnect();
+        if (!isRecording){
+            // Unbind from the service
+            backgroundServiceClient.disconnect();
+        }
     }
 
 
@@ -473,12 +480,14 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServiceStartRecording() {
+        isRecording = true;
         controlVuMeterUI();
         start_button.setClickable(true);
     }
 
     @Override
     public void onBackgroundServiceStopRecording() {
+        isRecording = false;
         start_button.setClickable(true);
     }
 
