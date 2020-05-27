@@ -38,6 +38,8 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import androidx.core.app.NavUtils;
+
+import android.preference.PreferenceScreen;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -392,6 +394,16 @@ public class SettingsActivity extends PreferenceActivity {
             for (Preference preference : preferencesToUpdate) {
                 sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, getPreferenceManager().getSharedPreferences().getString(preference.getKey(), ""));
             }
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            if (preference instanceof EditTextPreference){
+                EditTextPreference prefText = (EditTextPreference) preference;
+                prefText.getEditText().requestFocus();
+                Utils.showSoftInput(getActivity());
+            }
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
     }
 }

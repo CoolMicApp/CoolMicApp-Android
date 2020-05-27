@@ -31,6 +31,8 @@ import android.net.ConnectivityManager;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.util.Locale;
@@ -188,5 +190,17 @@ public class Utils {
         } else {
             return String.format(Locale.ENGLISH, "%.2f", power);
         }
+    }
+
+
+    /**
+     * Show soft keyboard, Dialog uses
+     *
+     * @param activity Current Activity
+     */
+    public static void showSoftInput(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }
