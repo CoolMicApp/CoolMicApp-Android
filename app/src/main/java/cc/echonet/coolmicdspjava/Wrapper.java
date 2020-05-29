@@ -39,19 +39,21 @@ public class Wrapper {
     }
 
     public static WrapperConstants.WrapperInitializationStatus init() {
-        try {
-            System.loadLibrary("ogg");
-            System.loadLibrary("vorbis");
-            System.loadLibrary("shout");
-            System.loadLibrary("coolmic-dsp");
-            System.loadLibrary("coolmic-dsp-java");
+        if (state == WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED) {
+            try {
+                System.loadLibrary("ogg");
+                System.loadLibrary("vorbis");
+                System.loadLibrary("shout");
+                System.loadLibrary("coolmic-dsp");
+                System.loadLibrary("coolmic-dsp-java");
 
-            initNative();
+                initNative();
 
-            state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED;
-        } catch (Throwable ex) {
-            initException = ex;
-            state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR;
+                state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED;
+            } catch (Throwable ex) {
+                initException = ex;
+                state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR;
+            }
         }
 
         return state;
@@ -83,5 +85,5 @@ public class Wrapper {
 
     public static native void initNative();
 
-    public static native int init(Object handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
+    public static native int init(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
 }

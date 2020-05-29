@@ -60,12 +60,13 @@ import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import cc.echonet.coolmicapp.MainActivity;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicapp.Utils;
+import cc.echonet.coolmicdspjava.CallbackHandler;
 import cc.echonet.coolmicdspjava.InputStreamAdapter;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 
-public class Server extends Service {
+public class Server extends Service implements CallbackHandler {
     private static final String TAG = "BGS/Server";
 
     private final List<Messenger> clients = new ArrayList<>();
@@ -644,7 +645,7 @@ public class Server extends Service {
     }
 
     @SuppressWarnings("unused")
-    private void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
+    public void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
         Log.d("CBHandler", String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
 
         switch (what) {
@@ -755,7 +756,7 @@ public class Server extends Service {
     }
 
     @SuppressWarnings("unused")
-    private void callbackVUMeterHandler(VUMeterResult result) {
+    public void callbackVUMeterHandler(VUMeterResult result) {
         Log.d("Handler VUMeter: ", String.valueOf(result.global_power));
 
         Message msgReply = createMessage(Constants.S2C_MSG_VUMETER);
