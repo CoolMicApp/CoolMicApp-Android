@@ -132,8 +132,8 @@ public class Utils {
         Toast.makeText(context, R.string.settings_conn_defaults_loaded, Toast.LENGTH_SHORT).show();
     }
 
-    public static AlertDialog.Builder buildAlertDialogCMTSTOS(Activity activity) {
-        AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(activity);
+    public static AlertDialog.Builder buildAlertDialogCMTSTOS(Context context) {
+        AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(context);
         alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
         alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);
         alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
