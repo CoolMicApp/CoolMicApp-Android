@@ -346,18 +346,6 @@ public class MainActivity extends Activity implements EventListener {
     public void onBackPressed() {
     }
 
-    private long getChannels() {
-        if (currentState == Constants.CONTROL_UI.CONTROL_UI_CONNECTED && backgroundServiceState != null) {
-            return backgroundServiceState.channels;
-        }
-
-        if (profile != null) {
-            return profile.getAudio().getChannels();
-        }
-
-        return 2; // default.
-    }
-
     private void controlRecordingUI(Constants.CONTROL_UI state) {
         if (state == currentState) {
             return;
