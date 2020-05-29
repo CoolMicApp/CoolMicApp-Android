@@ -216,12 +216,7 @@ public class MainActivity extends Activity implements EventListener {
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
 
         if (imageView1 != null) {
-            imageView1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onImageClick(v);
-                }
-            });
+            imageView1.setOnClickListener(v -> onImageClick(v));
         }
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -276,39 +271,30 @@ public class MainActivity extends Activity implements EventListener {
 
         controlRecordingUI(currentState);
 
-        start_button.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                backgroundServiceClient.reloadParameters();
-                return true;
-            }
+        start_button.setOnLongClickListener(view -> {
+            backgroundServiceClient.reloadParameters();
+            return true;
         });
 
-        start_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (start_button_debounce_active)
-                    return;
-                start_button_debounce_active = true;
-                v.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        start_button_debounce_active = false;
-                    }
-                }, 500);
-                start_button.setClickable(false);
-                startRecording();
-            }
+        start_button.setOnClickListener(v -> {
+            if (start_button_debounce_active)
+                return;
+            start_button_debounce_active = true;
+            v.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    start_button_debounce_active = false;
+                }
+            }, 500);
+            start_button.setClickable(false);
+            startRecording();
         });
 
 
-        findViewById(R.id.next_segment_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent fc = new Intent(Intent.ACTION_GET_CONTENT);
-                fc.setType("*/*");
-                startActivityForResult(fc, Constants.NEXTSEGMENT_REQUEST_CODE);
-            }
+        findViewById(R.id.next_segment_button).setOnClickListener(view -> {
+            Intent fc = new Intent(Intent.ACTION_GET_CONTENT);
+            fc.setType("*/*");
+            startActivityForResult(fc, Constants.NEXTSEGMENT_REQUEST_CODE);
         });
     }
 
