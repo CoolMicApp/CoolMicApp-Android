@@ -43,7 +43,7 @@ import cc.echonet.coolmicapp.Configuration.Profile;
  * Created by stjauernick@de.loewenfelsen.net on 10/13/16.
  */
 
-public class Utils {
+public final class Utils {
     public static String getStringByName(Context context, String name) {
         int resid = context.getResources().getIdentifier(name, "string", context.getPackageName());
 
@@ -134,7 +134,7 @@ public class Utils {
         Toast.makeText(context, R.string.settings_conn_defaults_loaded, Toast.LENGTH_SHORT).show();
     }
 
-    public static AlertDialog.Builder buildAlertDialogCMTSTOS(Context context) {
+    static AlertDialog.Builder buildAlertDialogCMTSTOS(Context context) {
         AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(context);
         alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
         alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);
@@ -198,7 +198,7 @@ public class Utils {
      *
      * @param activity Current Activity
      */
-    public static void showSoftInput(Activity activity) {
+    static void showSoftInput(Activity activity) {
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
