@@ -407,7 +407,20 @@ public class Server extends Service implements CallbackHandler {
         if (icecast != null)
             icecast.close();
 
-        icecast = new Icecast(server.getProtocol(), server.getHostname(), server.getPort());
+        try {
+            String protocol = server.getProtocol();
+            String hostname = server.getHostname();
+            int port = server.getPort();
+            icecast = new Icecast(protocol, hostname, port);
+        } catch (Exception e) {
+            Message msgReply = createMessage(Constants.S2C_MSG_ERROR);
+            Bundle bundle = msgReply.getData();
+
+            bundle.putString("error", getString(R.string.mainactivity_callback_error_invalid_server));
+
+            sendMessage(replyTo, msgReply);
+            return;
+        }
         icecast.setCredentials(server.getUsername(), server.getPassword());
 
         if (driver.hasCore()) {
