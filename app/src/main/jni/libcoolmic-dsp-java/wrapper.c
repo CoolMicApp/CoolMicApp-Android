@@ -440,6 +440,8 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setReconnectionProfile(JNIEnv *env, jclas
                                                               jstring profile_) {
     const char *profile = (*env)->GetStringUTFChars(env, profile_, 0);
 
+    LOGI("setReconnectionProfile profile=%s", profile);
+
     if (coolmic_simple_obj == NULL)
     {
         LOGI("setReconnectionProfile bailing - no core obj");
@@ -449,6 +451,8 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setReconnectionProfile(JNIEnv *env, jclas
     jint result = coolmic_simple_set_reconnection_profile(coolmic_simple_obj, profile);
 
     (*env)->ReleaseStringUTFChars(env, profile_, profile);
+
+    LOGI("setReconnectionProfile result=%i", (int)result);
 
     return result;
 }

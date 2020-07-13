@@ -84,6 +84,8 @@ final class Driver implements Closeable {
         this.profile = profile;
         this.callbackHandler = callbackHandler;
 
+        Log.d(TAG, "Driver() called with: context = [" + context + "], profile = [" + profile + "], callbackHandler = [" + callbackHandler + "]");
+
         initWrapper();
     }
 

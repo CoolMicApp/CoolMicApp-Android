@@ -100,6 +100,8 @@ public class Server extends Service implements CallbackHandler {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
 
+        Log.d(TAG, "attachBaseContext");
+
         manager = new Manager(this);
         profile = manager.getCurrentProfile();
         driver = new Driver(this, profile, this);
