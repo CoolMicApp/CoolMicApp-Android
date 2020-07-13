@@ -79,7 +79,7 @@ public final class Wrapper {
 
     public static synchronized native int nextSegment(InputStreamAdapter inputStreamAdapter);
 
-    public static synchronized native void initNative();
+    private static synchronized native void initNative();
 
     public static synchronized native int init(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
 }
