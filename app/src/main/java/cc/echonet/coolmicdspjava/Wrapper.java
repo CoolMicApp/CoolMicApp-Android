@@ -63,8 +63,6 @@ public final class Wrapper {
 
     public static synchronized native int stop();
 
-    public static synchronized native int ref();
-
     public static synchronized native int unref();
 
     public static synchronized native boolean hasCore();
@@ -78,8 +76,6 @@ public final class Wrapper {
     public static synchronized native int setMasterGainMono(int scale, int gain);
 
     public static synchronized native int setMasterGainStereo(int scale, int gain_left, int gain_right);
-
-    public static synchronized native int resetMasterGain();
 
     public static synchronized native int nextSegment(InputStreamAdapter inputStreamAdapter);
 

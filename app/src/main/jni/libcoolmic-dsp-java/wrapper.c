@@ -85,22 +85,6 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env,
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_ref(JNIEnv * env, jclass obj)
-{
-    LOGI("start ref");
-
-    if(coolmic_simple_obj == NULL)
-    {
-        LOGI("ref bailing - no core obj");
-        return -999666;
-    }
-
-    return igloo_ro_ref(coolmic_simple_obj);
-}
-#pragma clang diagnostic pop
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env, jclass obj)
 {
     LOGI("start unref");
@@ -497,14 +481,6 @@ static int __setMasterGain(unsigned int channels, uint16_t scale, const uint16_t
 
     return ret;
 }
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jint JNICALL
-Java_cc_echonet_coolmicdspjava_Wrapper_resetMasterGain(JNIEnv *env, jclass type) {
-    return __setMasterGain(0, 0, NULL);
-}
-#pragma clang diagnostic pop
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
