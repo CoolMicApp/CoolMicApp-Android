@@ -33,6 +33,7 @@
 #include <igloo/types.h>
 #include <android/log.h>
 #include <igloo/ro.h>
+#include <malloc.h>
 
 
 #define LOG_TAG "wrapper.c"
@@ -52,16 +53,40 @@ typedef struct {
     jmethodID callbackHandlerVUMeterMethod;
 } wrapper_t;
 
-static wrapper_t g_wrapper;
-static wrapper_t * get_wrapper_t(jobject obj) {
-    return &g_wrapper;
+static wrapper_t *get_wrapper_t(JNIEnv *env, jobject obj) {
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fidNativeObject = (*env)->GetFieldID(env, cls, "nativeObject", "J");
+    wrapper_t * wrapper = (void*)(jlong)(*env)->GetLongField(env, obj, fidNativeObject);
+
+    LOGI("wrapper=%p", wrapper);
+
+    if (wrapper == NULL) {
+        wrapper = calloc(1, sizeof(wrapper_t));
+        wrapper->vumeter_result_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/VUMeterResult"));
+        wrapper->wrapper_callback_events_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents"));
+        (*env)->SetLongField(env, obj, fidNativeObject, wrapper);
+    }
+
+    return wrapper;
+}
+
+static void free_wrapper_t(JNIEnv *env, jobject obj, wrapper_t ** wrapper) {
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fidNativeObject = (*env)->GetFieldID(env, cls, "nativeObject", "J");
+
+    (*env)->DeleteGlobalRef(env, (*wrapper)->callbackHandlerObject);
+
+    free(*wrapper);
+    *wrapper = NULL;
+
+    (*env)->SetLongField(env, obj, fidNativeObject, 0);
 }
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env, jobject obj)
 {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     LOGI("start start");
 
     if(wrapper->coolmic_simple_obj == NULL)
@@ -78,7 +103,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env, jobject obj)
 {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     LOGI("start stop");
 
     if(wrapper->coolmic_simple_obj == NULL)
@@ -96,7 +121,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env,
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env, jobject obj)
 {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     LOGI("start unref");
 
     if(wrapper->coolmic_simple_obj == NULL)
@@ -112,6 +137,8 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
         wrapper->coolmic_simple_obj = NULL;
     }
 
+    free_wrapper_t(env, obj, &wrapper);
+
     return error;
 }
 #pragma clang diagnostic pop
@@ -120,7 +147,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jboolean JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_hasCore(JNIEnv * env, jobject obj)
 {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     LOGI("hasCore %p %d", wrapper->coolmic_simple_obj,  (wrapper->coolmic_simple_obj == NULL ? 0 : 1));
 
     return (jboolean) (wrapper->coolmic_simple_obj == NULL ? 0 : 1);
@@ -312,7 +339,7 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jstring title, jstring artist, jdouble quality, jint restart)
 {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     int ret;
 
     LOGI("performMetaDataQualityUpdate start");
@@ -360,7 +387,7 @@ static int logging_callback(coolmic_logging_level_t level, const char *msg)
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
 {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     LOGI("start init");
 
     if(wrapper->coolmic_simple_obj != NULL)
@@ -429,7 +456,7 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_init(JNIEnv * env, 
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(JNIEnv * env, jobject obj, jint interval)
 {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     LOGI("setVuMeterInterval start");
 
     if(wrapper->coolmic_simple_obj == NULL)
@@ -443,20 +470,9 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic pop
-JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_initNative(JNIEnv * env, jobject obj)
-{
-    wrapper_t * wrapper = get_wrapper_t(obj);
-    wrapper->vumeter_result_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/VUMeterResult"));
-    wrapper->wrapper_callback_events_class = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "cc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents"));
-}
-#pragma clang diagnostic pop
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL
 Java_cc_echonet_coolmicdspjava_Wrapper_setReconnectionProfile(JNIEnv *env, jobject obj, jstring profile_) {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     const char *profile = (*env)->GetStringUTFChars(env, profile_, 0);
 
     LOGI("setReconnectionProfile profile=%s", profile);
@@ -510,7 +526,7 @@ static int __setMasterGain(wrapper_t * wrapper, unsigned int channels, uint16_t 
 JNIEXPORT jint JNICALL
 Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainStereo(JNIEnv *env, jobject obj, jint scale,
                                                            jint gain_left, jint gain_right) {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     const uint16_t cgain[2] = {(uint16_t)gain_left, (uint16_t)gain_right};
 
     return __setMasterGain(wrapper, 2, (uint16_t)scale, cgain);
@@ -522,7 +538,7 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainStereo(JNIEnv *env, jobject 
 JNIEXPORT jint JNICALL
 Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainMono(JNIEnv *env, jobject obj, jint scale,
                                                          jint gain) {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     const uint16_t cgain[1] = {(uint16_t)gain};
 
     return __setMasterGain(wrapper, 1, (uint16_t)scale, cgain);
@@ -531,7 +547,7 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainMono(JNIEnv *env, jobject ob
 JNIEXPORT jint JNICALL
 Java_cc_echonet_coolmicdspjava_Wrapper_nextSegment(JNIEnv *env, jobject obj,
                                                    jobject input_stream_adapter) {
-    wrapper_t * wrapper = get_wrapper_t(obj);
+    wrapper_t * wrapper = get_wrapper_t(env, obj);
     coolmic_iohandle_t *io;
     coolmic_simple_segment_t *segment;
 

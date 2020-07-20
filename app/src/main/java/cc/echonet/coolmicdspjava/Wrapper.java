@@ -30,6 +30,9 @@ public final class Wrapper {
     private static WrapperConstants.WrapperInitializationStatus state = WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED;
     private static Throwable initException = null;
 
+    @SuppressWarnings({"unused", "FieldMayBeFinal"})
+    private long nativeObject = 0x0;
+
     public synchronized WrapperConstants.WrapperInitializationStatus getState() {
         return state;
     }
@@ -59,7 +62,6 @@ public final class Wrapper {
 
     public Wrapper() {
         init();
-        initNative();
     }
 
     public synchronized native int start();
@@ -81,8 +83,6 @@ public final class Wrapper {
     public synchronized native int setMasterGainStereo(int scale, int gain_left, int gain_right);
 
     public synchronized native int nextSegment(InputStreamAdapter inputStreamAdapter);
-
-    private synchronized native void initNative();
 
     public synchronized native int init(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
 }
