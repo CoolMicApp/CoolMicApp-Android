@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -123,8 +122,6 @@ final class Driver implements Closeable {
         Log.d(TAG, "Minimum Buffer Size: " + bufferSize);
         int status = wrapper.prepare(callbackHandler, hostname, port_num, username, password, mountpoint, codec, sampleRate, channel, bufferSize);
 
-        hasCore();
-
         if (status != 0) {
             throw new IOException("Failed to init Core: " + status);
         }
@@ -204,7 +201,7 @@ final class Driver implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         stopStream();
     }
 }

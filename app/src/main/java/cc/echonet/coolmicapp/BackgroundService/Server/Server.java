@@ -530,8 +530,6 @@ public class Server extends Service implements CallbackHandler {
                 state.txtState = "Connecting";
 
                 break;
-            case THREAD_PRE_STOP:
-                break;
             case THREAD_STOP:
                 state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
 
