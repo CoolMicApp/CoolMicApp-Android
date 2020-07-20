@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -47,27 +48,23 @@ import cc.echonet.coolmicdspjava.WrapperConstants;
 final class Driver implements Closeable {
     private static final String TAG = "BGS/Driver";
 
+    private final @NonNull Wrapper wrapper = new Wrapper();
     private final @NonNull Context context;
     private @NonNull Profile profile;
     private final @NonNull CallbackHandler callbackHandler;
 
     private WrapperConstants.WrapperInitializationStatus initWrapper() {
-        final WrapperConstants.WrapperInitializationStatus previousStatus = Wrapper.getState();
-        final WrapperConstants.WrapperInitializationStatus status = Wrapper.init();
+        final WrapperConstants.WrapperInitializationStatus status = wrapper.getState();
         final Context applicationContext = context.getApplicationContext();
 
-        Log.d(TAG, "initWrapper: status = " + previousStatus + " -> " + status);
+        Log.d(TAG, "initWrapper: status = " + status);
 
         switch (status) {
             case WRAPPER_UNINITIALIZED:
                 break;
             case WRAPPER_INITIALIZATION_ERROR:
-                if (previousStatus == status) {
-                    Toast.makeText(applicationContext, R.string.mainactivity_native_components_previnit_error, Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d(TAG, "initWrapper: Wrapper's exception: " + Wrapper.getInitException().toString());
+                    Log.d(TAG, "initWrapper: Wrapper's exception: " + wrapper.getInitException().toString());
                     Toast.makeText(applicationContext, R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
-                }
                 break;
             case WRAPPER_INTITIALIZED:
                 Log.d(TAG, "initWrapper: Wrapper is ready.");
@@ -98,7 +95,7 @@ final class Driver implements Closeable {
     }
 
     public boolean hasCore() {
-        return isReady() && Wrapper.hasCore();
+        return isReady() && wrapper.hasCore();
     }
 
     public void startStream() throws IOException {
@@ -123,7 +120,7 @@ final class Driver implements Closeable {
         Log.d(TAG, Integer.toString(port_num));
 
         Log.d(TAG, "Minimum Buffer Size: " + buffersize);
-        int status = Wrapper.init(callbackHandler, hostname, port_num, username, password, mountpoint, codec_string, sampleRate, channel, buffersize);
+        int status = wrapper.init(callbackHandler, hostname, port_num, username, password, mountpoint, codec_string, sampleRate, channel, buffersize);
 
         hasCore();
 
@@ -131,23 +128,23 @@ final class Driver implements Closeable {
             throw new IOException("Failed to init Core: " + status);
         }
 
-        status = Wrapper.performMetaDataQualityUpdate(title, artist, quality, 0);
+        status = wrapper.performMetaDataQualityUpdate(title, artist, quality, 0);
 
         if (status != 0) {
             throw new IOException(context.getString(R.string.exception_failed_metadata_quality, status));
         }
 
         if (profile.getServer().getReconnect()) {
-            status = Wrapper.setReconnectionProfile("enabled");
+            status = wrapper.setReconnectionProfile("enabled");
         } else {
-            status = Wrapper.setReconnectionProfile("disabled");
+            status = wrapper.setReconnectionProfile("disabled");
         }
 
         if (status != 0) {
             throw new IOException(context.getString(R.string.exception_failed_reconnect, status));
         }
 
-        status = Wrapper.start();
+        status = wrapper.start();
 
         Log.d(TAG, "Status:" + status);
 
@@ -160,13 +157,13 @@ final class Driver implements Closeable {
         /* Normalize interval to a sample rate of 48kHz (as per Opus specs). */
         interval = (interval * sampleRate) / 48000;
 
-        Wrapper.setVuMeterInterval(interval);
+        wrapper.setVuMeterInterval(interval);
     }
 
     public boolean stopStream() {
         if (hasCore()) {
-            Wrapper.stop();
-            Wrapper.unref();
+            wrapper.stop();
+            wrapper.unref();
             return true;
         }
         return false;
@@ -177,21 +174,21 @@ final class Driver implements Closeable {
 
         track = profile.getTrack();
 
-        Wrapper.performMetaDataQualityUpdate(track.getTitle(), track.getArtist(), profile.getCodec().getQuality(), 1);
+        wrapper.performMetaDataQualityUpdate(track.getTitle(), track.getArtist(), profile.getCodec().getQuality(), 1);
 
         if (profile.getServer().getReconnect()) {
-            Wrapper.setReconnectionProfile("enabled");
+            wrapper.setReconnectionProfile("enabled");
         } else {
-            Wrapper.setReconnectionProfile("disabled");
+            wrapper.setReconnectionProfile("disabled");
         }
     }
 
     public void setGain(int scale, int left, int right) {
-        Wrapper.setMasterGainStereo(scale, left, right);
+        wrapper.setMasterGainStereo(scale, left, right);
     }
 
     public void setGain(int scale, int gain) {
-        Wrapper.setMasterGainMono(scale, gain);
+        wrapper.setMasterGainMono(scale, gain);
     }
 
     public void nextSegment(@Nullable InputStream inputStream) {
@@ -203,7 +200,7 @@ final class Driver implements Closeable {
             inputStreamAdapter = new InputStreamAdapter(inputStream);
         }
 
-        Wrapper.nextSegment(inputStreamAdapter);
+        wrapper.nextSegment(inputStreamAdapter);
     }
 
     @Override

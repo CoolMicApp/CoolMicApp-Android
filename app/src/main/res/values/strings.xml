@@ -238,7 +238,6 @@
     <string name="settingsactivity_permission_not_granted">Permission %1$s was not granted</string>
     <string name="settingsactivity_cannot_get_mountpoint">Can not get mountpoint, ignoring.</string>
     <string name="mainactivity_native_components_init_error">Could not initialize native components :( Blocking controls</string>
-    <string name="mainactivity_native_components_previnit_error">Previous problem detected with native components :( Blocking controls</string>
     <string name="mainactivity_native_components_unknown_state">Native components in unknown state</string>
     <string name="mainactivity_quit_cancel">Cancel</string>
     <string name="mainactivity_quit_ok">OK</string>
