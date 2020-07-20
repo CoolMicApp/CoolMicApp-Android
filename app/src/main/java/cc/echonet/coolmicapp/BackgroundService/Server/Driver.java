@@ -113,7 +113,7 @@ final class Driver implements Closeable {
         double quality = profile.getCodec().getQuality();
         String title = profile.getTrack().getTitle();
         String artist = profile.getTrack().getArtist();
-        String codec_string = profile.getCodec().getType();
+        String codec = profile.getCodec().getType();
 
         int buffersize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
 
@@ -121,7 +121,7 @@ final class Driver implements Closeable {
         Log.d(TAG, Integer.toString(port_num));
 
         Log.d(TAG, "Minimum Buffer Size: " + buffersize);
-        int status = wrapper.init(callbackHandler, hostname, port_num, username, password, mountpoint, codec_string, sampleRate, channel, buffersize);
+        int status = wrapper.init(callbackHandler, hostname, port_num, username, password, mountpoint, codec, sampleRate, channel, buffersize);
 
         hasCore();
 
