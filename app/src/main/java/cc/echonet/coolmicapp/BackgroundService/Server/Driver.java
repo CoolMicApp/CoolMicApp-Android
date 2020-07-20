@@ -121,7 +121,7 @@ final class Driver implements Closeable {
         Log.d(TAG, Integer.toString(port_num));
 
         Log.d(TAG, "Minimum Buffer Size: " + buffersize);
-        int status = wrapper.init(callbackHandler, hostname, port_num, username, password, mountpoint, codec, sampleRate, channel, buffersize);
+        int status = wrapper.prepare(callbackHandler, hostname, port_num, username, password, mountpoint, codec, sampleRate, channel, buffersize);
 
         hasCore();
 

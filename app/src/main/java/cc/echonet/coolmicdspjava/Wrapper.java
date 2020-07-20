@@ -80,5 +80,5 @@ public final class Wrapper implements Closeable {
 
     public synchronized native int nextSegment(InputStreamAdapter inputStreamAdapter);
 
-    public synchronized native int init(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
+    public synchronized native int prepare(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
 }
