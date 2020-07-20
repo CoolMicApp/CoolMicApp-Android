@@ -22,48 +22,43 @@
 
 package cc.echonet.coolmicdspjava;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+
 import java.io.Closeable;
 
 /**
  * Created by stephanj on 2/22/15.
  */
 public final class Wrapper implements Closeable {
-
-    private static WrapperConstants.WrapperInitializationStatus state = WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED;
-    private static Throwable initException = null;
+    private static @NonNull WrapperConstants.WrapperInitializationStatus state;
+    private static @Nullable Throwable initException;
 
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
     private long nativeObject = 0x0;
 
-    public synchronized WrapperConstants.WrapperInitializationStatus getState() {
-        return state;
-    }
+    static {
+        try {
+            System.loadLibrary("ogg");
+            System.loadLibrary("vorbis");
+            System.loadLibrary("shout");
+            System.loadLibrary("coolmic-dsp");
+            System.loadLibrary("coolmic-dsp-java");
 
-    public synchronized Throwable getInitException() {
-        return initException;
-    }
-
-    private static synchronized WrapperConstants.WrapperInitializationStatus init() {
-        if (state == WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED) {
-            try {
-                System.loadLibrary("ogg");
-                System.loadLibrary("vorbis");
-                System.loadLibrary("shout");
-                System.loadLibrary("coolmic-dsp");
-                System.loadLibrary("coolmic-dsp-java");
-
-                state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED;
-            } catch (Throwable ex) {
-                initException = ex;
-                state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR;
-            }
+            initException = null;
+            state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED;
+        } catch (Throwable ex) {
+            initException = ex;
+            state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INITIALIZATION_ERROR;
         }
+    }
 
+    public synchronized @NonNull WrapperConstants.WrapperInitializationStatus getState() {
         return state;
     }
 
-    public Wrapper() {
-        init();
+    public synchronized @Nullable Throwable getInitException() {
+        return initException;
     }
 
     public synchronized native int start();

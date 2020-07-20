@@ -35,6 +35,7 @@ import androidx.core.app.NotificationCompat;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Server;
@@ -63,7 +64,7 @@ final class Driver implements Closeable {
             case WRAPPER_UNINITIALIZED:
                 break;
             case WRAPPER_INITIALIZATION_ERROR:
-                    Log.d(TAG, "initWrapper: Wrapper's exception: " + wrapper.getInitException().toString());
+                    Log.d(TAG, "initWrapper: Wrapper's exception: " + Objects.requireNonNull(wrapper.getInitException()).toString());
                     Toast.makeText(applicationContext, R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
                 break;
             case WRAPPER_INTITIALIZED:
