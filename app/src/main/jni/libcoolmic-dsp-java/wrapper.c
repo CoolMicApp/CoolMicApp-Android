@@ -154,6 +154,8 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
     jobject THREAD_PRE_STOP = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidThreadPreStop);
     jfieldID fidThreadPostStop    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "THREAD_POST_STOP", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
     jobject THREAD_POST_STOP = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidThreadPostStop);
+    jfieldID fidThreadStop    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "THREAD_STOP", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
+    jobject THREAD_STOP = (*env)->GetStaticObjectField(env, wrapper_callback_events_class, fidThreadStop);
     jmethodID methodId = (*env)->GetMethodID(env, vumeter_result_class, "<init>", "(IIJIDII)V");
     jmethodID vumeterResultChannelValues = (*env)->GetMethodID(env, vumeter_result_class, "setChannelPeakPower", "(IIDII)V");
     jfieldID fidSTREAMSTATE    = (*env)->GetStaticFieldID(env, wrapper_callback_events_class , "STREAMSTATE", "Lcc/echonet/coolmicdspjava/WrapperConstants$WrapperCallbackEvents;");
@@ -184,6 +186,7 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
             (*env)->DeleteLocalRef(env, THREAD_POST_START);
             (*env)->DeleteLocalRef(env, THREAD_PRE_STOP);
             (*env)->DeleteLocalRef(env, THREAD_POST_STOP);
+            (*env)->DeleteLocalRef(env, THREAD_STOP);
             (*env)->DeleteLocalRef(env, STREAMSTATE);
             (*env)->DeleteLocalRef(env, RECONNECT);
             (*env)->DeleteLocalRef(env, SEGMENT_CONNECT);
@@ -276,6 +279,7 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
     (*env)->DeleteLocalRef(env, THREAD_POST_START);
     (*env)->DeleteLocalRef(env, THREAD_PRE_STOP);
     (*env)->DeleteLocalRef(env, THREAD_POST_STOP);
+    (*env)->DeleteLocalRef(env, THREAD_STOP);
     (*env)->DeleteLocalRef(env, STREAMSTATE);
     (*env)->DeleteLocalRef(env, RECONNECT);
     (*env)->DeleteLocalRef(env, SEGMENT_CONNECT);
