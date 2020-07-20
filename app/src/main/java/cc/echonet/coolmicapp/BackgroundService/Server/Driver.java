@@ -162,8 +162,7 @@ final class Driver implements Closeable {
 
     public boolean stopStream() {
         if (hasCore()) {
-            wrapper.stop();
-            wrapper.unref();
+            wrapper.close();
             return true;
         }
         return false;

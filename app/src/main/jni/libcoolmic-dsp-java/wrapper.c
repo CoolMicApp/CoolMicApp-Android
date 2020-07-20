@@ -74,6 +74,7 @@ static void free_wrapper_t(JNIEnv *env, jobject obj, wrapper_t ** wrapper) {
     jclass cls = (*env)->GetObjectClass(env, obj);
     jfieldID fidNativeObject = (*env)->GetFieldID(env, cls, "nativeObject", "J");
 
+    igloo_ro_unref((*wrapper)->coolmic_simple_obj);
     (*env)->DeleteGlobalRef(env, (*wrapper)->callbackHandlerObject);
 
     free(*wrapper);
@@ -101,25 +102,7 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_start(JNIEnv * env
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_stop(JNIEnv * env, jobject obj)
-{
-    wrapper_t * wrapper = get_wrapper_t(env, obj);
-    LOGI("start stop");
-
-    if(wrapper->coolmic_simple_obj == NULL)
-    {
-        LOGI("stop bailing - no core obj");
-        return -999666;
-    }
-
-
-    return coolmic_simple_stop(wrapper->coolmic_simple_obj);
-}
-#pragma clang diagnostic pop
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env, jobject obj)
+JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_close(JNIEnv * env, jobject obj)
 {
     wrapper_t * wrapper = get_wrapper_t(env, obj);
     LOGI("start unref");
@@ -127,19 +110,9 @@ JNIEXPORT jint JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_unref(JNIEnv * env
     if(wrapper->coolmic_simple_obj == NULL)
     {
         LOGI("unref bailing - no core obj");
-        return -999666;
-    }
-
-    int error =  igloo_ro_unref(wrapper->coolmic_simple_obj);
-
-    if(error == COOLMIC_ERROR_NONE)
-    {
-        wrapper->coolmic_simple_obj = NULL;
     }
 
     free_wrapper_t(env, obj, &wrapper);
-
-    return error;
 }
 #pragma clang diagnostic pop
 

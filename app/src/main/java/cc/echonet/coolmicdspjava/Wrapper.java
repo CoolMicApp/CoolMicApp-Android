@@ -22,10 +22,12 @@
 
 package cc.echonet.coolmicdspjava;
 
+import java.io.Closeable;
+
 /**
  * Created by stephanj on 2/22/15.
  */
-public final class Wrapper {
+public final class Wrapper implements Closeable {
 
     private static WrapperConstants.WrapperInitializationStatus state = WrapperConstants.WrapperInitializationStatus.WRAPPER_UNINITIALIZED;
     private static Throwable initException = null;
@@ -66,9 +68,8 @@ public final class Wrapper {
 
     public synchronized native int start();
 
-    public synchronized native int stop();
-
-    public synchronized native int unref();
+    @Override
+    public synchronized native void close();
 
     public synchronized native boolean hasCore();
 
