@@ -497,8 +497,8 @@ static int __setMasterGain(wrapper_t * wrapper, unsigned int channels, uint16_t 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL
-Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainStereo(JNIEnv *env, jobject obj, jint scale,
-                                                           jint gain_left, jint gain_right) {
+Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGain__III(JNIEnv *env, jobject obj, jint scale,
+                                                          jint gain_left, jint gain_right) {
     wrapper_t * wrapper = get_wrapper_t(env, obj);
     const uint16_t cgain[2] = {(uint16_t)gain_left, (uint16_t)gain_right};
 
@@ -509,7 +509,7 @@ Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainStereo(JNIEnv *env, jobject 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 JNIEXPORT jint JNICALL
-Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGainMono(JNIEnv *env, jobject obj, jint scale,
+Java_cc_echonet_coolmicdspjava_Wrapper_setMasterGain__II(JNIEnv *env, jobject obj, jint scale,
                                                          jint gain) {
     wrapper_t * wrapper = get_wrapper_t(env, obj);
     const uint16_t cgain[1] = {(uint16_t)gain};

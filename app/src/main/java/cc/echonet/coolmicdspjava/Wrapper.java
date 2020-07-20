@@ -74,9 +74,9 @@ public final class Wrapper implements Closeable {
 
     public synchronized native int setReconnectionProfile(String profile);
 
-    public synchronized native int setMasterGainMono(int scale, int gain);
+    public synchronized native int setMasterGain(int scale, int gain);
 
-    public synchronized native int setMasterGainStereo(int scale, int gain_left, int gain_right);
+    public synchronized native int setMasterGain(int scale, int gainLeft, int gainRight);
 
     public synchronized native int nextSegment(InputStreamAdapter inputStreamAdapter);
 

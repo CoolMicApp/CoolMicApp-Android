@@ -184,11 +184,11 @@ final class Driver implements Closeable {
     }
 
     public void setGain(int scale, int left, int right) {
-        wrapper.setMasterGainStereo(scale, left, right);
+        wrapper.setMasterGain(scale, left, right);
     }
 
     public void setGain(int scale, int gain) {
-        wrapper.setMasterGainMono(scale, gain);
+        wrapper.setMasterGain(scale, gain);
     }
 
     public void nextSegment(@Nullable InputStream inputStream) {
