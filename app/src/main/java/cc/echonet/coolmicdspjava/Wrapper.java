@@ -66,7 +66,7 @@ public final class Wrapper implements Closeable {
     @Override
     public synchronized native void close();
 
-    public synchronized native boolean hasCore();
+    public synchronized native boolean isPrepared();
 
     public synchronized native int setVuMeterInterval(int interval);
 

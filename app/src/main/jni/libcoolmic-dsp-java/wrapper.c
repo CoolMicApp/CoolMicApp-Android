@@ -118,7 +118,7 @@ JNIEXPORT void JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_close(JNIEnv * env
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-JNIEXPORT jboolean JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_hasCore(JNIEnv * env, jobject obj)
+JNIEXPORT jboolean JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_isPrepared(JNIEnv * env, jobject obj)
 {
     wrapper_t * wrapper = get_wrapper_t(env, obj);
     LOGI("hasCore %p %d", wrapper->coolmic_simple_obj,  (wrapper->coolmic_simple_obj == NULL ? 0 : 1));

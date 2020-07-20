@@ -96,7 +96,7 @@ final class Driver implements Closeable {
     }
 
     public boolean hasCore() {
-        return isReady() && wrapper.hasCore();
+        return isReady() && wrapper.isPrepared();
     }
 
     public void startStream() throws IOException {
