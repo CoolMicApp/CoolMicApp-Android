@@ -189,15 +189,12 @@ final class Driver implements Closeable {
     }
 
     public void nextSegment(@Nullable InputStream inputStream) {
-        final InputStreamAdapter inputStreamAdapter;
 
         if (inputStream == null) {
-            inputStreamAdapter = null;
+            wrapper.nextSegment();
         } else {
-            inputStreamAdapter = new InputStreamAdapter(inputStream);
+            wrapper.nextSegment(inputStream);
         }
-
-        wrapper.nextSegment(inputStreamAdapter);
     }
 
     @Override

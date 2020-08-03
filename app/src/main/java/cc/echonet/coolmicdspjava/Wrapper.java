@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 
 import java.io.Closeable;
+import java.io.InputStream;
 
 /**
  * This class wraps libcoolmic-dsp's simple API.
@@ -163,5 +164,24 @@ public final class Wrapper implements Closeable {
      * @param inputStreamAdapter The adapter for the next segment or {@code null} for a live segment.
      * @return TODO
      */
-    public synchronized native int nextSegment(InputStreamAdapter inputStreamAdapter);
+    public synchronized native int nextSegment(@Nullable InputStreamAdapter inputStreamAdapter);
+
+    /**
+     * Schedules and switches to the next segment.
+     * @param inputStream The {@link InputStream} for the next segment.
+     * @return TODO
+     * @see #nextSegment(InputStreamAdapter)
+     */
+    public synchronized int nextSegment(@NonNull InputStream inputStream) {
+        return nextSegment(new InputStreamAdapter(inputStream));
+    }
+
+    /**
+     * Schedules and switches to a live segment.
+     * @return TODO
+     * @see #nextSegment(InputStreamAdapter)
+     */
+    public synchronized int nextSegment() {
+        return nextSegment((InputStreamAdapter) null);
+    }
 }
