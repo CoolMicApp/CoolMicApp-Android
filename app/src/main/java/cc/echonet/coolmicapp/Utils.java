@@ -49,6 +49,8 @@ import cc.echonet.coolmicapp.Configuration.Profile;
  */
 
 public final class Utils {
+    static final int PERMISSION_CHECK_REQUEST_CODE = 1;
+
     public static @Nullable String getStringByName(Context context, String name) {
         int resid = context.getResources().getIdentifier(name, "string", context.getPackageName());
 
@@ -115,14 +117,14 @@ public final class Utils {
                 Toast.makeText(activity, R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
             }
 
-            ActivityCompat.requestPermissions(activity, getRequiredPermissionList(activity), Constants.PERMISSION_CHECK_REQUEST_CODE);
+            ActivityCompat.requestPermissions(activity, getRequiredPermissionList(activity), PERMISSION_CHECK_REQUEST_CODE);
         } else {
             Toast.makeText(activity, R.string.settingsactivity_toast_permissions_granted, Toast.LENGTH_LONG).show();
         }
     }
 
     static boolean onRequestPermissionsResult(@NotNull Context context, int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == Constants.PERMISSION_CHECK_REQUEST_CODE) {
+        if (requestCode == PERMISSION_CHECK_REQUEST_CODE) {
             boolean permissions_ok = true;
 
             for (int i = 0; i < grantResults.length; i++) {
