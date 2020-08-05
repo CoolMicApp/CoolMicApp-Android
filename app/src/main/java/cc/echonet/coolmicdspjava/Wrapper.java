@@ -44,6 +44,12 @@ public final class Wrapper implements Closeable {
     private static @NonNull WrapperConstants.WrapperInitializationStatus state;
     private static @Nullable Throwable initException;
 
+    public static final int CONNECTION_STATE_CONNECTING = 1;
+    public static final int CONNECTION_STATE_CONNECTED = 2;
+    public static final int CONNECTION_STATE_DISCONNECTING = 3;
+    public static final int CONNECTION_STATE_DISCONNECTED = 4;
+    public static final int CONNECTION_STATE_CONNECTION_ERROR = 5;
+
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
     private long nativeObject = 0x0;
 

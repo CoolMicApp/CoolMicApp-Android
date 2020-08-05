@@ -64,6 +64,7 @@ import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicapp.Utils;
 import cc.echonet.coolmicdspjava.CallbackHandler;
 import cc.echonet.coolmicdspjava.VUMeterResult;
+import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 
 public class Server extends Service implements CallbackHandler {
@@ -570,16 +571,13 @@ public class Server extends Service implements CallbackHandler {
                     error = getString(R.string.txtStateFormatError, arg1);
                 }
 
-                /* connected */
-                if (arg0 == 2) {
+                if (arg0 == Wrapper.CONNECTION_STATE_CONNECTED) {
                     state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
                     state.initialConnectPerformed = true;
                     state.startTime = SystemClock.uptimeMillis();
 
                     mIncomingHandler.sendEmptyMessageDelayed(Constants.H2S_MSG_TIMER, 500);
-                }
-                /* disconnected || connectionerror */
-                else if (arg0 == 4 || arg0 == 5) {
+                } else if (arg0 == Wrapper.CONNECTION_STATE_DISCONNECTED || arg0 == Wrapper.CONNECTION_STATE_CONNECTION_ERROR) {
                     mIncomingHandler.removeMessages(Constants.H2S_MSG_TIMER);
 
                     if (!state.initialConnectPerformed || !profile.getServer().getReconnect()) {
