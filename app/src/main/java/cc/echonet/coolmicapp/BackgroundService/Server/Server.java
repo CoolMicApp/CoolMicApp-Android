@@ -580,11 +580,7 @@ public class Server extends Service implements CallbackHandler {
                 } else if (arg0 == Wrapper.CONNECTION_STATE_DISCONNECTED || arg0 == Wrapper.CONNECTION_STATE_CONNECTION_ERROR) {
                     mIncomingHandler.removeMessages(Constants.H2S_MSG_TIMER);
 
-                    if (!state.initialConnectPerformed || !profile.getServer().getReconnect()) {
-                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
-                    } else {
-                        state.uiState = Constants.CONTROL_UI.CONTROL_UI_CONNECTING;
-                    }
+                    state.uiState = Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED;
                 }
 
                 state.txtState = getString(R.string.txtStateFormat, Utils.getStringByName(this, "coolmic_cs", arg0), error);
