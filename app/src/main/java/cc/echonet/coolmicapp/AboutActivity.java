@@ -43,6 +43,7 @@ import java.util.Locale;
 
 public class AboutActivity extends Activity {
     private ClipboardManager myClipboard;
+    private int extra = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,12 @@ public class AboutActivity extends Activity {
         ((TextView) findViewById(R.id.txtGITDirty)).setText(BuildConfig.GIT_DIRTY);
         ((TextView) findViewById(R.id.txtAPILevel)).setText(String.format(Locale.ROOT, "%d", Build.VERSION.SDK_INT));
         ((TextView) findViewById(R.id.txtSystemArch)).setText(System.getProperty("os.arch"));
+
+        ((TextView) findViewById(R.id.txtVersion)).setOnClickListener(v -> {
+            extra++;
+            if (extra == 6)
+                Toast.makeText(AboutActivity.this, "yes", Toast.LENGTH_SHORT).show();
+        });
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
