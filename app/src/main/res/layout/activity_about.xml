@@ -50,6 +50,7 @@
 
             <TextView
                 android:id="@+id/txtVersion"
+                android:paddingLeft="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
         </TableRow>
@@ -66,6 +67,7 @@
 
             <TextView
                 android:id="@+id/txtBuildType"
+                android:paddingLeft="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
         </TableRow>
@@ -82,6 +84,7 @@
 
             <TextView
                 android:id="@+id/txtBuildTS"
+                android:paddingLeft="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
         </TableRow>
@@ -98,8 +101,10 @@
 
             <TextView
                 android:id="@+id/txtGITBranch"
+                android:paddingLeft="5dp"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:layout_weight="1"  />
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
         </TableRow>
 
         <TableRow
@@ -114,8 +119,10 @@
 
             <TextView
                 android:id="@+id/txtGITRevision"
+                android:paddingLeft="5dp"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:layout_weight="1"   />
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
         </TableRow>
 
         <TableRow
@@ -130,6 +137,7 @@
 
             <TextView
                 android:id="@+id/txtGITDirty"
+                android:paddingLeft="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
         </TableRow>
@@ -145,6 +153,7 @@
 
             <TextView
                 android:id="@+id/txtAPILevel"
+                android:paddingLeft="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
         </TableRow>
@@ -160,6 +169,7 @@
 
             <TextView
                 android:id="@+id/txtSystemArch"
+                android:paddingLeft="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
         </TableRow>
