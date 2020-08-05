@@ -93,13 +93,13 @@ public class Stats extends Request {
             int listenersPeak = -1;
 
             if (!listeners.isEmpty()) {
-                listenersCurrent = Integer.valueOf(listeners);
+                listenersCurrent = Integer.parseInt(listeners);
             } else {
                 Log.d("CM-StreamStatsService", "found no listeners");
             }
 
             if (!listeners_peak.isEmpty()) {
-                listenersPeak = Integer.valueOf(listeners_peak);
+                listenersPeak = Integer.parseInt(listeners_peak);
             } else {
                 Log.d("CM-StreamStatsService", "found no listeners peak");
             }

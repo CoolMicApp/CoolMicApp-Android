@@ -46,6 +46,8 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -332,9 +334,9 @@ public class SettingsActivity extends PreferenceActivity {
                     alertDialog.setNegativeButton(R.string.mainactivity_quit_cancel, (dialog, which) -> dialog.cancel());
 
                     alertDialog.setPositiveButton(R.string.mainactivity_quit_ok, (dialog, which) -> {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(uf);
-                        startActivity(i);
+                        final @NotNull Intent uriOpenIntent = new Intent(Intent.ACTION_VIEW);
+                        uriOpenIntent.setData(uf);
+                        startActivity(uriOpenIntent);
                     });
 
                     alertDialog.show();

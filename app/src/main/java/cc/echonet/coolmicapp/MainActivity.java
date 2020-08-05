@@ -168,13 +168,13 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     private void goSettings() {
-        Intent i = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivity(i);
+        final @NotNull Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     private void goAbout() {
-        Intent i = new Intent(MainActivity.this, AboutActivity.class);
-        startActivity(i);
+        final @NotNull Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -219,7 +219,7 @@ public class MainActivity extends Activity implements EventListener {
         Log.v("onCreate", (imageView1 == null ? "iv null" : "iv ok"));
 
         if (imageView1 != null) {
-            imageView1.setOnClickListener(v -> onImageClick(v));
+            imageView1.setOnClickListener(this::onImageClick);
         }
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);

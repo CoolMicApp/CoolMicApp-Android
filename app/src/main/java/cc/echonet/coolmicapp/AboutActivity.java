@@ -64,28 +64,13 @@ public class AboutActivity extends Activity {
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
         cmdAboutCopy = findViewById(R.id.cmdAboutCopy);
-        cmdAboutCopy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onCMDAboutCopy(v);
-            }
-        });
+        cmdAboutCopy.setOnClickListener(this::onCMDAboutCopy);
 
         cmdOpenPrivacyPolicy = findViewById(R.id.cmdOpenPrivacyPolicy);
-        cmdOpenPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onCMDAboutOpenPP(v);
-            }
-        });
+        cmdOpenPrivacyPolicy.setOnClickListener(this::onCMDAboutOpenPP);
 
         cmdOpenLicenses = findViewById(R.id.cmdOpenLicenses);
-        cmdOpenLicenses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onCMDAboutOpenLicenses(v);
-            }
-        });
+        cmdOpenLicenses.setOnClickListener(this::onCMDAboutOpenLicenses);
     }
 
     /**
@@ -100,8 +85,6 @@ public class AboutActivity extends Activity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
