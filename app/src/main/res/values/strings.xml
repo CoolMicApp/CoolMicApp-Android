@@ -117,8 +117,10 @@
     <string name="popup_about_lbl_git_branch">GIT Branch:</string>
     <string name="popup_about_lbl_git_revision">GIT Commit:</string>
     <string name="popup_about_lbl_git_dirty">GIT Dirty:</string>
+    <string name="popup_about_lbl_api_level">API Level:</string>
+    <string name="popup_about_lbl_system_arch">System architecture:</string>
 
-    <string name="aboutactivity_copy_string">Cool Mic App Report\nVersion: %1$s\nBuild Type: %2$s\nGIT Branch: %3$s\nGIT Revision: %4$s\nGIT Branch: %5$s</string>
+    <string name="aboutactivity_copy_string">Cool Mic App Report\nVersion: %1$s\nBuild Type: %2$s\nGIT Branch: %3$s\nGIT Revision: %4$s\nGIT Branch: %5$s\nAPI Level: %6$d\nSystem architecture: %7$s</string>
     <string name="aboutactivity_copied_string">Cool Mic Report copied to clipboard</string>
 
     <string-array name="pref_titles_audio_channels">

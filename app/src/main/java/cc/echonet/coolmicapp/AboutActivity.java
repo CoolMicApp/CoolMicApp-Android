@@ -28,6 +28,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.core.app.NavUtils;
 import android.view.MenuItem;
@@ -37,6 +38,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Locale;
 
 public class AboutActivity extends Activity {
     private ClipboardManager myClipboard;
@@ -60,6 +63,8 @@ public class AboutActivity extends Activity {
         ((TextView) findViewById(R.id.txtGITBranch)).setText(BuildConfig.GIT_BRANCH);
         ((TextView) findViewById(R.id.txtGITRevision)).setText(shortRev);
         ((TextView) findViewById(R.id.txtGITDirty)).setText(BuildConfig.GIT_DIRTY);
+        ((TextView) findViewById(R.id.txtAPILevel)).setText(String.format(Locale.ROOT, "%d", Build.VERSION.SDK_INT));
+        ((TextView) findViewById(R.id.txtSystemArch)).setText(System.getProperty("os.arch"));
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
@@ -102,7 +107,9 @@ public class AboutActivity extends Activity {
                 BuildConfig.BUILD_TYPE,
                 BuildConfig.GIT_BRANCH,
                 BuildConfig.GIT_REVISION,
-                BuildConfig.GIT_DIRTY
+                BuildConfig.GIT_DIRTY,
+                Build.VERSION.SDK_INT,
+                System.getProperty("os.arch")
         ));
 
         myClipboard.setPrimaryClip(myClip);
