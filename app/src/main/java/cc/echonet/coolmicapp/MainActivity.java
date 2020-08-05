@@ -283,12 +283,7 @@ public class MainActivity extends Activity implements EventListener {
             if (start_button_debounce_active)
                 return;
             start_button_debounce_active = true;
-            v.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    start_button_debounce_active = false;
-                }
-            }, 500);
+            v.postDelayed(() -> start_button_debounce_active = false, 500);
             start_button.setClickable(false);
             startRecording();
         });
