@@ -29,11 +29,4 @@ import android.Manifest;
  */
 final class Constants {
     static final int PERMISSION_CHECK_REQUEST_CODE = 1;
-
-    static final String[] REQUIRED_PERMISSIONS = {
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.INTERNET,
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-    };
 }

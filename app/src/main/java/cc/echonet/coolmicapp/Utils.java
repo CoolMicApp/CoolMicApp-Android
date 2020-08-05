@@ -27,6 +27,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Locale;
 
 import cc.echonet.coolmicapp.Configuration.Profile;
@@ -71,25 +73,34 @@ public final class Utils {
         return context.getString(resid);
     }
 
+    private static @NotNull String[] getRequiredPermissionList(@NotNull Context context) {
+        try {
+            return context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions;
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkRequiredPermissions(@NotNull Context context) {
+        final String[] requiredPermissions = getRequiredPermissionList(context);
         int grantedCount = 0;
 
-        for (String permission : Constants.REQUIRED_PERMISSIONS) {
+        for (String permission : requiredPermissions) {
             if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
                 grantedCount++;
             }
         }
 
-        return grantedCount == Constants.REQUIRED_PERMISSIONS.length;
+        return grantedCount == requiredPermissions.length;
     }
 
 
     private static boolean shouldShowRequestPermissionRationale(@NotNull Activity activity) {
+        final String[] requiredPermissions = getRequiredPermissionList(activity);
         int grantedCount = 0;
 
-        for (String permission : Constants.REQUIRED_PERMISSIONS) {
+        for (String permission : requiredPermissions) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
                 grantedCount++;
             }
@@ -104,7 +115,7 @@ public final class Utils {
                 Toast.makeText(activity, R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
             }
 
-            ActivityCompat.requestPermissions(activity, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_CHECK_REQUEST_CODE);
+            ActivityCompat.requestPermissions(activity, getRequiredPermissionList(activity), Constants.PERMISSION_CHECK_REQUEST_CODE);
         } else {
             Toast.makeText(activity, R.string.settingsactivity_toast_permissions_granted, Toast.LENGTH_LONG).show();
         }
