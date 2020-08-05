@@ -30,6 +30,8 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
 import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.DialogState;
 import cc.echonet.coolmicapp.Configuration.Profile;
@@ -40,22 +42,22 @@ public class Dialog {
     private static final String KEY_URL = "url";
     private static final int CONTENT_PADDING = 50;
 
-    private final DialogIdentifier dialogIdentifier;
-    private final Context context;
-    private final Profile profile;
+    private final @NotNull DialogIdentifier dialogIdentifier;
+    private final @NotNull Context context;
+    private final @NotNull Profile profile;
 
-    public Dialog(DialogIdentifier dialogIdentifier, Context context, Profile profile) {
+    public Dialog(@NotNull DialogIdentifier dialogIdentifier, @NotNull Context context, @NotNull Profile profile) {
         this.dialogIdentifier = dialogIdentifier;
         this.context = context;
         this.profile = profile;
     }
 
-    private String getString(String subkey) {
+    private String getString(@NotNull String subkey) {
         return Utils.getStringByName(context, "popup_" + dialogIdentifier.toString().toLowerCase() + "_" + subkey);
     }
 
     public void show() {
-        TextView tv = new TextView(context);
+        final @NotNull TextView tv = new TextView(context);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(getString(KEY_TITLE));
@@ -65,7 +67,7 @@ public class Dialog {
         builder.setView(tv);
         builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
         builder.setNeutralButton(R.string.popup_any_more, ((dialogInterface, i) -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(KEY_URL)));
+            final @NotNull Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(KEY_URL)));
             context.startActivity(intent);
         }));
         builder.show();
@@ -73,7 +75,7 @@ public class Dialog {
     }
 
     public void showIfNecessary() {
-        DialogState dialogState = profile.getDialogState(dialogIdentifier);
+        final DialogState dialogState = profile.getDialogState(dialogIdentifier);
         boolean necessary = false;
 
         switch (dialogIdentifier) {

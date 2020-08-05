@@ -22,16 +22,18 @@
 
 package cc.echonet.coolmicapp.Icecast;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum Command {
     STATS("stats.xml");
 
-    private final String endpoint;
+    private final @NotNull String endpoint;
 
-    Command(String endpoint) {
+    Command(@NotNull String endpoint) {
         this.endpoint = endpoint;
     }
 
-    String getEndpoint() {
+    @NotNull String getEndpoint() {
         return endpoint;
     }
 }

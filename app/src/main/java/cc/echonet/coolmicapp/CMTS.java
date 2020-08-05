@@ -25,6 +25,8 @@ package cc.echonet.coolmicapp;
 import android.content.Context;
 import android.util.Base64;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -35,7 +37,7 @@ import cc.echonet.coolmicapp.Configuration.Server;
 public class CMTS {
     private static final String[] CMTSHosts = {"coolmic.net", "echonet.cc", "64.142.100.248", "64.142.100.249", "46.165.219.118"};
 
-    public static boolean isCMTSConnection(Profile profile) {
+    public static boolean isCMTSConnection(@NotNull Profile profile) {
         String serverName = profile.getServer().getHostname();
 
         for (String cmtsHost : CMTSHosts) {
@@ -64,10 +66,10 @@ public class CMTS {
         return Base64.encodeToString(digest, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING).substring(0, 20);
     }
 
-    public static void loadCMTSData(Profile profile) {
-        String randomComponent = generateShortUuid();
-        Context context = profile.getContext();
-        Server server;
+    public static void loadCMTSData(@NotNull Profile profile) {
+        final @NotNull String randomComponent = generateShortUuid();
+        final @NotNull Context context = profile.getContext();
+        final @NotNull Server server;
 
         /* copy profile so we have our own edit state */
         profile = new Profile(profile);

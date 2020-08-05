@@ -22,17 +22,19 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 
 public class Server extends ProfileBase {
-    Server(ProfileBase profile) {
+    Server(@NotNull ProfileBase profile) {
         super(profile);
     }
 
     @SuppressWarnings("SameReturnValue")
-    public String getProtocol() {
+    public @NotNull String getProtocol() {
         // TODO: This is static for now but may change in future.
         return "http";
     }
@@ -57,7 +59,7 @@ public class Server extends ProfileBase {
         return 8000;
     }
 
-    public void setAddress(String hostname, int port) {
+    public void setAddress(@NotNull String hostname, int port) {
         if (hostname.indexOf(':') > 0)
             throw new IllegalArgumentException("Bad Hostname");
 
@@ -71,7 +73,7 @@ public class Server extends ProfileBase {
         }
     }
 
-    public void setAddress(String address) {
+    public void setAddress(@NotNull String address) {
         String hostname;
         int port;
 

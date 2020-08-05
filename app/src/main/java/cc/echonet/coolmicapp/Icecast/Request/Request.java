@@ -25,6 +25,8 @@ package cc.echonet.coolmicapp.Icecast.Request;
 import android.renderscript.RSInvalidStateException;
 import android.util.Base64;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -38,7 +40,7 @@ abstract public class Request implements Closeable {
     protected State state = State.UNCONNECTED;
     protected Response response;
 
-    public Request(URL url) throws IOException {
+    public Request(@NotNull URL url) throws IOException {
         connection = (HttpURLConnection) url.openConnection();
 
         connection.setUseCaches(false);

@@ -46,6 +46,7 @@ import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 
 final class Driver implements Closeable {
+    @SuppressWarnings("HardcodedFileSeparator")
     private static final String TAG = "BGS/Driver";
 
     private final @NonNull Wrapper wrapper = new Wrapper();

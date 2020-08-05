@@ -22,18 +22,20 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Volume extends ProfileBase {
     private static final int DEFAULT_VOLUME = 100;
 
-    private Audio audio;
+    private final @NotNull Audio audio;
 
-    Volume(ProfileBase profile, Audio audio) {
+    Volume(@NotNull ProfileBase profile, @NotNull Audio audio) {
         super(profile);
 
         this.audio = audio;
     }
 
-    public Audio getAudio() {
+    public @NotNull Audio getAudio() {
         return audio;
     }
 

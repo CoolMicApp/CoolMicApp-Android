@@ -36,15 +36,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AboutActivity extends Activity {
+import org.jetbrains.annotations.NotNull;
 
+public class AboutActivity extends Activity {
     private ClipboardManager myClipboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Button cmdAboutCopy;
-        Button cmdOpenPrivacyPolicy;
-        Button cmdOpenLicenses;
+        final @NotNull Button cmdAboutCopy;
+        final @NotNull Button cmdOpenPrivacyPolicy;
+        final @NotNull Button cmdOpenLicenses;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);

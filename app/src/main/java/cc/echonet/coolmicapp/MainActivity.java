@@ -51,7 +51,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.MalformedURLException;
+import java.util.Objects;
 
 import cc.echonet.coolmicapp.BackgroundService.Client.Client;
 import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
@@ -293,6 +296,7 @@ public class MainActivity extends Activity implements EventListener {
 
         findViewById(R.id.next_segment_button).setOnClickListener(view -> {
             Intent fc = new Intent(Intent.ACTION_GET_CONTENT);
+            //noinspection HardcodedFileSeparator
             fc.setType("*/*");
             startActivityForResult(fc, Constants.NEXTSEGMENT_REQUEST_CODE);
         });
@@ -305,7 +309,7 @@ public class MainActivity extends Activity implements EventListener {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case Constants.NEXTSEGMENT_REQUEST_CODE:
-                    final Uri uri = data.getData();
+                    final @NotNull Uri uri = Objects.requireNonNull(data.getData());
                     backgroundServiceClient.nextSegment(uri.toString());
                     break;
             }

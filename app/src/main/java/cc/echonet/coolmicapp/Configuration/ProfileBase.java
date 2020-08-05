@@ -27,13 +27,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.jetbrains.annotations.NotNull;
+
 import cc.echonet.coolmicapp.R;
 
 abstract class ProfileBase {
-    final Context context;
-    String profileName;
-    SharedPreferences prefs;
-    SharedPreferences.Editor editor;
+    protected final Context context;
+    protected String profileName;
+    protected final SharedPreferences prefs;
+    protected SharedPreferences.Editor editor;
 
     public static void assertValidProfileName(String profileName) {
         if (profileName.startsWith("_"))
@@ -54,8 +56,9 @@ abstract class ProfileBase {
         }
     }
 
-    ProfileBase(ProfileBase profile) {
+    ProfileBase(@NotNull ProfileBase profile) {
         this.context = profile.context;
+        this.profileName = profile.profileName;
         this.prefs = profile.prefs;
         this.editor = profile.editor;
     }

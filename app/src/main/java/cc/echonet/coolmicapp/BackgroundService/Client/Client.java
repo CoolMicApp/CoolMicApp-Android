@@ -35,6 +35,8 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Closeable;
 
 import cc.echonet.coolmicapp.BackgroundService.Constants;
@@ -46,9 +48,10 @@ import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
 public class Client implements Closeable {
+    @SuppressWarnings("HardcodedFileSeparator")
     private static final String TAG = "BGS/Client";
 
-    private final Context context;
+    private final @NotNull Context context;
     private EventListener eventListener;
     private Messenger mBackgroundService = null;
     private final Messenger mBackgroundServiceClient = new Messenger(new IncomingHandler(this));
@@ -210,7 +213,7 @@ public class Client implements Closeable {
         }
     }
 
-    private Message createMessage(int what) {
+    private @NotNull Message createMessage(int what) {
         Message message = Message.obtain(null, what);
 
         message.replyTo = mBackgroundServiceClient;
@@ -227,7 +230,7 @@ public class Client implements Closeable {
         Log.d(TAG, "sync(): sync out, this=" + this + ", context=" + context + ", ready=" + ready);
     }
 
-    private synchronized void sendMessage(Message message) {
+    private synchronized void sendMessage(@NotNull Message message) {
         Log.d(TAG, "sendMessage(): this = " + this + ", mBackgroundServiceBound = " + mBackgroundServiceBound);
 
         try {
@@ -250,7 +253,7 @@ public class Client implements Closeable {
         }
     }
 
-    public Client(Context context, EventListener eventListener) {
+    public Client(@NotNull Context context, EventListener eventListener) {
         Log.d(TAG, "Client: this=" + this + ", context=" + context + ", eventListener=" + eventListener);
         this.context = context;
         this.eventListener = eventListener;

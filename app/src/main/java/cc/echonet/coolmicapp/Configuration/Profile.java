@@ -24,43 +24,45 @@ package cc.echonet.coolmicapp.Configuration;
 
 import android.content.Context;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Profile extends ProfileBase {
     private static final int DEFAULT_VOLUME = 100;
 
-    public Profile(Profile profile) {
+    public Profile(@NotNull Profile profile) {
         super(profile);
     }
 
-    public Profile(Context context, String profile) {
+    public Profile(@NotNull Context context, @NotNull String profile) {
         super(context, profile);
     }
 
     //Stolen from: http://stackoverflow.com/a/23704728 & http://stackoverflow.com/a/18879453 (removed the shortening because it did not work reliably)
-    public Track getTrack() {
+    public @NotNull Track getTrack() {
         return new Track(this);
     }
 
-    public Server getServer() {
+    public @NotNull Server getServer() {
         return new Server(this);
     }
 
-    public Audio getAudio() {
+    public @NotNull Audio getAudio() {
         return new Audio(this);
     }
 
-    public Codec getCodec() {
+    public @NotNull Codec getCodec() {
         return new Codec(this, getAudio());
     }
 
-    public VUMeter getVUMeter() {
+    public @NotNull VUMeter getVUMeter() {
         return new VUMeter(this);
     }
 
-    public Volume getVolume() {
+    public @NotNull Volume getVolume() {
         return new Volume(this, getAudio());
     }
 
-    public DialogState getDialogState(DialogIdentifier dialogIdentifier) {
+    public @NotNull DialogState getDialogState(DialogIdentifier dialogIdentifier) {
         return new DialogState(this, dialogIdentifier);
     }
 }

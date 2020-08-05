@@ -27,7 +27,7 @@ import android.Manifest;
 /**
  * Created by stephanj on 21.03.2016.
  */
-class Constants {
+final class Constants {
     static final int PERMISSION_CHECK_REQUEST_CODE = 1;
 
     static final String[] REQUIRED_PERMISSIONS = {

@@ -22,19 +22,22 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
+import org.jetbrains.annotations.NotNull;
+
 import cc.echonet.coolmicapp.R;
 
 public class Codec extends ProfileBase {
-    public static final String TYPE_OPUS = "audio/ogg; codec=opus";
+    @SuppressWarnings("HardcodedFileSeparator")
+    public static final @NotNull String TYPE_OPUS = "audio/ogg; codec=opus";
 
-    private Audio audio;
+    private final @NotNull Audio audio;
 
-    Codec(ProfileBase profile, Audio audio) {
+    Codec(@NotNull ProfileBase profile, @NotNull Audio audio) {
         super(profile);
         this.audio = audio;
     }
 
-    public Audio getAudio() {
+    public @NotNull Audio getAudio() {
         return audio;
     }
 

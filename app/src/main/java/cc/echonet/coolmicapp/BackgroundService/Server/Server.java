@@ -40,12 +40,16 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.State;
@@ -63,6 +67,7 @@ import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 
 public class Server extends Service implements CallbackHandler {
+    @SuppressWarnings("HardcodedFileSeparator")
     private static final String TAG = "BGS/Server";
 
     private final List<Messenger> clients = new ArrayList<>();
@@ -107,7 +112,7 @@ public class Server extends Service implements CallbackHandler {
         driver = new Driver(this, profile, this);
     }
 
-    private void addClient(Messenger messenger) {
+    private void addClient(@NotNull Messenger messenger) {
         if (!clients.contains(messenger)) {
             clients.add(messenger);
         }
@@ -118,7 +123,7 @@ public class Server extends Service implements CallbackHandler {
         state.listeners_peak = listeners_peak;
     }
 
-    private Message createMessage(int what) {
+    private @NotNull Message createMessage(int what) {
         return Message.obtain(null, what);
     }
 
@@ -143,9 +148,9 @@ public class Server extends Service implements CallbackHandler {
      * Handler of incoming messages from clients.
      */
     static class IncomingHandler extends Handler {
-        private final Server service;
+        private final @NotNull Server service;
 
-        IncomingHandler(Server service) {
+        IncomingHandler(@NotNull Server service) {
             this.service = service;
         }
 
@@ -255,7 +260,7 @@ public class Server extends Service implements CallbackHandler {
         int ret = super.onStartCommand(intent, flags, startId);
 
         if (intent != null) {
-            int what = intent.getExtras().getInt("what");
+            int what = Objects.requireNonNull(intent.getExtras()).getInt("what");
             Message message = Message.obtain(null, what);
 
             Log.d(TAG, "onStartCommand() called with: intent = [" + intent + "], flags = [" + flags + "], startId = [" + startId + "]");
@@ -363,10 +368,9 @@ public class Server extends Service implements CallbackHandler {
         }
     }
 
-    private void checkWrapperState(Messenger replyTo) {
-        Message msgReply = Message.obtain(null, Constants.S2C_MSG_STATE_REPLY, 0, 0);
-
-        Bundle bundle = msgReply.getData();
+    private void checkWrapperState(@NotNull Messenger replyTo) {
+        final @NotNull Message msgReply = Message.obtain(null, Constants.S2C_MSG_STATE_REPLY, 0, 0);
+        final @NotNull Bundle bundle = msgReply.getData();
 
         bundle.putSerializable("state", state);
         bundle.putString("profile", profile.getName());
@@ -374,7 +378,7 @@ public class Server extends Service implements CallbackHandler {
         sendMessage(replyTo, msgReply);
     }
 
-    private static boolean sendMessage(Messenger messenger, Message message) {
+    private static boolean sendMessage(@NotNull Messenger messenger, @NotNull Message message) {
         try {
             messenger.send(message);
             return true;
@@ -384,7 +388,7 @@ public class Server extends Service implements CallbackHandler {
         }
     }
 
-    private void sendMessageToAll(Message message) {
+    private void sendMessageToAll(@NotNull Message message) {
         for (Messenger client : clients) {
             if (!sendMessage(client, message)) {
                 clients.remove(client);
@@ -467,9 +471,9 @@ public class Server extends Service implements CallbackHandler {
     }
 
 
-    private void startStream(Messenger replyTo) {
-        Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
-        Bundle bundle = msgReply.getData();
+    private void startStream(@NotNull Messenger replyTo) {
+        final @NotNull Message msgReply = createMessage(Constants.S2C_MSG_STREAM_START_REPLY);
+        final @NotNull Bundle bundle = msgReply.getData();
         boolean success;
 
         state.timerInMS = 0;
@@ -497,7 +501,7 @@ public class Server extends Service implements CallbackHandler {
         sendMessage(replyTo, msgReply);
     }
 
-    public void stopStream(Messenger replyTo) {
+    public void stopStream(@Nullable Messenger replyTo) {
         final boolean was_running;
 
         Log.d(TAG, "Stop Stream");
@@ -612,9 +616,8 @@ public class Server extends Service implements CallbackHandler {
     public void callbackVUMeterHandler(VUMeterResult result) {
         Log.d(TAG, String.valueOf(result.global_power));
 
-        Message msgReply = createMessage(Constants.S2C_MSG_VUMETER);
-
-        Bundle bundle = msgReply.getData();
+        final @NotNull Message msgReply = createMessage(Constants.S2C_MSG_VUMETER);
+        final @NotNull Bundle bundle = msgReply.getData();
 
         bundle.putSerializable("vumeterResult", result);
 
@@ -623,7 +626,7 @@ public class Server extends Service implements CallbackHandler {
 
     @Override
     public void onDestroy() {
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        final @NotNull NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         Log.v(TAG, "Server.onDestroy()");
         stopStream(null);

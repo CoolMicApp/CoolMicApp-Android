@@ -22,10 +22,12 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
+import org.jetbrains.annotations.NotNull;
+
 import cc.echonet.coolmicapp.R;
 
 public class Audio extends ProfileBase {
-    Audio(ProfileBase profile) {
+    Audio(@NotNull ProfileBase profile) {
         super(profile);
     }
 

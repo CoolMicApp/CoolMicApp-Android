@@ -22,6 +22,9 @@
 
 package cc.echonet.coolmicapp.Icecast;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -31,13 +34,13 @@ import java.util.Locale;
 import cc.echonet.coolmicapp.Icecast.Request.Stats;
 
 public class Icecast implements Closeable {
-    private String protocol;
-    private String host;
-    private int port;
+    private final @NotNull String protocol;
+    private final @NotNull String host;
+    private final int port;
     private String username;
     private String password;
 
-    public Icecast(String protocol, String host, int port) {
+    public Icecast(@NotNull String protocol, @NotNull String host, int port) {
         this.protocol = protocol;
         this.host = host;
         this.port = port;
@@ -48,7 +51,7 @@ public class Icecast implements Closeable {
         this.password = password;
     }
 
-    URL getCommandURL(Command command, String mount) throws MalformedURLException {
+    URL getCommandURL(@NotNull Command command, @Nullable String mount) throws MalformedURLException {
         String url;
 
         // TODO: Improve this mess...
@@ -61,7 +64,7 @@ public class Icecast implements Closeable {
         return new URL(url);
     }
 
-    public Stats getStats(String mount) throws IOException {
+    public Stats getStats(@Nullable String mount) throws IOException {
         return new Stats(getCommandURL(Command.STATS, mount));
     }
 

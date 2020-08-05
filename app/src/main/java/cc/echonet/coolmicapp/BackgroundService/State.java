@@ -25,6 +25,8 @@ package cc.echonet.coolmicapp.BackgroundService;
 import android.content.Context;
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
 import cc.echonet.coolmicapp.R;
@@ -54,7 +56,7 @@ public class State implements Serializable {
         Log.v("State", "BSS constructed");
     }
 
-    public String getTimerString(Context context) {
+    public @NotNull String getTimerString(@NotNull Context context) {
         int secs = (int) (timerInMS / 1000);
         int mins = secs / 60;
         int hours = mins / 60;
@@ -65,11 +67,11 @@ public class State implements Serializable {
         return context.getString(R.string.timer_format, hours, mins, secs);
     }
 
-    public String getTextState(Context context) {
+    public @NotNull String getTextState(@NotNull Context context) {
         return txtState;
     }
 
-    public String getListenersString(Context context) {
+    public @NotNull String getListenersString(@NotNull Context context) {
         return context.getString(R.string.formatListeners, listeners_current, listeners_peak);
     }
 }

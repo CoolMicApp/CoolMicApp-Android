@@ -24,16 +24,18 @@ package cc.echonet.coolmicapp.Configuration;
 
 import android.content.Context;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Manager {
     static final String DEFAULT_PROFILE = "default";
 
-    private final Context context;
-    private GlobalConfiguration globalConfiguration;
+    private final @NotNull Context context;
+    private final @NotNull GlobalConfiguration globalConfiguration;
 
-    public Manager(Context context) {
+    public Manager(@NotNull Context context) {
         this.context = context;
         this.globalConfiguration = new GlobalConfiguration(context);
     }
@@ -57,7 +59,7 @@ public class Manager {
         return getProfile(globalConfiguration.getCurrentProfileName());
     }
 
-    public GlobalConfiguration getGlobalConfiguration() {
+    public @NotNull GlobalConfiguration getGlobalConfiguration() {
         return globalConfiguration;
     }
 }

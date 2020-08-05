@@ -22,8 +22,10 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Track extends ProfileBase {
-    Track(ProfileBase profile) {
+    Track(@NotNull ProfileBase profile) {
         super(profile);
     }
 

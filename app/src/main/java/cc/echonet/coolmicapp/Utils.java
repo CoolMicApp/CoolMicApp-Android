@@ -35,6 +35,9 @@ import androidx.core.content.ContextCompat;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Locale;
 
 import cc.echonet.coolmicapp.Configuration.Profile;
@@ -44,7 +47,7 @@ import cc.echonet.coolmicapp.Configuration.Profile;
  */
 
 public final class Utils {
-    public static String getStringByName(Context context, String name) {
+    public static @Nullable String getStringByName(Context context, String name) {
         int resid = context.getResources().getIdentifier(name, "string", context.getPackageName());
 
         if (resid == 0)
@@ -53,7 +56,7 @@ public final class Utils {
         return context.getString(resid);
     }
 
-    public static String getStringByName(Context context, String name, int subid) {
+    public static @Nullable String getStringByName(Context context, String name, int subid) {
         int resid;
 
         if (subid < 0) {
@@ -70,7 +73,7 @@ public final class Utils {
 
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean checkRequiredPermissions(Context context) {
+    public static boolean checkRequiredPermissions(@NotNull Context context) {
         int grantedCount = 0;
 
         for (String permission : Constants.REQUIRED_PERMISSIONS) {
@@ -83,7 +86,7 @@ public final class Utils {
     }
 
 
-    private static boolean shouldShowRequestPermissionRationale(Activity activity) {
+    private static boolean shouldShowRequestPermissionRationale(@NotNull Activity activity) {
         int grantedCount = 0;
 
         for (String permission : Constants.REQUIRED_PERMISSIONS) {
@@ -95,7 +98,7 @@ public final class Utils {
         return grantedCount > 0;
     }
 
-    static void requestPermissions(Activity activity) {
+    static void requestPermissions(@NotNull Activity activity) {
         if (!checkRequiredPermissions(activity)) {
             if (shouldShowRequestPermissionRationale(activity)) {
                 Toast.makeText(activity, R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
@@ -107,7 +110,7 @@ public final class Utils {
         }
     }
 
-    static boolean onRequestPermissionsResult(Context context, int requestCode, String[] permissions, int[] grantResults) {
+    static boolean onRequestPermissionsResult(@NotNull Context context, int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == Constants.PERMISSION_CHECK_REQUEST_CODE) {
             boolean permissions_ok = true;
 
@@ -128,13 +131,13 @@ public final class Utils {
         }
     }
 
-    static void loadCMTSData(Context context, Profile profile) {
+    static void loadCMTSData(@NotNull Context context, @NotNull Profile profile) {
         CMTS.loadCMTSData(profile);
 
         Toast.makeText(context, R.string.settings_conn_defaults_loaded, Toast.LENGTH_SHORT).show();
     }
 
-    static AlertDialog.Builder buildAlertDialogCMTSTOS(Context context) {
+    static AlertDialog.Builder buildAlertDialogCMTSTOS(@NotNull Context context) {
         AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(context);
         alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
         alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);

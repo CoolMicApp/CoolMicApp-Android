@@ -24,6 +24,7 @@ package cc.echonet.coolmicapp.Icecast.Request;
 
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -45,12 +46,12 @@ import cc.echonet.coolmicapp.Icecast.State;
 
 public class Stats extends Request {
 
-    public Stats(URL url) throws IOException {
+    public Stats(@NotNull URL url) throws IOException {
         super(url);
         Log.d("CM-StreamStatsService", "url=" + url);
     }
 
-    private String exceptionToString(Exception ex) {
+    private @NotNull String exceptionToString(@NotNull Exception ex) {
         StringWriter sw = new StringWriter();
         ex.printStackTrace(new PrintWriter(sw));
         return sw.toString();
@@ -67,24 +68,24 @@ public class Stats extends Request {
                 return;
             }
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(connection.getInputStream());
+            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder builder = factory.newDocumentBuilder();
+            final Document doc = builder.parse(connection.getInputStream());
 
             Log.d("CM-StreamStatsService", "Parsed Document " + doc.toString());
 
-            XPathFactory xpathFactory = XPathFactory.newInstance();
-            XPath xpath = xpathFactory.newXPath();
+            final XPathFactory xpathFactory = XPathFactory.newInstance();
+            final XPath xpath = xpathFactory.newXPath();
 
             Log.d("CM-StreamStatsService", "post xpath");
 
-            XPathExpression expr_listeners = xpath.compile("/icestats/source/listeners/text()");
-            XPathExpression expr_listeners_peak = xpath.compile("/icestats/source/listener_peak/text()");
+            final XPathExpression expr_listeners = xpath.compile("/icestats/source/listeners/text()");
+            final XPathExpression expr_listeners_peak = xpath.compile("/icestats/source/listener_peak/text()");
 
             Log.d("CM-StreamStatsService", "post xpath compile");
 
-            String listeners = (String) expr_listeners.evaluate(doc, XPathConstants.STRING);
-            String listeners_peak = (String) expr_listeners_peak.evaluate(doc, XPathConstants.STRING);
+            final String listeners = (String) expr_listeners.evaluate(doc, XPathConstants.STRING);
+            final String listeners_peak = (String) expr_listeners_peak.evaluate(doc, XPathConstants.STRING);
 
             Log.d("CM-StreamStatsService", "post xpath eval " + listeners + " " + listeners_peak);
 

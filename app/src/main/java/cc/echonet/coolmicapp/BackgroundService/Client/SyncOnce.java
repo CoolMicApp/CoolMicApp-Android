@@ -24,10 +24,13 @@ package cc.echonet.coolmicapp.BackgroundService.Client;
 
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
+
 public class SyncOnce {
+    @SuppressWarnings("HardcodedFileSeparator")
     private static final String TAG = "BGS/Client/SyncOnce";
 
-    private final Object notifyBus = new Object();
+    private final @NotNull Object notifyBus = new Object();
     private boolean state = false;
 
     public void ready() {

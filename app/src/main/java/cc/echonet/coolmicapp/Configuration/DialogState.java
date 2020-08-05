@@ -24,6 +24,8 @@ package cc.echonet.coolmicapp.Configuration;
 
 import android.os.SystemClock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Locale;
 
 import cc.echonet.coolmicapp.BuildConfig;
@@ -32,9 +34,9 @@ public class DialogState extends ProfileBase {
     private static final String KEY_VERSION = "version";
     private static final String KEY_TIMESTAMP = "timestamp";
 
-    final DialogIdentifier dialogIdentifier;
+    private final @NotNull DialogIdentifier dialogIdentifier;
 
-    DialogState(ProfileBase profile, DialogIdentifier dialogId) {
+    DialogState(@NotNull ProfileBase profile, @NotNull DialogIdentifier dialogId) {
         super(profile);
         this.dialogIdentifier = dialogId;
     }
@@ -50,7 +52,7 @@ public class DialogState extends ProfileBase {
                 "[" + BuildConfig.BUILD_TS + "]";
     }
 
-    public DialogIdentifier getDialogIdentifier() {
+    public @NotNull DialogIdentifier getDialogIdentifier() {
         return dialogIdentifier;
     }
 

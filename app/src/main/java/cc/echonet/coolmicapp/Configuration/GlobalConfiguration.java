@@ -26,14 +26,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.jetbrains.annotations.NotNull;
+
 public class GlobalConfiguration {
     private static final String PROFILE_NAME = "_global";
     private static final String KEY_PROFILE_CURRENT = "profile_current";
 
-    private Context context;
-    private SharedPreferences prefs;
+    private final @NotNull Context context;
+    private final @NotNull SharedPreferences prefs;
 
-    public GlobalConfiguration(Context context) {
+    public GlobalConfiguration(@NotNull Context context) {
         this.context = context;
         this.prefs = context.getSharedPreferences(PROFILE_NAME, Context.MODE_PRIVATE);
 

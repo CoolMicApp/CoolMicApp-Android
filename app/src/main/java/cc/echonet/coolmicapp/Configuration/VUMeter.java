@@ -22,10 +22,12 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
+import org.jetbrains.annotations.NotNull;
+
 import cc.echonet.coolmicapp.R;
 
 public class VUMeter extends ProfileBase {
-    VUMeter(ProfileBase profile) {
+    VUMeter(@NotNull ProfileBase profile) {
         super(profile);
     }
 
