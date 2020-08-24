@@ -511,13 +511,15 @@ public class Server extends Service implements CallbackHandler {
 
         state.initialConnectPerformed = false;
 
-        if (replyTo != null) {
+        state.txtState = "Disconnected";
+
+        for (Messenger client : clients) {
             Message msgReply = createMessage(Constants.S2C_MSG_STREAM_STOP_REPLY);
 
             Bundle bundle = msgReply.getData();
             bundle.putBoolean("was_running", was_running);
 
-            sendMessage(replyTo, msgReply);
+            sendMessage(client, msgReply);
         }
 
         sendStateToAll();
@@ -562,6 +564,10 @@ public class Server extends Service implements CallbackHandler {
                 sendMessageToAll(msgReply);
 
                 state.hadError = true;
+
+                if (!profile.getServer().getReconnect()) {
+                    stopStream(null);
+                }
 
                 break;
             case STREAMSTATE:

@@ -231,7 +231,7 @@ public class Client implements Closeable {
     }
 
     private synchronized void sendMessage(@NotNull Message message) {
-        Log.d(TAG, "sendMessage(): this = " + this + ", mBackgroundServiceBound = " + mBackgroundServiceBound);
+        Log.d(TAG, "sendMessage(): this = " + this + ", mBackgroundServiceBound = " + mBackgroundServiceBound + ", message = " + message + ", message.what = " + message.what);
 
         try {
             sync();

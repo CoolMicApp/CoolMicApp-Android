@@ -346,6 +346,8 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     private void controlRecordingUI(Constants.CONTROL_UI state) {
+        Log.d("MainActivity", "controlRecordingUI: state = " + currentState + " -> " + state);
+
         if (state == currentState) {
             return;
         }
@@ -462,6 +464,10 @@ public class MainActivity extends Activity implements EventListener {
     public void onBackgroundServiceStopRecording() {
         isRecording = false;
         start_button.setClickable(true);
+
+        // Force reload of UI state:
+        currentState = Constants.CONTROL_UI.CONTROL_UI_CONNECTED;
+        controlRecordingUI(Constants.CONTROL_UI.CONTROL_UI_DISCONNECTED);
     }
 
     @Override
