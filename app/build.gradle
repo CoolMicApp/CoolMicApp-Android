@@ -26,14 +26,14 @@ task appVersion {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "cc.echonet.coolmicapp"
         versionCode versionCodeTmp
         versionName versionNameTmp
 
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
