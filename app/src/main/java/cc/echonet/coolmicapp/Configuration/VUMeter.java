@@ -32,6 +32,6 @@ public class VUMeter extends ProfileBase {
     }
 
     public int getInterval() {
-        return Integer.parseInt(getString("audio_interval", R.string.pref_default_vumeter_interval));
+        return Integer.parseInt(getString("vumeter_interval", R.string.pref_default_vumeter_interval));
     }
 }

@@ -421,6 +421,8 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_setVuMeterInterval(
         return -999666;
     }
 
+    LOGI("Setting VU-Meter Interval to %i", (int)interval);
+
     return coolmic_simple_set_vumeter_interval(wrapper->coolmic_simple_obj, (size_t) interval);
 }
 
