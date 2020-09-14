@@ -194,6 +194,7 @@ public class MainActivity extends Activity implements EventListener {
             backgroundServiceClient.connect();
             controlRecordingUI(currentState);
         }
+        controlVuMeterUI();
     }
 
     @Override
