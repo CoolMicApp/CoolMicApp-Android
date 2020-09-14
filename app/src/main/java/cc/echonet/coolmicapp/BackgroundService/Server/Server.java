@@ -228,7 +228,7 @@ public class Server extends Service implements CallbackHandler {
 
                         service.sendStateToAll();
 
-                        if (service.state.lastStateFetch + 15 * 1000 < service.state.timerInMS) {
+                        if ((service.state.lastStateFetch + 15 * 1000) < service.state.timerInMS) {
                             new Thread(service.fetchListeners()).start();
 
                             service.state.lastStateFetch = service.state.timerInMS;
