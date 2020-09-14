@@ -187,7 +187,7 @@ public class Server extends Service implements CallbackHandler {
                             Message msgReply = service.createMessage(Constants.S2C_MSG_ERROR);
                             Bundle bundle = msgReply.getData();
 
-                            bundle.putString("error", service.getString(R.string.mainactivity_callback_error_invalid_server));
+                            bundle.putString("error", service.getString(R.string.mainactivity_callback_error, e.toString()));
 
                             Server.sendMessage(msg.replyTo, msgReply);
                         }
