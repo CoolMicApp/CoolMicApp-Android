@@ -381,7 +381,7 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     private void controlVuMeterUI() {
-        int visibility = View.GONE;
+        int visibility = View.INVISIBLE;
 
         if (profile != null && profile.getVUMeter().getInterval() != 0)
             visibility = View.VISIBLE;
