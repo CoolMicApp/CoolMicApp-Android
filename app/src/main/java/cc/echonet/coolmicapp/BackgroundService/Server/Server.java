@@ -180,7 +180,18 @@ public class Server extends Service implements CallbackHandler {
                     break;
 
                 case Constants.C2S_MSG_STREAM_RELOAD:
-                    service.getDriver().reloadParameters();
+                    try {
+                        service.getDriver().reloadParameters(true);
+                    } catch (Throwable e) {
+                        if (msg.replyTo != null) {
+                            Message msgReply = service.createMessage(Constants.S2C_MSG_ERROR);
+                            Bundle bundle = msgReply.getData();
+
+                            bundle.putString("error", service.getString(R.string.mainactivity_callback_error_invalid_server));
+
+                            Server.sendMessage(msg.replyTo, msgReply);
+                        }
+                    }
 
                     break;
 

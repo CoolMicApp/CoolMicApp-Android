@@ -31,6 +31,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,9 +112,6 @@ final class Driver implements Closeable {
 
         int sampleRate = profile.getAudio().getSampleRate();
         int channel = profile.getAudio().getChannels();
-        double quality = profile.getCodec().getQuality();
-        String title = profile.getTrack().getTitle();
-        String artist = profile.getTrack().getArtist();
         String codec = profile.getCodec().getType();
 
         int bufferSize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
@@ -127,7 +126,30 @@ final class Driver implements Closeable {
             throw new IOException("Failed to init Core: " + status);
         }
 
-        status = wrapper.performMetaDataQualityUpdate(title, artist, quality, 0);
+        reloadParameters(false);
+
+        status = wrapper.start();
+
+        Log.d(TAG, "Status:" + status);
+
+        if (status != 0) {
+            throw new IOException(context.getString(R.string.exception_start_failed, status));
+        }
+    }
+
+    public boolean stopStream() {
+        if (hasCore()) {
+            wrapper.close();
+            return true;
+        }
+        return false;
+    }
+
+    public void reloadParameters(boolean restart) throws IOException {
+        final @NotNull Track track = profile.getTrack();
+        int status;
+
+        status = wrapper.performMetaDataQualityUpdate(track.getTitle(), track.getArtist(), profile.getCodec().getQuality(), restart ? 1 : 0);
 
         if (status != 0) {
             throw new IOException(context.getString(R.string.exception_failed_metadata_quality, status));
@@ -143,42 +165,12 @@ final class Driver implements Closeable {
             throw new IOException(context.getString(R.string.exception_failed_reconnect, status));
         }
 
-        status = wrapper.start();
-
-        Log.d(TAG, "Status:" + status);
-
-        if (status != 0) {
-            throw new IOException(context.getString(R.string.exception_start_failed, status));
-        }
-
         int interval = profile.getVUMeter().getInterval();
 
         /* Normalize interval to a sample rate of 48kHz (as per Opus specs). */
-        interval = (interval * sampleRate) / 48000;
+        interval = (interval * profile.getAudio().getSampleRate()) / 48000;
 
         wrapper.setVuMeterInterval(interval);
-    }
-
-    public boolean stopStream() {
-        if (hasCore()) {
-            wrapper.close();
-            return true;
-        }
-        return false;
-    }
-
-    public void reloadParameters() {
-        Track track;
-
-        track = profile.getTrack();
-
-        wrapper.performMetaDataQualityUpdate(track.getTitle(), track.getArtist(), profile.getCodec().getQuality(), 1);
-
-        if (profile.getServer().getReconnect()) {
-            wrapper.setReconnectionProfile("enabled");
-        } else {
-            wrapper.setReconnectionProfile("disabled");
-        }
     }
 
     public void setGain(int scale, int left, int right) {
