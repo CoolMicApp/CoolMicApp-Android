@@ -403,7 +403,8 @@ public class MainActivity extends Activity implements EventListener {
         if (!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         } else {
-            startRecording();
+            if (Utils.checkRequiredPermissions(this))
+                startRecording();
         }
     }
 
