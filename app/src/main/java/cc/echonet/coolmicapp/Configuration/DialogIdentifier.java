@@ -24,5 +24,6 @@ package cc.echonet.coolmicapp.Configuration;
 
 public enum DialogIdentifier {
     FIRST_TIME,
-    NEW_VERSION;
+    NEW_VERSION,
+    PERMISSIONS;
 }

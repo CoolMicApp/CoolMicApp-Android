@@ -42,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Locale;
 
+import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.Profile;
 
 /**
@@ -111,13 +112,13 @@ public final class Utils {
         return grantedCount > 0;
     }
 
-    static void requestPermissions(@NotNull Activity activity) {
+    static void requestPermissions(@NotNull Activity activity, @NotNull Profile profile) {
         if (!checkRequiredPermissions(activity)) {
             if (shouldShowRequestPermissionRationale(activity)) {
                 Toast.makeText(activity, R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
             }
 
-            ActivityCompat.requestPermissions(activity, getRequiredPermissionList(activity), PERMISSION_CHECK_REQUEST_CODE);
+            new Dialog(DialogIdentifier.PERMISSIONS, activity, profile, () -> ActivityCompat.requestPermissions(activity, getRequiredPermissionList(activity), PERMISSION_CHECK_REQUEST_CODE)).show();
         } else {
             Toast.makeText(activity, R.string.settingsactivity_toast_permissions_granted, Toast.LENGTH_LONG).show();
         }

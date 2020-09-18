@@ -474,7 +474,7 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public void onBackgroundServicePermissionsMissing() {
-        Utils.requestPermissions(this);
+        Utils.requestPermissions(this, profile);
     }
 
     @Override

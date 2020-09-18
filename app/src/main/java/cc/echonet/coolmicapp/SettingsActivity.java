@@ -279,7 +279,8 @@ public class SettingsActivity extends PreferenceActivity {
             Preference util_permission_check = getPreferenceManager().findPreference("util_permission_check");
             if (util_permission_check != null) {
                 util_permission_check.setOnPreferenceClickListener(arg0 -> {
-                    Utils.requestPermissions(getActivity());
+                    Profile profile = (new Manager(getActivity())).getCurrentProfile();
+                    Utils.requestPermissions(getActivity(), profile);
 
                     return true;
                 });

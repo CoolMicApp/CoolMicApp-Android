@@ -312,6 +312,13 @@
 ]]></string>
     <string name="popup_new_version_url">https://coolmic.net/news/</string>
 
+    <string name="popup_permissions_title">Cool Mic: Permissions</string>
+    <string name="popup_permissions_message"><![CDATA[
+    <p>Cool Mic needs to access your microphone ("Record Audio") to broadcast live audio. Please allow this permission in the next dialog.</p>
+    <p>Cool Mic also requires access to your media storage ("Photos and Media") to stream audio files on your device as part of your broadcast ("Segments"). If you do not wish to stream audio files as part of your broadcast you can safely deny this permission.</p>
+]]></string>
+    <string name="popup_permissions_url">https://coolmic.net/help/permissions/</string>
+
     <string name="popup_any_more">More Info</string>
     <string name="pref_title_utility_reset_dialogs">Restore Hidden Dialogs</string>
     <string name="pref_title_utility_reset_dialogs_done">Hidden Dialogs Restored</string>
