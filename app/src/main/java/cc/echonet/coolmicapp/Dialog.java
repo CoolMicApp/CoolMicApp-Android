@@ -31,6 +31,7 @@ import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.DialogState;
@@ -45,15 +46,26 @@ public class Dialog {
     private final @NotNull DialogIdentifier dialogIdentifier;
     private final @NotNull Context context;
     private final @NotNull Profile profile;
+    private final @Nullable Runnable onDone;
 
     public Dialog(@NotNull DialogIdentifier dialogIdentifier, @NotNull Context context, @NotNull Profile profile) {
+        this(dialogIdentifier, context, profile, null);
+    }
+
+    public Dialog(@NotNull DialogIdentifier dialogIdentifier, @NotNull Context context, @NotNull Profile profile, @Nullable Runnable onDone) {
         this.dialogIdentifier = dialogIdentifier;
         this.context = context;
         this.profile = profile;
+        this.onDone = onDone;
     }
 
     private String getString(@NotNull String subkey) {
         return Utils.getStringByName(context, "popup_" + dialogIdentifier.toString().toLowerCase() + "_" + subkey);
+    }
+
+    private void onDone() {
+        if (onDone != null)
+            onDone.run();
     }
 
     public void show() {
@@ -65,10 +77,14 @@ public class Dialog {
         tv.setMovementMethod(LinkMovementMethod.getInstance());
         tv.setPaddingRelative(CONTENT_PADDING, tv.getPaddingTop(), CONTENT_PADDING, tv.getPaddingBottom());
         builder.setView(tv);
-        builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
+        builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+            dialogInterface.dismiss();
+            onDone();
+        });
         builder.setNeutralButton(R.string.popup_any_more, ((dialogInterface, i) -> {
             final @NotNull Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(KEY_URL)));
             context.startActivity(intent);
+            onDone();
         }));
         builder.show();
         profile.getDialogState(dialogIdentifier).shown();
