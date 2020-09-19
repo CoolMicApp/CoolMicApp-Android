@@ -480,11 +480,9 @@ public class MainActivity extends Activity implements EventListener {
     @Override
     public void onBackgroundServiceConnectionUnset() {
         AlertDialog.Builder alertDialog = Utils.buildAlertDialogCMTSTOS(this);
-        alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Utils.loadCMTSData(MainActivity.this, profile);
-                startRecording();
-            }
+        alertDialog.setPositiveButton(R.string.mainactivity_missing_connection_details_yes, (dialog, which) -> {
+            Utils.loadCMTSData(MainActivity.this, profile);
+            startRecording();
         });
         alertDialog.show();
     }
@@ -494,16 +492,8 @@ public class MainActivity extends Activity implements EventListener {
         AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(this);
         alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
         alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);
-        alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        alertDialogCMTSTOS.setPositiveButton(R.string.coolmic_tos_accept, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                startRecording();
-            }
-        });
+        alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, (dialog, which) -> dialog.cancel());
+        alertDialogCMTSTOS.setPositiveButton(R.string.coolmic_tos_accept, (dialog, which) -> startRecording());
 
         alertDialogCMTSTOS.show();
     }
