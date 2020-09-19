@@ -34,7 +34,7 @@ import java.util.UUID;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Server;
 
-public class CMTS {
+public final class CMTS {
     private static final String[] CMTSHosts = {"coolmic.net", "echonet.cc", "64.142.100.248", "64.142.100.249", "46.165.219.118"};
 
     public static boolean isCMTSConnection(@NotNull Profile profile) {
