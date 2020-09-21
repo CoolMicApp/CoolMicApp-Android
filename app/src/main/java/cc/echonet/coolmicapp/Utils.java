@@ -84,7 +84,6 @@ public final class Utils {
         }
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkRequiredPermissions(@NotNull Context context) {
         final String[] requiredPermissions = getRequiredPermissionList(context);
         int grantedCount = 0;
