@@ -129,7 +129,6 @@
     <PreferenceCategory android:title="@string/prefs_header_utilities">
         <Preference android:title="@string/pref_title_utility_connection_default" android:key="util_conn_default"/>
         <Preference android:title="@string/pref_title_utility_qr_scan" android:key="util_qr_scan"/>
-        <Preference android:title="@string/pref_title_utility_permission_check" android:key="util_permission_check"/>
         <Preference android:title="@string/pref_title_utility_reset_dialogs" android:key="util_reset_dialogs"/>
     </PreferenceCategory>
 </PreferenceScreen>

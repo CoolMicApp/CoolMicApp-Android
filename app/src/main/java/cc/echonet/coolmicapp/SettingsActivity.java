@@ -276,16 +276,6 @@ public class SettingsActivity extends PreferenceActivity {
                 });
             }
 
-            Preference util_permission_check = getPreferenceManager().findPreference("util_permission_check");
-            if (util_permission_check != null) {
-                util_permission_check.setOnPreferenceClickListener(arg0 -> {
-                    Profile profile = (new Manager(getActivity())).getCurrentProfile();
-                    Utils.requestPermissions(getActivity(), profile);
-
-                    return true;
-                });
-            }
-
             Preference util_reset_dialogs = getPreferenceManager().findPreference("util_reset_dialogs");
             if (util_reset_dialogs != null) {
                 util_reset_dialogs.setOnPreferenceClickListener(preference -> {
