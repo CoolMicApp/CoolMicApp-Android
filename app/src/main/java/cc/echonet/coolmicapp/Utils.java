@@ -22,6 +22,7 @@
 
 package cc.echonet.coolmicapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -84,17 +85,22 @@ public final class Utils {
         }
     }
 
-    public static boolean checkRequiredPermissions(@NotNull Context context) {
+    public static boolean checkRequiredPermissions(@NotNull Context context, boolean minimalOnly) {
         final String[] requiredPermissions = getRequiredPermissionList(context);
+        int count = 0;
         int grantedCount = 0;
 
         for (String permission : requiredPermissions) {
+            if (minimalOnly && permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE))
+                continue;
+
             if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
                 grantedCount++;
             }
+            count++;
         }
 
-        return grantedCount == requiredPermissions.length;
+        return grantedCount == count;
     }
 
 
@@ -112,7 +118,7 @@ public final class Utils {
     }
 
     static void requestPermissions(@NotNull Activity activity, @NotNull Profile profile) {
-        if (!checkRequiredPermissions(activity)) {
+        if (!checkRequiredPermissions(activity, false)) {
             if (shouldShowRequestPermissionRationale(activity)) {
                 Toast.makeText(activity, R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
             }

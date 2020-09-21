@@ -379,6 +379,8 @@ public class MainActivity extends Activity implements EventListener {
         }
 
         currentState = state;
+
+        findViewById(R.id.next_segment_button).setEnabled(Utils.checkRequiredPermissions(this, false));
     }
 
     private void controlVuMeterUI() {
@@ -403,7 +405,7 @@ public class MainActivity extends Activity implements EventListener {
         if (!Utils.onRequestPermissionsResult(this, requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         } else {
-            if (Utils.checkRequiredPermissions(this))
+            if (Utils.checkRequiredPermissions(this, false))
                 startRecording();
         }
     }

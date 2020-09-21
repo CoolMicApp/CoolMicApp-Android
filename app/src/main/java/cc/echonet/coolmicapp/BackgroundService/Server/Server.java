@@ -446,7 +446,7 @@ public class Server extends Service implements CallbackHandler {
             return;
         }
 
-        if (!Utils.checkRequiredPermissions(getApplicationContext())) {
+        if (!Utils.checkRequiredPermissions(getApplicationContext(), true)) {
             Message msgReply = createMessage(Constants.S2C_MSG_PERMISSIONS_MISSING);
 
             sendMessage(replyTo, msgReply);
