@@ -360,6 +360,8 @@ public class MainActivity extends Activity implements EventListener {
                 transitionButton.startTransition(5000);
 
                 start_button.setText(R.string.cmdStartInitializing);
+
+                findViewById(R.id.next_segment_button).setEnabled(false);
                 break;
             case CONTROL_UI_CONNECTED:
                 start_button.startAnimation(animation);
@@ -367,6 +369,8 @@ public class MainActivity extends Activity implements EventListener {
                 transitionButton.startTransition(5000);
 
                 start_button.setText(R.string.broadcasting);
+
+                findViewById(R.id.next_segment_button).setEnabled(Utils.checkRequiredPermissions(this, false));
                 break;
             case CONTROL_UI_DISCONNECTED:
                 start_button.clearAnimation();
@@ -379,12 +383,12 @@ public class MainActivity extends Activity implements EventListener {
                 ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
                 ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
                 ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
+
+                findViewById(R.id.next_segment_button).setEnabled(false);
                 break;
         }
 
         currentState = state;
-
-        findViewById(R.id.next_segment_button).setEnabled(Utils.checkRequiredPermissions(this, false));
     }
 
     private void controlVuMeterUI() {
