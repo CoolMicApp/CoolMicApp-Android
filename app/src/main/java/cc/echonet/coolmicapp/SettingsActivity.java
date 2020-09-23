@@ -270,18 +270,6 @@ public class SettingsActivity extends PreferenceActivity {
                 });
             }
 
-            Preference util_reset_dialogs = getPreferenceManager().findPreference("util_reset_dialogs");
-            if (util_reset_dialogs != null) {
-                util_reset_dialogs.setOnPreferenceClickListener(preference -> {
-                    Profile profile = (new Manager(getActivity())).getCurrentProfile();
-                    for (DialogIdentifier dialogIdentifier : DialogIdentifier.values()) {
-                        profile.getDialogState(dialogIdentifier).reset();
-                    }
-                    Toast.makeText(getActivity().getApplicationContext(), R.string.pref_title_utility_reset_dialogs_done, Toast.LENGTH_SHORT).show();
-                    return true;
-                });
-            }
-
             handleSampleRateEnabled();
         }
 

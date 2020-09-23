@@ -45,5 +45,9 @@
         android:id="@+id/menu_action_devel_permission_check"
         android:orderInCategory="1010"
         android:title="@string/menu_action_devel_permission_check" />
+    <item
+        android:id="@+id/menu_action_devel_reset_dialogs"
+        android:orderInCategory="1020"
+        android:title="@string/menu_action_devel_reset_dialogs" />
     <!-- goto 10 -->
 </menu> 

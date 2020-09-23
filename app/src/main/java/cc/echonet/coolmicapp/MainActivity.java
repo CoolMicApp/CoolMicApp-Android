@@ -151,6 +151,12 @@ public class MainActivity extends Activity implements EventListener {
             case R.id.menu_action_devel_permission_check:
                 Utils.requestPermissions(this, profile, true);
                 return true;
+            case R.id.menu_action_devel_reset_dialogs:
+                for (DialogIdentifier dialogIdentifier : DialogIdentifier.values()) {
+                    profile.getDialogState(dialogIdentifier).reset();
+                }
+                Toast.makeText(this, R.string.menu_action_devel_reset_dialogs_done, Toast.LENGTH_SHORT).show();
+                return true;
 
             default:
                 Toast.makeText(getApplicationContext(), R.string.menu_action_default, Toast.LENGTH_SHORT).show();
