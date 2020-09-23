@@ -353,29 +353,33 @@ public class MainActivity extends Activity implements EventListener {
             return;
         }
 
-        if (state == Constants.CONTROL_UI.CONTROL_UI_CONNECTING) {
-            start_button.startAnimation(animation);
-            start_button.setBackground(transitionButton);
-            transitionButton.startTransition(5000);
+        switch (state) {
+            case CONTROL_UI_CONNECTING:
+                start_button.startAnimation(animation);
+                start_button.setBackground(transitionButton);
+                transitionButton.startTransition(5000);
 
-            start_button.setText(R.string.cmdStartInitializing);
-        } else if (state == Constants.CONTROL_UI.CONTROL_UI_CONNECTED) {
-            start_button.startAnimation(animation);
-            start_button.setBackground(transitionButton);
-            transitionButton.startTransition(5000);
+                start_button.setText(R.string.cmdStartInitializing);
+                break;
+            case CONTROL_UI_CONNECTED:
+                start_button.startAnimation(animation);
+                start_button.setBackground(transitionButton);
+                transitionButton.startTransition(5000);
 
-            start_button.setText(R.string.broadcasting);
-        } else {
-            start_button.clearAnimation();
-            start_button.setBackground(buttonColor);
-            start_button.setText(R.string.start_broadcast);
+                start_button.setText(R.string.broadcasting);
+                break;
+            case CONTROL_UI_DISCONNECTED:
+                start_button.clearAnimation();
+                start_button.setBackground(buttonColor);
+                start_button.setText(R.string.start_broadcast);
 
-            ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
-            ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
-            ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
-            ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
-            ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
-            ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
+                ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setProgress(0);
+                ((ProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setProgress(0);
+                ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterLeft)).setText("");
+                ((TextProgressBar) MainActivity.this.findViewById(R.id.pbVuMeterRight)).setText("");
+                ((TextView) MainActivity.this.findViewById(R.id.rbPeakLeft)).setText("");
+                ((TextView) MainActivity.this.findViewById(R.id.rbPeakRight)).setText("");
+                break;
         }
 
         currentState = state;
