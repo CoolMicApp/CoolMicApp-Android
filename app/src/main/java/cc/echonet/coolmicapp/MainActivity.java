@@ -62,6 +62,7 @@ import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.Server.Server;
 import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
+import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 
@@ -115,6 +116,15 @@ public class MainActivity extends Activity implements EventListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_menu, menu);
+
+        if (!new Manager(this).getGlobalConfiguration().getDeveloperMode()) {
+            for (int i = 0; i < menu.size(); i++) {
+                final @NotNull MenuItem item = menu.getItem(i);
+                if (item.getOrder() >= 1000)
+                    item.setVisible(false);
+            }
+        }
+
         return true;
     }
 
