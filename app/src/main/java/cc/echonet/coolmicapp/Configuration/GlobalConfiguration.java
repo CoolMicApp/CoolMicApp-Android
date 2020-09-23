@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import cc.echonet.coolmicapp.BuildConfig;
@@ -54,7 +55,7 @@ public class GlobalConfiguration {
         editor = prefs.edit();
 
         editor.putString(KEY_PROFILE_CURRENT, Manager.DEFAULT_PROFILE);
-        editor.putBoolean(KEY_DEVELOPER_MODE, BuildConfig.DEBUG);
+        editor.putBoolean(KEY_DEVELOPER_MODE, getDeveloperModeDefault());
 
         editor.putBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true).apply();
         editor.apply();
@@ -69,8 +70,14 @@ public class GlobalConfiguration {
         prefs.edit().putString(KEY_PROFILE_CURRENT, profileName).apply();
     }
 
+    @Contract(pure = true)
+    private boolean getDeveloperModeDefault() {
+        //noinspection ConstantConditions
+        return BuildConfig.FLAVOR.equals("debugdev");
+    }
+
     public boolean getDeveloperMode() {
-        return prefs.getBoolean(KEY_DEVELOPER_MODE, BuildConfig.DEBUG);
+        return prefs.getBoolean(KEY_DEVELOPER_MODE, getDeveloperModeDefault());
     }
 
     public void setDeveloperMode(boolean mode) {
