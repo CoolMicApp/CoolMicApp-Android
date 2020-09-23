@@ -41,6 +41,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
+import cc.echonet.coolmicapp.Configuration.Manager;
+
 public class AboutActivity extends Activity {
     private ClipboardManager myClipboard;
     private int extra = 0;
@@ -69,8 +71,10 @@ public class AboutActivity extends Activity {
 
         ((TextView) findViewById(R.id.txtVersion)).setOnClickListener(v -> {
             extra++;
-            if (extra == 6)
+            if (extra == 6) {
                 Toast.makeText(AboutActivity.this, "yes", Toast.LENGTH_SHORT).show();
+                new Manager(this).getGlobalConfiguration().setDeveloperMode(true);
+            }
         });
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
