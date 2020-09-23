@@ -120,10 +120,6 @@ public final class Utils {
 
     static void requestPermissions(@NotNull Activity activity, @NotNull Profile profile, boolean passive) {
         if (!checkRequiredPermissions(activity, false)) {
-            if (shouldShowRequestPermissionRationale(activity)) {
-                Toast.makeText(activity, R.string.settingsactivity_toast_permission_denied, Toast.LENGTH_SHORT).show();
-            }
-
             new Dialog(DialogIdentifier.PERMISSIONS, activity, profile,
                     () -> ActivityCompat.requestPermissions(activity, getRequiredPermissionList(activity), passive ? PERMISSION_CHECK_PASSIVE_REQUEST_CODE : PERMISSION_CHECK_REQUEST_CODE)
             ).show();

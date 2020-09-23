@@ -234,7 +234,6 @@
     <string name="coolmic_help_url">http://coolmic.net/help</string>
     <string name="coolmic_back_message">Tap [ OK ] to stop Livestream.</string>
     <string name="aboutactivity_cmd_about_copy">Copy to Clipboard</string>
-    <string name="settingsactivity_toast_permission_denied">Cool Mic needs the requested permissions for recording and streaming. Without them it is quite useless</string>
     <string name="settingsactivity_url_invalid">Please scan a valid URI</string>
     <string name="settingsactivity_qrcode_loaded">Loaded settings from QR code</string>
     <string name="settingsactivity_toast_permissions_granted">All required permissions granted</string>
