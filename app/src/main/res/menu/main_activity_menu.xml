@@ -41,5 +41,9 @@
         android:title="@string/menu_action_quit" />
 
     <!-- Items with android:orderInCategory >= 1000 are developer mode only -->
+    <item
+        android:id="@+id/menu_action_devel_permission_check"
+        android:orderInCategory="1010"
+        android:title="@string/menu_action_devel_permission_check" />
     <!-- goto 10 -->
 </menu> 

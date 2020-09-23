@@ -109,6 +109,7 @@
     <string name="menu_action_help">Help</string>
     <string name="menu_action_quit">Quit</string>
     <string name="menu_action_about">About</string>
+    <string name="menu_action_devel_permission_check">Permission Check</string>
     <string name="menu_action_default">No appropriate menu action</string>
     <string name="popup_about_cmd_dismiss">Dismiss</string>
     <string name="popup_about_lbl_version">Version:</string>

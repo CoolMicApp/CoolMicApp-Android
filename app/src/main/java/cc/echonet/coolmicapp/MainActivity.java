@@ -147,6 +147,11 @@ public class MainActivity extends Activity implements EventListener {
             case R.id.menu_action_quit:
                 exitApp();
                 return true;
+            /* developer mode below */
+            case R.id.menu_action_devel_permission_check:
+                Utils.requestPermissions(this, profile, true);
+                return true;
+
             default:
                 Toast.makeText(getApplicationContext(), R.string.menu_action_default, Toast.LENGTH_SHORT).show();
                 break;
