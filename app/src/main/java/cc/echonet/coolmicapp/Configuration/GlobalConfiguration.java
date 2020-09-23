@@ -28,9 +28,12 @@ import android.preference.PreferenceManager;
 
 import org.jetbrains.annotations.NotNull;
 
+import cc.echonet.coolmicapp.BuildConfig;
+
 public class GlobalConfiguration {
     private static final String PROFILE_NAME = "_global";
     private static final String KEY_PROFILE_CURRENT = "profile_current";
+    private static final String KEY_DEVELOPER_MODE = "developer_mode";
 
     private final @NotNull Context context;
     private final @NotNull SharedPreferences prefs;
@@ -51,6 +54,7 @@ public class GlobalConfiguration {
         editor = prefs.edit();
 
         editor.putString(KEY_PROFILE_CURRENT, Manager.DEFAULT_PROFILE);
+        editor.putBoolean(KEY_DEVELOPER_MODE, BuildConfig.DEBUG);
 
         editor.putBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true).apply();
         editor.apply();
@@ -63,5 +67,13 @@ public class GlobalConfiguration {
     public void setCurrentProfileName(String profileName) {
         Profile.assertValidProfileName(profileName);
         prefs.edit().putString(KEY_PROFILE_CURRENT, profileName).apply();
+    }
+
+    public boolean getDeveloperMode() {
+        return prefs.getBoolean(KEY_DEVELOPER_MODE, BuildConfig.DEBUG);
+    }
+
+    public void setDeveloperMode(boolean mode) {
+        prefs.edit().putBoolean(KEY_DEVELOPER_MODE, mode).apply();
     }
 }
