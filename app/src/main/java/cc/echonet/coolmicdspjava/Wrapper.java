@@ -33,7 +33,7 @@ import java.io.InputStream;
  * <P>
  * The general workflow consists of calling:
  * <ul>
- *     <li>{@link #prepare(CallbackHandler, String, int, String, String, String, String, int, int, int)} to prepare the stream.</li>
+ *     <li>{@link #prepare(CallbackHandler, String, int, String, String, String, String, int, int, int, String, String, String)} to prepare the stream.</li>
  *     <li>Optionally call setters for additional settings.</li>
  *     <li>{@link #start()} to start recording.</li>
  *     <li>Optionally call setters for updating the stream or {@link #nextSegment(InputStreamAdapter)} to start a new segment.</li>
@@ -101,7 +101,7 @@ public final class Wrapper implements Closeable {
      * @param buffersize The buffer site to use.
      * @return TODO
      */
-    public synchronized native int prepare(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize);
+    public synchronized native int prepare(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize, String softwareName, String softwareVersion, String softwareComment);
 
     /**
      * This starts streaming.
@@ -117,7 +117,7 @@ public final class Wrapper implements Closeable {
 
     /**
      * Gets the state of the wrapper.
-     * Will return true once {@link #prepare(CallbackHandler, String, int, String, String, String, String, int, int, int)}
+     * Will return true once {@link #prepare(CallbackHandler, String, int, String, String, String, String, int, int, int, String, String, String)}
      * was called and {@link #close()} has not yet been called.
      *
      * @return Whether the wrapper is in prepared state.

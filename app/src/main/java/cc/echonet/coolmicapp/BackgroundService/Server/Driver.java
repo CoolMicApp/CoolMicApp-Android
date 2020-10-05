@@ -36,8 +36,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import cc.echonet.coolmicapp.BuildConfig;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Server;
 import cc.echonet.coolmicapp.Configuration.Track;
@@ -120,7 +122,8 @@ final class Driver implements Closeable {
         Log.d(TAG, Integer.toString(port_num));
 
         Log.d(TAG, "Minimum Buffer Size: " + bufferSize);
-        int status = wrapper.prepare(callbackHandler, hostname, port_num, username, password, mountpoint, codec, sampleRate, channel, bufferSize);
+        int status = wrapper.prepare(callbackHandler, hostname, port_num, username, password, mountpoint, codec, sampleRate, channel, bufferSize,
+                BuildConfig.HTTP_PRODUCT, BuildConfig.HTTP_VERSION, BuildConfig.HTTP_COMMENT);
 
         if (status != 0) {
             throw new IOException("Failed to init Core: " + status);

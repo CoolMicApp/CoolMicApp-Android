@@ -344,9 +344,13 @@ static int logging_callback(coolmic_logging_level_t level, const char *msg)
 }
 
 
-JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_prepare(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize)
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_prepare(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize, jstring software_name, jstring software_version, jstring software_comment)
 {
     wrapper_t * wrapper = get_wrapper_t(env, obj);
+    const char *software_nameNative = NULL;
+    const char *software_versionNative = NULL;
+    const char *software_commentNative = NULL;
+
     LOGI("start init");
 
     if(wrapper->coolmic_simple_obj != NULL)
@@ -355,11 +359,17 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_prepare(JNIEnv * en
         return -666666;
     }
 
-    const char *codecNative    = (*env)->GetStringUTFChars(env, codec,    0);
-    const char *hostnameNative = (*env)->GetStringUTFChars(env, hostname, 0);
-    const char *usernameNative = (*env)->GetStringUTFChars(env, username, 0);
-    const char *passwordNative = (*env)->GetStringUTFChars(env, password, 0);
-    const char *mountNative    = (*env)->GetStringUTFChars(env, mount,    0);
+    const char *codecNative    = (*env)->GetStringUTFChars(env, codec,    NULL);
+    const char *hostnameNative = (*env)->GetStringUTFChars(env, hostname, NULL);
+    const char *usernameNative = (*env)->GetStringUTFChars(env, username, NULL);
+    const char *passwordNative = (*env)->GetStringUTFChars(env, password, NULL);
+    const char *mountNative    = (*env)->GetStringUTFChars(env, mount,    NULL);
+    if (software_name)
+        software_nameNative = (*env)->GetStringUTFChars(env, software_name, NULL);
+    if (software_version)
+        software_versionNative = (*env)->GetStringUTFChars(env, software_version, NULL);
+    if (software_comment)
+        software_commentNative = (*env)->GetStringUTFChars(env, software_comment, NULL);
 
     if ((*env)->GetJavaVM(env, &(wrapper->g_vm)) != 0)
         return -1;
@@ -379,11 +389,14 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_prepare(JNIEnv * en
 
     memset(&shout_config, 0, sizeof(shout_config));
 
-    shout_config.hostname = hostnameNative;
-    shout_config.port     = port;
-    shout_config.username = usernameNative;
-    shout_config.password = passwordNative;
-    shout_config.mount    = mountNative;
+    shout_config.hostname           = hostnameNative;
+    shout_config.port               = port;
+    shout_config.username           = usernameNative;
+    shout_config.password           = passwordNative;
+    shout_config.mount              = mountNative;
+    shout_config.software_name      = software_nameNative;
+    shout_config.software_version   = software_versionNative;
+    shout_config.software_comment   = software_commentNative;
 
     wrapper->coolmic_simple_obj = coolmic_simple_new(NULL, igloo_RO_NULL, codecNative, (uint_least32_t) (int) rate,
                                             (unsigned int) (int) channels, buffersize, &shout_config);
@@ -404,6 +417,12 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_prepare(JNIEnv * en
     (*env)->ReleaseStringUTFChars(env, username, usernameNative);
     (*env)->ReleaseStringUTFChars(env, password, passwordNative);
     (*env)->ReleaseStringUTFChars(env, mount, mountNative);
+    if (software_name)
+        (*env)->ReleaseStringUTFChars(env, software_name, software_nameNative);
+    if (software_version)
+        (*env)->ReleaseStringUTFChars(env, software_version, software_versionNative);
+    if (software_comment)
+        (*env)->ReleaseStringUTFChars(env, software_comment, software_commentNative);
 
     LOGI("end init");
 

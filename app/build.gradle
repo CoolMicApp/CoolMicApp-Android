@@ -42,6 +42,9 @@ android {
         buildConfigField "String", "GIT_AUTHOR", "\"${gitAuthor()}\""
         buildConfigField "String", "GIT_DIRTY", "\"${gitDirty()}\""
         buildConfigField "String", "BUILD_TS", "\"${buildTimeStamp()}\""
+        buildConfigField "String", "HTTP_PRODUCT", "\"CoolMic\""
+        buildConfigField "String", "HTTP_VERSION", "VERSION_NAME"
+        buildConfigField "String", "HTTP_COMMENT", "\"build-ts:\" + BUILD_TS + \"; git-rev:\" + GIT_REVISION"
 
         // `return void` removes the lint error: `Not all execution paths return a value`.
         return void
