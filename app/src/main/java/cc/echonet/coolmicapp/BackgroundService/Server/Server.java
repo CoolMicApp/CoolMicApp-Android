@@ -394,7 +394,7 @@ public class Server extends Service implements CallbackHandler {
         try {
             messenger.send(message);
             return true;
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             Log.d(TAG, "sendMessage: failed to send message to " + messenger + ": " + e.toString());
             return false;
         }

@@ -179,7 +179,10 @@ public class Client implements Closeable {
                     Log.v("IH", "In Handler: S2C_MSG_STREAM_STOP_REPLY: X!");
 
                     if (was_running) {
-                        Toast.makeText(client.context, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
+                        try {
+                            Toast.makeText(client.context, R.string.broadcast_stop_message, Toast.LENGTH_SHORT).show();
+                        } catch (Exception ignored) {
+                        }
                     }
 
                     client.eventListener.onBackgroundServiceStopRecording();
