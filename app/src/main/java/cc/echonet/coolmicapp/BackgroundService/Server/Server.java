@@ -577,7 +577,8 @@ public class Server extends Service implements CallbackHandler {
                 state.hadError = true;
 
                 if (!profile.getServer().getReconnect()) {
-                    stopStream(null);
+                    // Use a different thread as we need to access the driver here.
+                    new Thread(() -> stopStream(null)).start();
                 }
 
                 break;
