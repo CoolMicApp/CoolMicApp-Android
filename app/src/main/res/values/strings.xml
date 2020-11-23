@@ -279,6 +279,9 @@
     <string name="next_segment">Play Audio Clip</string>
     <string name="next_segment_active">Playing Audio Clip</string>
 
+    <string name="codecmissmatch_title">Codec Missmatch</string>
+    <string name="codecmissmatch_text">Streaming codec and input file mismatch. Currently streaming in "%s" but file is in "%s". Do you want to continue?</string>
+
     <string name="popup_first_time_title">Welcome to Cool Mic</string>
     <string name="popup_first_time_message"><![CDATA[
 <p>• Welcome! Cool Mic is an open source Icecast source client. It livestreams audio captured by your Android device’s microphone/line-in jack or internal microphone.</p>

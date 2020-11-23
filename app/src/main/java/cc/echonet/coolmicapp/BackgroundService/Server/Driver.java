@@ -31,6 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
@@ -57,6 +58,7 @@ final class Driver implements Closeable {
     private final @NonNull Context context;
     private @NonNull Profile profile;
     private final @NonNull CallbackHandler callbackHandler;
+    private @Nullable String codec;
 
     private WrapperConstants.WrapperInitializationStatus initWrapper() {
         final WrapperConstants.WrapperInitializationStatus status = wrapper.getState();
@@ -114,7 +116,8 @@ final class Driver implements Closeable {
 
         int sampleRate = profile.getAudio().getSampleRate();
         int channel = profile.getAudio().getChannels();
-        String codec = profile.getCodec().getType();
+
+        codec = profile.getCodec().getType();
 
         int bufferSize = AudioRecord.getMinBufferSize(sampleRate, channel == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
 
@@ -141,6 +144,7 @@ final class Driver implements Closeable {
     }
 
     public boolean stopStream() {
+        codec = null;
         if (hasCore()) {
             wrapper.close();
             return true;
@@ -191,6 +195,11 @@ final class Driver implements Closeable {
         } else {
             wrapper.nextSegment(inputStream);
         }
+    }
+
+    @Contract(pure = true)
+    public @Nullable String getCodec() {
+        return codec;
     }
 
     @Override

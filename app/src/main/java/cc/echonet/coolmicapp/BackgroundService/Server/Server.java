@@ -22,12 +22,14 @@
 
 package cc.echonet.coolmicapp.BackgroundService.Server;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +40,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +60,8 @@ import cc.echonet.coolmicapp.CMTS;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Volume;
+import cc.echonet.coolmicapp.Dialog;
+import cc.echonet.coolmicapp.FileFormatDetector;
 import cc.echonet.coolmicapp.Icecast.Icecast;
 import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import cc.echonet.coolmicapp.MainActivity;
@@ -206,10 +211,8 @@ public class Server extends Service implements CallbackHandler {
                     Log.d(TAG, "handleMessage: XXX: C2S_MSG_NEXT_SEGMENT: path="+path);
 
                     try {
-                        final @NotNull InputStream inputStream = Utils.openURI(service, Objects.requireNonNull(path));
-
+                        final @NotNull InputStream inputStream = Utils.openURI(service, Uri.parse(path));
                         service.getDriver().nextSegment(inputStream);
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

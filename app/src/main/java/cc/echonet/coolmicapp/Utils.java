@@ -237,9 +237,9 @@ public final class Utils {
      * @return An open {@link InputStream}.
      * @throws IOException Thrown according to errors opening the file.
      */
-    public static @NotNull InputStream openURI(@NotNull Context context, @NotNull String uri) throws IOException {
+    public static @NotNull InputStream openURI(@NotNull Context context, @NotNull Uri uri) throws IOException {
         try {
-            return Objects.requireNonNull(context.getContentResolver().openInputStream(Uri.parse(uri)));
+            return Objects.requireNonNull(context.getContentResolver().openInputStream(uri));
         } catch (NullPointerException e) {
             throw new IOException(e);
         }

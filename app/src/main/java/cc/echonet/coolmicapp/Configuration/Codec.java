@@ -23,12 +23,17 @@
 package cc.echonet.coolmicapp.Configuration;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import cc.echonet.coolmicapp.R;
 
+@SuppressWarnings("HardcodedFileSeparator")
 public class Codec extends ProfileBase {
-    @SuppressWarnings("HardcodedFileSeparator")
+    public static final @NotNull String TYPE_OGG = "application/ogg";
     public static final @NotNull String TYPE_OPUS = "audio/ogg; codec=opus";
+    public static final @NotNull String TYPE_VORBIS = "audio/ogg; codec=vorbis";
+    public static final @NotNull String TYPE_AAC = "audio/aac";
+    public static final @NotNull String TYPE_MP3 = "audio/mpeg";
 
     private final @NotNull Audio audio;
 
@@ -56,5 +61,19 @@ public class Codec extends ProfileBase {
 
     public double getQuality() {
         return Double.parseDouble(getString("audio_quality", R.string.pref_default_audio_quality));
+    }
+
+    public static boolean isOgg(@Nullable String type) {
+        if (type == null)
+            return false;
+
+        switch (type) {
+            case TYPE_OGG:
+            case TYPE_VORBIS:
+            case TYPE_OPUS:
+                return true;
+        }
+
+        return false;
     }
 }

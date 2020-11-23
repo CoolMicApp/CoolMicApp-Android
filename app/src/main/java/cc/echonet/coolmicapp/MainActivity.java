@@ -52,7 +52,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Objects;
 
@@ -61,6 +64,7 @@ import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.Server.Server;
 import cc.echonet.coolmicapp.BackgroundService.State;
+import cc.echonet.coolmicapp.Configuration.Codec;
 import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
@@ -319,6 +323,45 @@ public class MainActivity extends Activity implements EventListener {
         });
     }
 
+    private void handleNextSegment(@NotNull Uri uri) {
+        try {
+            final @NotNull InputStream inputStream = Utils.openURI(this, uri);
+            final @Nullable String type;
+            final @Nullable String streamType = profile.getCodec().getType();
+
+            type = FileFormatDetector.detect(inputStream);
+
+            inputStream.close();
+
+            if (type != null && streamType != null) {
+                if (type.equals(streamType)) {
+                    backgroundServiceClient.nextSegment(uri.toString());
+                    return;
+                }
+
+                final @NotNull TextView tv = new TextView(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                builder.setTitle(R.string.codecmissmatch_title);
+                tv.setText(getString(R.string.codecmissmatch_text, streamType, type));
+                builder.setView(tv);
+                builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    Log.d("MainActivity", "handleNextSegment: User confirmed codec mismatch.");
+                    backgroundServiceClient.nextSegment(uri.toString());
+                });
+                builder.setCancelable(true);
+                builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    Log.d("MainActivity", "handleNextSegment: User CANCELed codec nextSegment request as codecs mismatch. (via button)");
+                });
+                builder.setOnCancelListener(dialog -> {
+                    Log.d("MainActivity", "handleNextSegment: User CANCELed codec nextSegment request as codecs mismatch.");
+                });
+                builder.show();
+            }
+        } catch (IOException e) {
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -327,7 +370,7 @@ public class MainActivity extends Activity implements EventListener {
             switch (requestCode) {
                 case Constants.NEXTSEGMENT_REQUEST_CODE:
                     final @NotNull Uri uri = Objects.requireNonNull(data.getData());
-                    backgroundServiceClient.nextSegment(uri.toString());
+                    handleNextSegment(uri);
                     break;
             }
         }
