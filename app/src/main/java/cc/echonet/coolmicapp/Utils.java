@@ -34,14 +34,19 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.net.Uri;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
 
 import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.Profile;
@@ -223,5 +228,20 @@ public final class Utils {
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    /**
+     * Opens a file based on a URI via Android content resolution.
+     * @param context The {@link Context} to use.
+     * @param uri The URI to use.
+     * @return An open {@link InputStream}.
+     * @throws IOException Thrown according to errors opening the file.
+     */
+    public static @NotNull InputStream openURI(@NotNull Context context, @NotNull String uri) throws IOException {
+        try {
+            return Objects.requireNonNull(context.getContentResolver().openInputStream(Uri.parse(uri)));
+        } catch (NullPointerException e) {
+            throw new IOException(e);
+        }
     }
 }

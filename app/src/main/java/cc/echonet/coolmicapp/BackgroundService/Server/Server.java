@@ -206,15 +206,11 @@ public class Server extends Service implements CallbackHandler {
                     Log.d(TAG, "handleMessage: XXX: C2S_MSG_NEXT_SEGMENT: path="+path);
 
                     try {
-                        InputStream inputStream = null;
-
-                        if (path != null) {
-                            inputStream = service.getContentResolver().openInputStream(Uri.parse(path));
-                        }
+                        final @NotNull InputStream inputStream = Utils.openURI(service, Objects.requireNonNull(path));
 
                         service.getDriver().nextSegment(inputStream);
 
-                    } catch (FileNotFoundException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
