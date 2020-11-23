@@ -297,21 +297,13 @@
     <string name="popup_new_version_message"><![CDATA[
      <h1>Features:</h1>
 
-    <p>• Insert audio clips into livestreams:<br>
-        &nbsp;→ Upload audio (Vorbis, Opus) files to your Android device<br>
-        &nbsp;→ Start a livestream in Cool Mic<br>
-        &nbsp;→ Tap “Play Audio Clip”<br>
-        &nbsp;→ Select your file(s)<br>
-        &nbsp;→ Livestream cuts to audio clip and is played in realtime<br>
-        &nbsp;→ When clip finishes, live audio resumes</p>
-    <p>• Added landscape layout</p>
+    <p>• Added warning if attempt to play an audio file in different format than current stream settings<br>
 
 <h1>Improvements:</h1>
 
-    <p>• Fixes for various stability issues</p>
+    <p>• Fixes for various stability issues including an ANR when network drops or becomes unstable</p>
     <p>• Improved UI</p>
     <p>• Updated libshout version</p>
-    <p>• Lots of code cleanup</p>
 
 ]]></string>
     <string name="popup_new_version_url">https://coolmic.net/news/</string>
