@@ -327,7 +327,7 @@ public class MainActivity extends Activity implements EventListener {
         try {
             final @NotNull InputStream inputStream = Utils.openURI(this, uri);
             final @Nullable String type;
-            final @Nullable String streamType = profile.getCodec().getType();
+            final @Nullable String streamType = profile == null ? null : profile.getCodec().getType();
 
             type = FileFormatDetector.detect(inputStream);
 
