@@ -377,6 +377,9 @@ public class MainActivity extends Activity implements EventListener {
     }
 
     private void onImageClick(View view) {
+        if (profile == null)
+            return;
+
         if (profile.getServer().isSet()) {
             try {
                 ClipData myClip = ClipData.newPlainText("text", profile.getServer().getStreamURL().toString());
