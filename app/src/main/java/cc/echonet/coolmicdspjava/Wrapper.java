@@ -25,15 +25,18 @@ package cc.echonet.coolmicdspjava;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Closeable;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * This class wraps libcoolmic-dsp's simple API.
  * <P>
  * The general workflow consists of calling:
  * <ul>
- *     <li>{@link #prepare(CallbackHandler, String, int, String, String, String, String, int, int, int, String, String, String)} to prepare the stream.</li>
+ *     <li>{@link #prepare(CallbackHandler, String, int, String, String, String, String, int, int, int, String, String, String, String[])} to prepare the stream.</li>
  *     <li>Optionally call setters for additional settings.</li>
  *     <li>{@link #start()} to start recording.</li>
  *     <li>Optionally call setters for updating the stream or {@link #nextSegment(InputStreamAdapter)} to start a new segment.</li>
@@ -86,6 +89,8 @@ public final class Wrapper implements Closeable {
         return initException;
     }
 
+    private synchronized native int prepare(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize, String softwareName, String softwareVersion, String softwareComment, String[] station);
+
     /**
      * Prepares the wrapper for streaming.
      *
@@ -99,10 +104,20 @@ public final class Wrapper implements Closeable {
      * @param rate The sample rate to use.
      * @param channels The number of channels to use.
      * @param buffersize The buffer site to use.
+     * @param station {@link Map} of station metadata. The keys must be from {@code SHOUT_META_}*.
      * @return TODO
      */
-    public synchronized native int prepare(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize, String softwareName, String softwareVersion, String softwareComment);
+    public synchronized int prepare(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize, String softwareName, String softwareVersion, String softwareComment, Map<String, String> station) {
+        final @NotNull String[] stationAsArray = new String[station.size() * 2];
+        int i = 0;
 
+        for (final @NotNull Map.Entry<String, String> entry : station.entrySet()) {
+            stationAsArray[i++] = entry.getKey();
+            stationAsArray[i++] = entry.getValue();
+        }
+
+        return prepare(handler, hostname, port, username, password, mount, codec, rate, channels, buffersize, softwareName, softwareVersion, softwareComment, stationAsArray);
+    }
     /**
      * This starts streaming.
      * @return TODO
@@ -117,7 +132,7 @@ public final class Wrapper implements Closeable {
 
     /**
      * Gets the state of the wrapper.
-     * Will return true once {@link #prepare(CallbackHandler, String, int, String, String, String, String, int, int, int, String, String, String)}
+     * Will return true once {@link #prepare(CallbackHandler, String, int, String, String, String, String, int, int, int, String, String, String, String[])}
      * was called and {@link #close()} has not yet been called.
      *
      * @return Whether the wrapper is in prepared state.

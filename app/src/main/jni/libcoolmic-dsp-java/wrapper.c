@@ -344,12 +344,13 @@ static int logging_callback(coolmic_logging_level_t level, const char *msg)
 }
 
 
-JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_prepare(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize, jstring software_name, jstring software_version, jstring software_comment)
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_prepare(JNIEnv * env, jobject obj, jobject objHandler, jstring hostname, jint port, jstring username, jstring password, jstring mount, jstring codec, jint rate, jint channels, jint buffersize, jstring software_name, jstring software_version, jstring software_comment, jobjectArray station)
 {
     wrapper_t * wrapper = get_wrapper_t(env, obj);
     const char *software_nameNative = NULL;
     const char *software_versionNative = NULL;
     const char *software_commentNative = NULL;
+    int stationCount, stationCursor;
 
     LOGI("start init");
 
@@ -423,6 +424,30 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_prepare(JNIEnv * en
         (*env)->ReleaseStringUTFChars(env, software_version, software_versionNative);
     if (software_comment)
         (*env)->ReleaseStringUTFChars(env, software_comment, software_commentNative);
+
+    /*
+     * 23:16 <@ph3-der-loewe>     int stringCount = env->GetArrayLength(stringArray);
+23:16 <@ph3-der-loewe>     for (int i=0; i<stringCount; i++) {
+23:16 <@ph3-der-loewe>         jstring string = (jstring) (env->GetObjectArrayElement(stringArray, i));
+
+     */
+
+    stationCount = (*env)->GetArrayLength(env, station);
+    for (stationCursor = 0; stationCursor < stationCount; stationCursor += 2) {
+        jstring javaKey = (*env)->GetObjectArrayElement(env, station, stationCursor);
+        jstring javaValue = (*env)->GetObjectArrayElement(env, station, stationCursor + 1);
+        const char *key = (*env)->GetStringUTFChars(env, javaKey, NULL);
+        const char *value = (*env)->GetStringUTFChars(env, javaValue, NULL);
+
+        LOGI("station: %s -> %s", key, value);
+        coolmic_simple_set_station_meta(wrapper->coolmic_simple_obj, key, value);
+
+        (*env)->ReleaseStringUTFChars(env, javaKey, key);
+        (*env)->ReleaseStringUTFChars(env, javaValue, value);
+
+        (*env)->DeleteLocalRef(env, javaKey);
+        (*env)->DeleteLocalRef(env, javaValue);
+    }
 
     LOGI("end init");
 

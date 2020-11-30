@@ -22,7 +22,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_header_general">
+    <PreferenceCategory android:title="@string/pref_header_track_metadata">
         <EditTextPreference
             android:defaultValue="@string/pref_default_general_title"
             android:inputType="text"
@@ -39,6 +39,49 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/pref_title_general_artist" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_station_metadata">
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_station_metadata_name"
+            android:inputType="text"
+            android:key="station_name"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_station_metadata_name" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_station_metadata_genre"
+            android:inputType="text"
+            android:key="station_genre"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_station_metadata_genre" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_station_metadata_description"
+            android:inputType="text"
+            android:key="station_description"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_station_metadata_description" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_station_metadata_url"
+            android:inputType="textUri"
+            android:key="station_url"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_station_metadata_url" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_station_metadata_irc"
+            android:inputType="text"
+            android:key="station_irc"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_station_metadata_irc" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_connection">

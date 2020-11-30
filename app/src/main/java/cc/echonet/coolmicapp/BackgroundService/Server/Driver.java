@@ -126,7 +126,7 @@ final class Driver implements Closeable {
 
         Log.d(TAG, "Minimum Buffer Size: " + bufferSize);
         int status = wrapper.prepare(callbackHandler, hostname, port_num, username, password, mountpoint, codec, sampleRate, channel, bufferSize,
-                BuildConfig.HTTP_PRODUCT, BuildConfig.HTTP_VERSION, BuildConfig.HTTP_COMMENT);
+                BuildConfig.HTTP_PRODUCT, BuildConfig.HTTP_VERSION, BuildConfig.HTTP_COMMENT, profile.getStation().getMetadata());
 
         if (status != 0) {
             throw new IOException("Failed to init Core: " + status);

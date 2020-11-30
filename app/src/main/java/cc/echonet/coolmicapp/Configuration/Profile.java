@@ -42,6 +42,10 @@ public class Profile extends ProfileBase {
         return new Track(this);
     }
 
+    public @NotNull Station getStation() {
+        return new Station(this);
+    }
+
     public @NotNull Server getServer() {
         return new Server(this);
     }
