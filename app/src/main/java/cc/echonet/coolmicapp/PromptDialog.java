@@ -37,10 +37,13 @@ public final class PromptDialog {
         void result(@Nullable String result);
     }
 
-    public static void prompt(@NonNull Context context, @NonNull String title, @NonNull String value, @NonNull ResultCallback resultCallback) {
+    public static void prompt(@NonNull Context context, @NonNull String title, @Nullable String value, @NonNull ResultCallback resultCallback) {
         final @NonNull AlertDialog.Builder builder = new AlertDialog.Builder(context);
         final @NonNull EditText editText = new EditText(context);
         final @NonNull AlertDialog dialog;
+
+        if (value == null)
+            value = "";
 
         editText.setText(value);
         editText.setSingleLine();
