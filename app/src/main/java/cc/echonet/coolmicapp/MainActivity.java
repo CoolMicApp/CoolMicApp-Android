@@ -141,6 +141,11 @@ public class MainActivity extends Activity implements EventListener {
             case R.id.menu_action_settings:
                 goSettings();
                 return true;
+            case R.id.menu_action_track_metadata:
+                final @NotNull TrackMetadataDialog dialog = new TrackMetadataDialog(this, profile);
+                dialog.setOnDone(backgroundServiceClient::reloadParameters);
+                dialog.show();
+                return true;
             case R.id.menu_action_about:
                 goAbout();
                 return true;
