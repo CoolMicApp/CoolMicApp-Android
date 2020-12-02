@@ -37,8 +37,10 @@ public class Track extends ProfileBase {
 
     public @NotNull List<String> getKeys() {
         final @NotNull List<String> ret = new ArrayList<>();
-        ret.add("artist");
-        ret.add("title");
+        for (final @NotNull String key : new String[]{"artist", "title"}) {
+            if (getValue(key, null) != null)
+                ret.add(key);
+        }
         return ret;
     }
 
