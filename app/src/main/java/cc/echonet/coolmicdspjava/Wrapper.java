@@ -152,13 +152,16 @@ public final class Wrapper implements Closeable {
 
     /**
      * Updates the metadata and quality settings for the stream and applies those parameters.
-     * @param title The new title to use (Vorbis Comment Tag: TITLE).
-     * @param artist The new artist to use (Vorbis Comment Tag: ARTIST).
+     * @param track {@link Map} of track metadata.
      * @param quality The new quality to use in the range of [-0.1:+1.0].
      * @param restart Whether the settings should be applied.
      * @return TODO
      */
-    public synchronized native int performMetaDataQualityUpdate(String title, String artist, double quality, int restart);
+    public synchronized int performMetaDataQualityUpdate(@NotNull Map<@NotNull String, @NotNull String> track, double quality, boolean restart) {
+        return performMetaDataQualityUpdate(mapToArray(track), quality, restart ? 1 : 0);
+    }
+
+    private synchronized native int performMetaDataQualityUpdate(String[] track, double quality, int restart);
 
     /**
      * Sets the profile for reconnecting to the server in case the connection is lost.

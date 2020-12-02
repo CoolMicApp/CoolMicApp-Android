@@ -299,10 +299,10 @@ static int callback(coolmic_simple_t *inst, void *userdata, coolmic_simple_event
 }
 #pragma clang diagnostic pop
 
-JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jstring title, jstring artist, jdouble quality, jint restart)
+JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQualityUpdate(JNIEnv * env, jobject obj, jobjectArray track, jdouble quality, jint restart)
 {
     wrapper_t * wrapper = get_wrapper_t(env, obj);
-    int ret;
+    int trackCount, trackCursor;
 
     LOGI("performMetaDataQualityUpdate start");
 
@@ -312,25 +312,31 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
         return -999666;
     }
 
-    const char *titleNative  = (*env)->GetStringUTFChars(env, title,    0);
-    const char *artistNative = (*env)->GetStringUTFChars(env, artist, 0);
     int result = 0;
 
-    LOGI("performMetaDataQualityUpdate(%s, %s, %g)", titleNative, artistNative, quality);
-
-    ret = coolmic_simple_set_meta(wrapper->coolmic_simple_obj, "TITLE", titleNative, 1);
-    LOGI("performMetaDataQualityUpdate(): set TITLE -> %i", ret);
-    ret = coolmic_simple_set_meta(wrapper->coolmic_simple_obj, "ARTIST", artistNative, 1);
-    LOGI("performMetaDataQualityUpdate(): set ARTIST -> %i", ret);
     coolmic_simple_set_quality(wrapper->coolmic_simple_obj, quality);
+
+    trackCount = (*env)->GetArrayLength(env, track);
+    for (trackCursor = 0; trackCursor < trackCount; trackCursor += 2) {
+        jstring javaKey = (*env)->GetObjectArrayElement(env, track, trackCursor);
+        jstring javaValue = (*env)->GetObjectArrayElement(env, track, trackCursor + 1);
+        const char *key = (*env)->GetStringUTFChars(env, javaKey, NULL);
+        const char *value = (*env)->GetStringUTFChars(env, javaValue, NULL);
+
+        LOGI("track: %s -> %s", key, value);
+        coolmic_simple_set_meta(wrapper->coolmic_simple_obj, key, value, 1);
+
+        (*env)->ReleaseStringUTFChars(env, javaKey, key);
+        (*env)->ReleaseStringUTFChars(env, javaValue, value);
+
+        (*env)->DeleteLocalRef(env, javaKey);
+        (*env)->DeleteLocalRef(env, javaValue);
+    }
 
     if(restart)
     {
         result = coolmic_simple_restart_encoder(wrapper->coolmic_simple_obj);
     }
-
-    (*env)->ReleaseStringUTFChars(env, title, titleNative);
-    (*env)->ReleaseStringUTFChars(env, artist, artistNative);
 
     return result;
 }

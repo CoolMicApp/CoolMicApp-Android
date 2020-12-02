@@ -37,6 +37,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import cc.echonet.coolmicapp.BuildConfig;
@@ -152,9 +155,14 @@ final class Driver implements Closeable {
 
     public void reloadParameters(boolean restart) throws IOException {
         final @NotNull Track track = profile.getTrack();
+        final @NotNull Map<@NotNull String, @NotNull String> trackMetadata = new HashMap<>();
         int status;
 
-        status = wrapper.performMetaDataQualityUpdate(track.getTitle(), track.getArtist(), profile.getCodec().getQuality(), restart ? 1 : 0);
+        for (final @NotNull String key : track.getKeys()) {
+            trackMetadata.put(key.toUpperCase(Locale.ROOT), Objects.requireNonNull(track.getValue(key, null)));
+        }
+
+        status = wrapper.performMetaDataQualityUpdate(trackMetadata, profile.getCodec().getQuality(), restart);
 
         if (status != 0) {
             throw new IOException(context.getString(R.string.exception_failed_metadata_quality, status));
