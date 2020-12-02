@@ -79,10 +79,6 @@ public class Track extends ProfileBase {
 
     public @NotNull List<String> getKeys() {
         final @NotNull List<String> ret = new ArrayList<>();
-        for (final @NotNull String key : new String[]{"artist", "title"}) {
-            if (getValue(key, null) != null)
-                ret.add(key);
-        }
 
         for (final @NotNull Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
             if (entry.getValue() instanceof String) {
@@ -95,6 +91,13 @@ public class Track extends ProfileBase {
             }
         }
 
+        for (final @NotNull String key : new String[]{"artist", "title"}) {
+            if (!ret.contains(key))
+                if (getValue(key, null) != null)
+                    ret.add(key);
+        }
+
+
         return ret;
     }
 
@@ -104,11 +107,10 @@ public class Track extends ProfileBase {
 
         key = normalizeKey(key);
 
-        if (isLegacyKey(key)) {
-            ret = getString(PREF_PREFIX_LEGACY + key, def);
-        } else {
-            ret = getString(PREF_PREFIX + key, def);
-        }
+        if (isLegacyKey(key))
+            def = getString(PREF_PREFIX_LEGACY + key, def);
+
+        ret = getString(PREF_PREFIX + key, def);
 
         if (ret == null || ret.isEmpty())
             return def;
@@ -119,11 +121,10 @@ public class Track extends ProfileBase {
     public void setValue(@NotNull String key, @Nullable String value) {
         key = normalizeKey(key);
 
-        if (isLegacyKey(key)) {
-            key = PREF_PREFIX_LEGACY + key;
-        } else {
-            key = PREF_PREFIX + key;
-        }
+        if (isLegacyKey(key))
+            editor.remove(PREF_PREFIX_LEGACY + key);
+
+        key = PREF_PREFIX + key;
 
         if (value == null) {
             editor.remove(key);
