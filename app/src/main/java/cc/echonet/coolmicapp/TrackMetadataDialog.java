@@ -59,30 +59,44 @@ public class TrackMetadataDialog {
             ((TextView)view.findViewById(R.id.metadata_key)).setText(key);
             ((TextView)view.findViewById(R.id.metadata_value)).setText(value);
 
-            view.setOnClickListener(v -> PromptDialog.prompt(getContext(), key, value, result -> {
-                profile.edit();
-                profile.getTrack().setValue(key, result);
-                profile.apply();
-                notifyDataSetChanged();
-            }));
+            view.setOnClickListener(v -> PromptDialog.prompt(getContext(), key, value, result -> setMetadata(key, result)));
 
-            view.findViewById(R.id.metadata_delete_key).setOnClickListener(v -> {
-                profile.edit();
-                profile.getTrack().setValue(key, null);
-                profile.apply();
-                clear();
-                addAll(profile.getTrack().getKeys());
-                notifyDataSetChanged();
-            });
+            view.findViewById(R.id.metadata_delete_key).setOnClickListener(v -> setMetadata(key, null));
 
             return view;
+        }
+
+        public void reloadData() {
+            clear();
+            addAll(profile.getTrack().getKeys());
+            notifyDataSetChanged();
+        }
+
+        public void setMetadata(@NotNull String key, @Nullable String value) {
+            profile.edit();
+            profile.getTrack().setValue(key, value);
+            profile.apply();
+            reloadData();
         }
     }
 
     private final @NotNull Context context;
     private final @NotNull Profile profile;
     private final @NotNull AlertDialog.Builder builder;
+    private final @NotNull Adapter adapter;
     private @Nullable Runnable onDone = null;
+
+    private void addKey() {
+        final @NotNull AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        final @NotNull String[] supported = new String[]{"artist", "title"};
+
+        builder.setItems(supported, (dialog, which) -> {
+            dialog.dismiss();
+            PromptDialog.prompt(context, supported[which], null, result -> adapter.setMetadata(supported[which], result));
+        });
+
+        builder.show();
+    }
 
     private void done() {
         if (onDone != null)
@@ -92,13 +106,14 @@ public class TrackMetadataDialog {
     private void setup() {
         final @NotNull ListView listView = new ListView(context);
 
-        listView.setAdapter(new Adapter(context, profile));
+        listView.setAdapter(adapter);
 
         builder.setView(listView);
 
         builder.setCancelable(true);
 
         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> done());
+        builder.setNeutralButton(R.string.trackmetadata_add, null);
 
         builder.setOnCancelListener(dialog -> done());
     }
@@ -108,11 +123,13 @@ public class TrackMetadataDialog {
         this.context = context;
         this.profile = profile;
         this.builder = new AlertDialog.Builder(context);
+        this.adapter = new Adapter(context, profile);
         setup();
     }
 
     public void show() {
         final @NotNull AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(dialogInterface -> dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> addKey()));
         dialog.show();
     }
 
