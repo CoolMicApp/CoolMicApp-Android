@@ -66,6 +66,15 @@ public class TrackMetadataDialog {
                 notifyDataSetChanged();
             }));
 
+            view.findViewById(R.id.metadata_delete_key).setOnClickListener(v -> {
+                profile.edit();
+                profile.getTrack().setValue(key, null);
+                profile.apply();
+                clear();
+                addAll(profile.getTrack().getKeys());
+                notifyDataSetChanged();
+            });
+
             return view;
         }
     }
