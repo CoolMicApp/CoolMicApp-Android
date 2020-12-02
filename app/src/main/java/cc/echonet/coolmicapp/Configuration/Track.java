@@ -97,6 +97,7 @@ public class Track extends ProfileBase {
                     ret.add(key);
         }
 
+        Collections.sort(ret);
 
         return ret;
     }
