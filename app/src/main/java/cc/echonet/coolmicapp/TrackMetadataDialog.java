@@ -36,9 +36,13 @@ import androidx.annotation.Nullable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import cc.echonet.coolmicapp.Configuration.Profile;
+import cc.echonet.coolmicapp.Configuration.Track;
 
 public class TrackMetadataDialog {
     private final static class Adapter extends ArrayAdapter<String> {
@@ -55,11 +59,12 @@ public class TrackMetadataDialog {
             final @NonNull View view = super.getView(position, convertView, parent);
             final @NonNull String key = Objects.requireNonNull(super.getItem(position));
             final @NonNull String value = profile.getTrack().getValue(key, "");
+            final @NonNull String keyDisplayName = Track.getKeyDisplayName(key);
 
-            ((TextView)view.findViewById(R.id.metadata_key)).setText(key);
+            ((TextView)view.findViewById(R.id.metadata_key)).setText(keyDisplayName);
             ((TextView)view.findViewById(R.id.metadata_value)).setText(value);
 
-            view.setOnClickListener(v -> PromptDialog.prompt(getContext(), key, value, result -> setMetadata(key, result)));
+            view.setOnClickListener(v -> PromptDialog.prompt(getContext(), keyDisplayName, value, result -> setMetadata(key, result)));
 
             view.findViewById(R.id.metadata_delete_key).setOnClickListener(v -> setMetadata(key, null));
 
@@ -88,7 +93,20 @@ public class TrackMetadataDialog {
 
     private void addKey() {
         final @NotNull AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        final @NotNull String[] supported = new String[]{"artist", "title"};
+        final @NotNull List<@NotNull String> keys = new ArrayList<>(Track.STANDARD_KEYS);
+        final @NotNull String[] supported;
+        final @NotNull Track track = profile.getTrack();
+
+        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext(); ) {
+            String key = iterator.next();
+            if (track.getValue(key, null) != null)
+                iterator.remove();
+        }
+
+        supported = keys.toArray(new String[0]);
+
+        for (int i = 0; i < supported.length; i++)
+            supported[i] = Track.getKeyDisplayName(supported[i]);
 
         builder.setItems(supported, (dialog, which) -> {
             dialog.dismiss();
