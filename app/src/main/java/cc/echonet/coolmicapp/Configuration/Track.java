@@ -39,9 +39,16 @@ public class Track extends ProfileBase {
             Collections.unmodifiableList(
                     Arrays.asList("title", "version", "album", "artist", "performer", "copyright", "license", "organization", "description", "genre", "location", "contact"));
     private static final @NotNull String PREF_PREFIX = "trackmetadata_key_";
+    private static final @NotNull String PREF_PREFIX_LEGACY = "general_";
 
     Track(@NotNull ProfileBase profile) {
         super(profile);
+    }
+
+    private static boolean isLegacyKey(@NotNull String key) {
+        key = normalizeKey(key);
+
+        return key.equals("artist") || key.equals("title");
     }
 
     @Contract("_ -> new")
@@ -97,10 +104,10 @@ public class Track extends ProfileBase {
 
         key = normalizeKey(key);
 
-        switch (key) {
-            case "artist": ret = getArtist(); break;
-            case "title": ret = getTitle(); break;
-            default: ret = getString(PREF_PREFIX + key, def); break;
+        if (isLegacyKey(key)) {
+            ret = getString(PREF_PREFIX_LEGACY + key, def);
+        } else {
+            ret = getString(PREF_PREFIX + key, def);
         }
 
         if (ret == null || ret.isEmpty())
@@ -112,8 +119,8 @@ public class Track extends ProfileBase {
     public void setValue(@NotNull String key, @Nullable String value) {
         key = normalizeKey(key);
 
-        if (key.equals("artist") || key.equals("title")) {
-            key = "general_" + key;
+        if (isLegacyKey(key)) {
+            key = PREF_PREFIX_LEGACY + key;
         } else {
             key = PREF_PREFIX + key;
         }
@@ -124,13 +131,4 @@ public class Track extends ProfileBase {
             editor.putString(key, value);
         }
     }
-
-    public String getArtist() {
-        return getString("general_artist");
-    }
-
-    public String getTitle() {
-        return getString("general_title");
-    }
-
 }
