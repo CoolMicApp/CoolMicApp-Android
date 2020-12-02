@@ -194,9 +194,6 @@ public class SettingsActivity extends PreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("general_artist"));
-            bindPreferenceSummaryToValue(findPreference("general_title"));
-
             bindPreferenceSummaryToValue(findPreference("connection_address"));
             bindPreferenceSummaryToValue(findPreference("connection_username"));
             bindPreferenceSummaryToValue(findPreference("connection_mountpoint"));
@@ -263,6 +260,14 @@ public class SettingsActivity extends PreferenceActivity {
                     integrator.setTitle("Please scan a fully qualified URI");
                     integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
 
+                    return true;
+                });
+            }
+
+            Preference trackmetadata_edit = getPreferenceManager().findPreference("trackmetadata_edit");
+            if (trackmetadata_edit != null) {
+                trackmetadata_edit.setOnPreferenceClickListener(preference -> {
+                    new TrackMetadataDialog(getActivity(), (new Manager(getActivity())).getCurrentProfile()).show();
                     return true;
                 });
             }
