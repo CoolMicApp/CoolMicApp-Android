@@ -24,20 +24,14 @@ package cc.echonet.coolmicapp;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

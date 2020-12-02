@@ -24,16 +24,11 @@ package cc.echonet.coolmicapp;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
