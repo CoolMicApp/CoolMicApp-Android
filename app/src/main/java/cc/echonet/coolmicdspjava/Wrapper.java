@@ -72,6 +72,18 @@ public final class Wrapper implements Closeable {
         }
     }
 
+    private @NotNull String[] mapToArray(@NotNull Map<String, String> map) {
+        final @NotNull String[] array = new String[map.size() * 2];
+        int i = 0;
+
+        for (final @NotNull Map.Entry<String, String> entry : map.entrySet()) {
+            array[i++] = entry.getKey();
+            array[i++] = entry.getValue();
+        }
+
+        return array;
+    }
+
     /**
      * Gets the state of the object.
      * This should be {@link WrapperConstants.WrapperInitializationStatus#WRAPPER_INTITIALIZED}.
@@ -108,15 +120,7 @@ public final class Wrapper implements Closeable {
      * @return TODO
      */
     public synchronized int prepare(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize, String softwareName, String softwareVersion, String softwareComment, Map<String, String> station) {
-        final @NotNull String[] stationAsArray = new String[station.size() * 2];
-        int i = 0;
-
-        for (final @NotNull Map.Entry<String, String> entry : station.entrySet()) {
-            stationAsArray[i++] = entry.getKey();
-            stationAsArray[i++] = entry.getValue();
-        }
-
-        return prepare(handler, hostname, port, username, password, mount, codec, rate, channels, buffersize, softwareName, softwareVersion, softwareComment, stationAsArray);
+        return prepare(handler, hostname, port, username, password, mount, codec, rate, channels, buffersize, softwareName, softwareVersion, softwareComment, mapToArray(station));
     }
     /**
      * This starts streaming.
