@@ -143,7 +143,8 @@ public class MainActivity extends Activity implements EventListener {
                 return true;
             case R.id.menu_action_track_metadata:
                 final @NotNull TrackMetadataDialog dialog = new TrackMetadataDialog(this, profile);
-                dialog.setOnDone(backgroundServiceClient::reloadParameters);
+                if (isRecording)
+                    dialog.setOnDone(backgroundServiceClient::reloadParameters);
                 dialog.show();
                 return true;
             case R.id.menu_action_about:
