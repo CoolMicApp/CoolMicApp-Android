@@ -312,8 +312,6 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
         return -999666;
     }
 
-    int result = 0;
-
     coolmic_simple_set_quality(wrapper->coolmic_simple_obj, quality);
 
     trackCount = (*env)->GetArrayLength(env, track);
@@ -333,12 +331,11 @@ JNIEXPORT int JNICALL Java_cc_echonet_coolmicdspjava_Wrapper_performMetaDataQual
         (*env)->DeleteLocalRef(env, javaValue);
     }
 
-    if(restart)
-    {
-        result = coolmic_simple_restart_encoder(wrapper->coolmic_simple_obj);
+    if (restart) {
+        return coolmic_simple_restart_encoder(wrapper->coolmic_simple_obj);
+    } else {
+        return 0;
     }
-
-    return result;
 }
 
 static int logging_callback(coolmic_logging_level_t level, const char *msg)
