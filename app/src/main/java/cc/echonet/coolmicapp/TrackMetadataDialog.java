@@ -91,6 +91,10 @@ public class TrackMetadataDialog {
     private final @NotNull Adapter adapter;
     private @Nullable Runnable onDone = null;
 
+    private void askKey(@NotNull String key) {
+        PromptDialog.prompt(context, Track.getKeyDisplayName(key), null, result -> adapter.setMetadata(key, result));
+    }
+
     private void addKey() {
         final @NotNull AlertDialog.Builder builder = new AlertDialog.Builder(context);
         final @NotNull List<@NotNull String> keys = new ArrayList<>(Track.STANDARD_KEYS);
@@ -103,6 +107,8 @@ public class TrackMetadataDialog {
                 iterator.remove();
         }
 
+        keys.add(context.getString(R.string.trackmetadata_custom));
+
         supported = keys.toArray(new String[0]);
 
         for (int i = 0; i < supported.length; i++)
@@ -110,7 +116,11 @@ public class TrackMetadataDialog {
 
         builder.setItems(supported, (dialog, which) -> {
             dialog.dismiss();
-            PromptDialog.prompt(context, supported[which], null, result -> adapter.setMetadata(supported[which], result));
+            if (which == (supported.length - 1)) {
+                PromptDialog.prompt(context, context.getString(R.string.trackmetadata_key_name), null, this::askKey);
+            } else {
+                askKey(supported[which]);
+            }
         });
 
         builder.show();

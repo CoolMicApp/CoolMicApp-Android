@@ -28,21 +28,17 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class Track extends ProfileBase {
-    public static final @NotNull @UnmodifiableView List<@NotNull String> STANDARD_KEYS = Collections.unmodifiableList(makeStandardKeys());
-
-    private static @NotNull List<@NotNull String> makeStandardKeys() {
-        final @NotNull List<@NotNull String> ret = new ArrayList<>();
-
-        ret.add("title");
-        ret.add("artist");
-
-        return ret;
-    }
+    public static final @NotNull @UnmodifiableView List<@NotNull String> STANDARD_KEYS =
+            Collections.unmodifiableList(
+                    Arrays.asList("title", "version", "album", "artist", "performer", "copyright", "license", "organization", "description", "genre", "location", "contact"));
+    private static final @NotNull String PREF_PREFIX = "trackmetadata_key_";
 
     Track(@NotNull ProfileBase profile) {
         super(profile);
@@ -62,6 +58,8 @@ public class Track extends ProfileBase {
     }
 
     public static @NotNull String getKeyDisplayName(@NotNull String key) {
+        key = normalizeKey(key);
+
         if (key.contains("_"))
             return key.toUpperCase(Locale.ROOT);
 
@@ -69,7 +67,7 @@ public class Track extends ProfileBase {
     }
 
     public static @NotNull String normalizeKey(@NotNull String key) {
-        return key.toLowerCase(Locale.ROOT);
+        return key.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_]", "_");
     }
 
     public @NotNull List<String> getKeys() {
@@ -78,6 +76,18 @@ public class Track extends ProfileBase {
             if (getValue(key, null) != null)
                 ret.add(key);
         }
+
+        for (final @NotNull Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
+            if (entry.getValue() instanceof String) {
+                final @NotNull String key = entry.getKey();
+                final @NotNull String value = (String) entry.getValue();
+
+                if (key.startsWith(PREF_PREFIX) && !value.isEmpty()) {
+                    ret.add(key.substring(PREF_PREFIX.length()));
+                }
+            }
+        }
+
         return ret;
     }
 
@@ -90,7 +100,7 @@ public class Track extends ProfileBase {
         switch (key) {
             case "artist": ret = getArtist(); break;
             case "title": ret = getTitle(); break;
-            default: ret = null; break;
+            default: ret = getString(PREF_PREFIX + key, def); break;
         }
 
         if (ret == null || ret.isEmpty())
@@ -102,10 +112,17 @@ public class Track extends ProfileBase {
     public void setValue(@NotNull String key, @Nullable String value) {
         key = normalizeKey(key);
 
-        if (!(key.equals("artist") || key.equals("title")))
-            return;
+        if (key.equals("artist") || key.equals("title")) {
+            key = "general_" + key;
+        } else {
+            key = PREF_PREFIX + key;
+        }
 
-        editor.putString("general_" + key, value);
+        if (value == null) {
+            editor.remove(key);
+        } else {
+            editor.putString(key, value);
+        }
     }
 
     public String getArtist() {
