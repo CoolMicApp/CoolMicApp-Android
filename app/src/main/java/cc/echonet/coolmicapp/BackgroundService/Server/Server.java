@@ -22,14 +22,12 @@
 
 package cc.echonet.coolmicapp.BackgroundService.Server;
 
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,16 +35,13 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -60,8 +55,6 @@ import cc.echonet.coolmicapp.CMTS;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Volume;
-import cc.echonet.coolmicapp.Dialog;
-import cc.echonet.coolmicapp.FileFormatDetector;
 import cc.echonet.coolmicapp.Icecast.Icecast;
 import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import cc.echonet.coolmicapp.MainActivity;

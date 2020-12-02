@@ -22,8 +22,6 @@
 
 package cc.echonet.coolmicapp;
 
-import android.preference.TwoStatePreference;
-
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

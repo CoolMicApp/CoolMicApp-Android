@@ -37,7 +37,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import cc.echonet.coolmicapp.BuildConfig;
@@ -46,7 +45,6 @@ import cc.echonet.coolmicapp.Configuration.Server;
 import cc.echonet.coolmicapp.Configuration.Track;
 import cc.echonet.coolmicapp.R;
 import cc.echonet.coolmicdspjava.CallbackHandler;
-import cc.echonet.coolmicdspjava.InputStreamAdapter;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
 

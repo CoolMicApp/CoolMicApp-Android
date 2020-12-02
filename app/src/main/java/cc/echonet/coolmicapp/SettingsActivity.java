@@ -26,7 +26,6 @@ package cc.echonet.coolmicapp;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -37,11 +36,11 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import androidx.core.app.NavUtils;
-
 import android.preference.PreferenceScreen;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.core.app.NavUtils;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -53,8 +52,6 @@ import java.util.List;
 
 import cc.echonet.coolmicapp.BackgroundService.Client.Client;
 import cc.echonet.coolmicapp.Configuration.Codec;
-import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
-import cc.echonet.coolmicapp.Configuration.DialogState;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Server;

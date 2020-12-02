@@ -22,11 +22,7 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
-import android.os.SystemClock;
-
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 import cc.echonet.coolmicapp.BuildConfig;
 

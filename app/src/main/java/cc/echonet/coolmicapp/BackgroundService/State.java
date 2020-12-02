@@ -30,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
 import cc.echonet.coolmicapp.R;
-import cc.echonet.coolmicdspjava.WrapperConstants;
 
 /**
  * Created by stephan on 2/24/18.
