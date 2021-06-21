@@ -32,11 +32,11 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
+import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
+import cc.echonet.coolmicapp.Configuration.Profile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,9 +44,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Objects;
-
-import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
-import cc.echonet.coolmicapp.Configuration.Profile;
 
 /**
  * Created by stjauernick@de.loewenfelsen.net on 10/13/16.
