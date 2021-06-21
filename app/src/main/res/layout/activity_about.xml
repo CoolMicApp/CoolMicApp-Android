@@ -175,6 +175,10 @@
         </TableRow>
     </TableLayout>
 
+    <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp"/>
+
     <Button
         android:text="@string/aboutactivity_cmd_about_copy"
         android:layout_width="match_parent"
