@@ -20,184 +20,231 @@
   ~ along with Cool Mic.  If not, see <http://www.gnu.org/licenses/>.
   ~
   -->
+<ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_about"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="cc.echonet.coolmicapp.AboutActivity"
+        android:theme="@style/AppTheme">
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:layout_height="wrap_content" android:layout_width="match_parent">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_about"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context="cc.echonet.coolmicapp.AboutActivity"
-    android:theme="@style/AppTheme">
-
-    <TableLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/lblVersion"
+        <TextView
+                android:text="@string/app_name"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/popup_about_lbl_version" />
-
-            <TextView
+                android:layout_height="wrap_content" android:id="@+id/textView3"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="8dp" android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:textSize="24sp"/>
+        <TextView
                 android:id="@+id/txtVersion"
-                android:paddingLeft="5dp"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/lblBuildType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/popup_about_lbl_buildtype" />
-
-            <TextView
-                android:id="@+id/txtBuildType"
-                android:paddingLeft="5dp"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/lblBuildTS"
+                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                android:layout_marginTop="8dp" android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:textSize="18sp"/>
+        <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/popup_about_lbl_buildts" />
-
-            <TextView
-                android:id="@+id/txtBuildTS"
-                android:paddingLeft="5dp"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/lblGITBranch"
+                android:layout_height="wrap_content" android:id="@+id/lblDeveloperMode"
+                app:layout_constraintTop_toBottomOf="@+id/txtVersion" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp" app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/popup_about_developer_mode" android:textColor="#F44336" android:textSize="18sp"
+                android:layout_marginTop="8dp" android:visibility="gone"/>
+        <ImageView
+                android:src="@drawable/mic"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/popup_about_lbl_git_branch" />
-
-            <TextView
-                android:id="@+id/txtGITBranch"
-                android:paddingLeft="5dp"
+                android:layout_height="wrap_content" android:id="@+id/imageView"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lblDeveloperMode" android:layout_marginTop="16dp"
+                android:contentDescription="@string/img_content"/>
+        <TableLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/lblGITRevision"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/popup_about_lbl_git_revision" />
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp" app:layout_constraintEnd_toEndOf="parent" android:id="@+id/tableLayout"
+                app:layout_constraintTop_toBottomOf="@+id/imageView" android:layout_marginTop="16dp">
 
-            <TextView
-                android:id="@+id/txtGITRevision"
-                android:paddingLeft="5dp"
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                        android:id="@+id/lblBuildType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/popup_about_lbl_buildtype"/>
+
+                <TextView
+                        android:id="@+id/txtBuildType"
+                        android:paddingLeft="5dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"/>
+            </TableRow>
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                        android:id="@+id/lblBuildTS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/popup_about_lbl_buildts"/>
+
+                <TextView
+                        android:id="@+id/txtBuildTS"
+                        android:paddingLeft="5dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"/>
+            </TableRow>
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                        android:id="@+id/lblGITBranch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/popup_about_lbl_git_branch"/>
+
+                <TextView
+                        android:id="@+id/txtGITBranch"
+                        android:paddingLeft="5dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                        android:id="@+id/lblGITRevision"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/popup_about_lbl_git_revision"/>
+
+                <TextView
+                        android:id="@+id/txtGITRevision"
+                        android:paddingLeft="5dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                        android:id="@+id/lblGITDirty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/popup_about_lbl_git_dirty"/>
+
+                <TextView
+                        android:id="@+id/txtGITDirty"
+                        android:paddingLeft="5dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"/>
+            </TableRow>
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/popup_about_lbl_api_level"/>
+
+                <TextView
+                        android:id="@+id/txtAPILevel"
+                        android:paddingLeft="5dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"/>
+            </TableRow>
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/popup_about_lbl_system_arch"/>
+
+                <TextView
+                        android:id="@+id/txtSystemArch"
+                        android:paddingLeft="5dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"/>
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+                android:text="@string/aboutactivity_cmd_about_sponsor"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/lblGITDirty"
-                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/textView5"
+                app:layout_constraintTop_toBottomOf="@+id/tableLayout" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/popup_about_lbl_git_dirty" />
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="16dp" android:id="@+id/linearLayout2"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" android:layout_marginTop="16dp">
+            <Button
+                    android:text="@string/aboutactivity_cmd_about_copy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cmdAboutCopy"
+                    android:gravity="center"/>
+            <Button
+                    android:text="@string/aboutactivity_cmd_about_copy_debug"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cmdDebugCopy"
+                    android:gravity="center"/>
+            <Button
+                    android:text="@string/aboutactivity_cmd_about_open_pp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cmdOpenPrivacyPolicy"
+                    android:gravity="center"/>
+            <Button
+                    android:text="@string/aboutactivity_cmd_about_open_licenses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cmdOpenLicenses"
+                    android:gravity="center"/>
+            <Button
+                    android:text="@string/aboutactivity_cmd_about_open_sponsor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cmdOpenSponsor"
+                    android:gravity="center"/>
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/txtGITDirty"
-                android:paddingLeft="5dp"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/popup_about_lbl_api_level" />
-
-            <TextView
-                android:id="@+id/txtAPILevel"
-                android:paddingLeft="5dp"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/popup_about_lbl_system_arch" />
-
-            <TextView
-                android:id="@+id/txtSystemArch"
-                android:paddingLeft="5dp"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-        </TableRow>
-    </TableLayout>
-
-    <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp"/>
-
-    <Button
-        android:text="@string/aboutactivity_cmd_about_copy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/cmdAboutCopy"
-        android:gravity="center" />
-
-    <Button
-        android:text="@string/aboutactivity_cmd_about_open_pp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/cmdOpenPrivacyPolicy"
-        android:gravity="center" />
-
-    <Button
-        android:text="@string/aboutactivity_cmd_about_open_licenses"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/cmdOpenLicenses"
-        android:gravity="center" />
-
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

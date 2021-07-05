@@ -32,17 +32,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.core.app.NavUtils;
-
+import cc.echonet.coolmicapp.Configuration.GlobalConfiguration;
+import cc.echonet.coolmicapp.Configuration.Manager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
-
-import cc.echonet.coolmicapp.Configuration.Manager;
 
 public class AboutActivity extends Activity {
     private ClipboardManager myClipboard;
@@ -50,14 +47,15 @@ public class AboutActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final @NotNull Button cmdAboutCopy;
-        final @NotNull Button cmdOpenPrivacyPolicy;
-        final @NotNull Button cmdOpenLicenses;
+        final @NotNull GlobalConfiguration globalConfiguration = new Manager(this).getGlobalConfiguration();
+        final @NotNull View developerModeLabel;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
         this.setupActionBar();
+
+        developerModeLabel = findViewById(R.id.lblDeveloperMode);
 
         String shortRev = BuildConfig.GIT_REVISION.substring(BuildConfig.GIT_REVISION.length() - 8);
 
@@ -74,20 +72,24 @@ public class AboutActivity extends Activity {
             extra++;
             if (extra == 6) {
                 Toast.makeText(AboutActivity.this, "yes", Toast.LENGTH_SHORT).show();
-                new Manager(this).getGlobalConfiguration().setDeveloperMode(true);
+                globalConfiguration.setDeveloperMode(true);
+                developerModeLabel.setVisibility(View.VISIBLE);
             }
+        });
+
+        developerModeLabel.setVisibility(globalConfiguration.getDeveloperMode() ? View.VISIBLE : View.GONE);
+        developerModeLabel.setOnClickListener(v -> {
+            globalConfiguration.setDeveloperMode(false);
+            developerModeLabel.setVisibility(View.GONE);
         });
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
-        cmdAboutCopy = findViewById(R.id.cmdAboutCopy);
-        cmdAboutCopy.setOnClickListener(this::onCMDAboutCopy);
-
-        cmdOpenPrivacyPolicy = findViewById(R.id.cmdOpenPrivacyPolicy);
-        cmdOpenPrivacyPolicy.setOnClickListener(this::onCMDAboutOpenPP);
-
-        cmdOpenLicenses = findViewById(R.id.cmdOpenLicenses);
-        cmdOpenLicenses.setOnClickListener(this::onCMDAboutOpenLicenses);
+        findViewById(R.id.cmdAboutCopy).setOnClickListener(this::onCMDAboutCopy);
+        findViewById(R.id.cmdDebugCopy).setOnClickListener(this::onCMDDebugCopy);
+        findViewById(R.id.cmdOpenPrivacyPolicy).setOnClickListener(this::onCMDAboutOpenPP);
+        findViewById(R.id.cmdOpenLicenses).setOnClickListener(this::onCMDAboutOpenLicenses);
+        findViewById(R.id.cmdOpenSponsor).setOnClickListener(this::onCMDAboutOpenSponsor);
     }
 
     /**
@@ -112,8 +114,8 @@ public class AboutActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void onCMDAboutCopy(View view) {
-        ClipData myClip = ClipData.newPlainText("text", getString(
+    private @NotNull String getInfoAsString(boolean debug) {
+        return getString(
                 R.string.aboutactivity_copy_string,
                 BuildConfig.VERSION_NAME,
                 BuildConfig.BUILD_TYPE,
@@ -122,10 +124,18 @@ public class AboutActivity extends Activity {
                 BuildConfig.GIT_DIRTY,
                 Build.VERSION.SDK_INT,
                 System.getProperty("os.arch")
-        ));
+        );
+    }
 
+    private void onCMDAboutCopy(View view) {
+        ClipData myClip = ClipData.newPlainText("text", getInfoAsString(false));
         myClipboard.setPrimaryClip(myClip);
+        Toast.makeText(getApplicationContext(), R.string.aboutactivity_copied_string, Toast.LENGTH_SHORT).show();
+    }
 
+    private void onCMDDebugCopy(View view) {
+        ClipData myClip = ClipData.newPlainText("text", getInfoAsString(true));
+        myClipboard.setPrimaryClip(myClip);
         Toast.makeText(getApplicationContext(), R.string.aboutactivity_copied_string, Toast.LENGTH_SHORT).show();
     }
 
@@ -138,4 +148,10 @@ public class AboutActivity extends Activity {
         Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_licenses)));
         startActivity(helpIntent);
     }
+
+    private void onCMDAboutOpenSponsor(View view) {
+        Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_sponsor)));
+        startActivity(helpIntent);
+    }
+
 }
