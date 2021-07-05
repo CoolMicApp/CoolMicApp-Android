@@ -135,7 +135,7 @@
     <string name="popup_about_lbl_system_arch">System architecture:</string>
     <string name="popup_about_developer_mode">Developer mode</string>
 
-    <string name="aboutactivity_copy_string">Cool Mic App Report\nVersion: %1$s\nBuild Type: %2$s\nGIT Branch: %3$s\nGIT Revision: %4$s\nGIT Branch: %5$s\nAPI Level: %6$d\nSystem architecture: %7$s</string>
+    <string name="aboutactivity_copy_string">Cool Mic App Report\nVersion: %1$s\nBuild Type: %2$s\nGIT Branch: %3$s\nGIT Revision: %4$s\nGIT Dirty: %5$s\nAPI Level: %6$d\nSystem architecture: %7$s</string>
     <string name="aboutactivity_copy_string_debug">%1$s\nDeveloper mode: %2$b\nCurrent Profile: %3$s\nSample Rate: %4$d\nChannels: %5$d\nCodec: %6$s\nQuality: %7$.5f\nVU-Meter interval: %8$d\nAudio volume left: %9$d\nAudio volume: right: %10$d\nCMTS: %11$b</string>
     <string name="aboutactivity_copied_string">Cool Mic Report copied to clipboard</string>
 
