@@ -42,23 +42,8 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import androidx.annotation.NonNull;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.Objects;
-
 import cc.echonet.coolmicapp.BackgroundService.Client.Client;
 import cc.echonet.coolmicapp.BackgroundService.Client.EventListener;
 import cc.echonet.coolmicapp.BackgroundService.Constants;
@@ -68,6 +53,13 @@ import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicdspjava.VUMeterResult;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.Objects;
 
 /**
  * This activity demonstrates how to use JNI to encode and decode Ogg/Vorbis audio
