@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.StringRes;
 import androidx.core.app.NavUtils;
 import cc.echonet.coolmicapp.Configuration.GlobalConfiguration;
 import cc.echonet.coolmicapp.Configuration.Manager;
@@ -139,19 +140,21 @@ public class AboutActivity extends Activity {
         Toast.makeText(getApplicationContext(), R.string.aboutactivity_copied_string, Toast.LENGTH_SHORT).show();
     }
 
-    private void onCMDAboutOpenPP(View view) {
-        Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_privacy_policy)));
+    private void goToURI(@StringRes int uri) {
+        final Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(uri)));
         startActivity(helpIntent);
+    }
+
+    private void onCMDAboutOpenPP(View view) {
+        goToURI(R.string.url_privacy_policy);
     }
 
     private void onCMDAboutOpenLicenses(View view) {
-        Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_licenses)));
-        startActivity(helpIntent);
+        goToURI(R.string.url_licenses);
     }
 
     private void onCMDAboutOpenSponsor(View view) {
-        Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_sponsor)));
-        startActivity(helpIntent);
+        goToURI(R.string.url_sponsor);
     }
 
 }
