@@ -36,8 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.StringRes;
 import androidx.core.app.NavUtils;
-import cc.echonet.coolmicapp.Configuration.GlobalConfiguration;
-import cc.echonet.coolmicapp.Configuration.Manager;
+import cc.echonet.coolmicapp.Configuration.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -116,7 +115,7 @@ public class AboutActivity extends Activity {
     }
 
     private @NotNull String getInfoAsString(boolean debug) {
-        return getString(
+        final @NotNull String base = getString(
                 R.string.aboutactivity_copy_string,
                 BuildConfig.VERSION_NAME,
                 BuildConfig.BUILD_TYPE,
@@ -126,6 +125,31 @@ public class AboutActivity extends Activity {
                 Build.VERSION.SDK_INT,
                 System.getProperty("os.arch")
         );
+
+        if (!debug)
+            return base;
+
+        {
+            final @NotNull Manager manager = new Manager(this);
+            final @NotNull GlobalConfiguration globalConfiguration = manager.getGlobalConfiguration();
+            final @NotNull Profile profile = manager.getCurrentProfile();
+            final @NotNull Audio audio = profile.getAudio();
+            final @NotNull Codec codec = profile.getCodec();
+            final @NotNull Volume volume = profile.getVolume();
+
+            return getString(R.string.aboutactivity_copy_string_debug, base,
+                    globalConfiguration.getDeveloperMode(),
+                    globalConfiguration.getCurrentProfileName(),
+                    audio.getSampleRate(),
+                    audio.getChannels(),
+                    codec.getType(),
+                    codec.getQuality(),
+                    profile.getVUMeter().getInterval(),
+                    volume.getLeft(),
+                    volume.getRight(),
+                    CMTS.isCMTSConnection(profile)
+            );
+        }
     }
 
     private void onCMDAboutCopy(View view) {
