@@ -320,14 +320,18 @@
     <string name="popup_new_version_message"><![CDATA[
      <h1>Features:</h1>
 
-    <p>• Added warning if attempt to play an audio file in different format than current stream settings<br>
+    <p>• Added support for Track and Station metadata</p>
+    <br>
 
 <h1>Improvements:</h1>
 
-    <p>• Fixes for various stability issues including an ANR when network drops or becomes unstable</p>
-    <p>• Improved UI</p>
-    <p>• Updated libshout version</p>
+    <p>• General fixes</p>
+    <p>• Debugging improvements</p>
+    <p>• Improved \'About\' activity</p>
+    <br>
 
+<h1>Other:</h1>
+    <p>• Cool Mic development is generously sponsored by <a href="https://www.loewenfelsen.net/">Löwenfelsen</a>.</p>
 ]]></string>
     <string name="popup_new_version_url">https://coolmic.net/news/</string>
 
