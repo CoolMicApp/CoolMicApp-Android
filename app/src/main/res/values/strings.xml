@@ -303,7 +303,7 @@
     <string name="trackmetadata_key_name">Key name</string>
 
     <string name="codecmissmatch_title">Codec Missmatch</string>
-    <string name="codecmissmatch_text">Streaming codec and input file mismatch. Currently streaming in "%s" but file is in "%s". Do you want to continue?</string>
+    <string name="codecmissmatch_text">Streaming codec and input file mismatch. Currently streaming in "%1$s" but file is in "%2$s". Do you want to continue?</string>
 
     <string name="popup_first_time_title">Welcome to Cool Mic</string>
     <string name="popup_first_time_message"><![CDATA[
