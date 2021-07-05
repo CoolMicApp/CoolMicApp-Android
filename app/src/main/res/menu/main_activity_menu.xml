@@ -28,10 +28,6 @@
         android:orderInCategory="10"
         android:title="@string/menu_action_settings" />
     <item
-        android:id="@+id/menu_action_track_metadata"
-        android:orderInCategory="10"
-        android:title="@string/menu_action_track_metadata" />
-    <item
         android:id="@+id/menu_action_about"
         android:orderInCategory="15"
         android:title="@string/menu_action_about" />
@@ -45,6 +41,10 @@
         android:title="@string/menu_action_quit" />
 
     <!-- Items with android:orderInCategory >= 1000 are developer mode only -->
+    <item
+        android:id="@+id/menu_action_track_metadata"
+        android:orderInCategory="1005"
+        android:title="@string/menu_action_track_metadata" />
     <item
         android:id="@+id/menu_action_devel_permission_check"
         android:orderInCategory="1010"
