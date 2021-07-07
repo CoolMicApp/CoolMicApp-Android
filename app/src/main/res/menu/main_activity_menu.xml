@@ -42,6 +42,10 @@
 
     <!-- Items with android:orderInCategory >= 1000 are developer mode only -->
     <item
+        android:id="@+id/menu_action_station_metadata"
+        android:orderInCategory="1004"
+        android:title="@string/menu_action_station_metadata" />
+    <item
         android:id="@+id/menu_action_track_metadata"
         android:orderInCategory="1005"
         android:title="@string/menu_action_track_metadata" />

@@ -37,6 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import cc.echonet.coolmicapp.Configuration.DialogIdentifier;
 import cc.echonet.coolmicapp.Configuration.Profile;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,6 +53,19 @@ import java.util.Objects;
 public final class Utils {
     private static final int PERMISSION_CHECK_REQUEST_CODE = 1;
     private static final int PERMISSION_CHECK_PASSIVE_REQUEST_CODE = 2;
+
+    @Contract("_ -> new")
+    public static @NotNull String toUpperFirst(@NotNull String str) {
+        if (str.isEmpty()) {
+            return "";
+        } else {
+            char[] chars = str.toCharArray();
+
+            chars[0] = Character.toUpperCase(chars[0]);
+
+            return new String(chars);
+        }
+    }
 
     public static @Nullable String getStringByName(Context context, String name) {
         int resid = context.getResources().getIdentifier(name, "string", context.getPackageName());

@@ -22,6 +22,7 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
+import cc.echonet.coolmicapp.Utils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,26 +52,13 @@ public class Track extends ProfileBase {
         return key.equals("artist") || key.equals("title");
     }
 
-    @Contract("_ -> new")
-    private static @NotNull String toUpperFirst(@NotNull String str) {
-        if (str.isEmpty()) {
-            return "";
-        } else {
-            char[] chars = str.toCharArray();
-
-            chars[0] = Character.toUpperCase(chars[0]);
-
-            return new String(chars);
-        }
-    }
-
     public static @NotNull String getKeyDisplayName(@NotNull String key) {
         key = normalizeKey(key);
 
         if (key.contains("_"))
             return key.toUpperCase(Locale.ROOT);
 
-        return toUpperFirst(key);
+        return Utils.toUpperFirst(key);
     }
 
     public static @NotNull String normalizeKey(@NotNull String key) {

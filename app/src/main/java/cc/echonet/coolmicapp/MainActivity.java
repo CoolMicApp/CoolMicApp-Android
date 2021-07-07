@@ -143,12 +143,20 @@ public class MainActivity extends Activity implements EventListener {
                 exitApp();
                 return true;
             /* developer mode below */
-            case R.id.menu_action_track_metadata:
+            case R.id.menu_action_station_metadata: {
+                final @NotNull StationMetadataDialog dialog = new StationMetadataDialog(this, profile);
+                if (isRecording)
+                    dialog.setOnDone(backgroundServiceClient::reloadParameters);
+                dialog.show();
+                return true;
+            }
+            case R.id.menu_action_track_metadata: {
                 final @NotNull TrackMetadataDialog dialog = new TrackMetadataDialog(this, profile);
                 if (isRecording)
                     dialog.setOnDone(backgroundServiceClient::reloadParameters);
                 dialog.show();
                 return true;
+            }
             case R.id.menu_action_devel_permission_check:
                 Utils.requestPermissions(this, profile, true);
                 return true;

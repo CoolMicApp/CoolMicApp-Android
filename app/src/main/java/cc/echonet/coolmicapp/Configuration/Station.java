@@ -22,6 +22,8 @@
 
 package cc.echonet.coolmicapp.Configuration;
 
+import cc.echonet.coolmicapp.Utils;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -32,6 +34,20 @@ import java.util.Map;
 
 public class Station extends ProfileBase {
     private static final @NotNull String[] KEY_LIST = new String[]{"name", "genre", "url", "description", "irc"};
+
+    private static void assertValidKey(@NotNull String key) {
+        for (final @NotNull String validKey : KEY_LIST) {
+            if (key.equals(validKey)) {
+                return;
+            }
+        }
+
+        throw new IllegalArgumentException("Invalid key: " + key);
+    }
+
+    public static @NotNull String getKeyDisplayName(@NotNull String key) {
+        return Utils.toUpperFirst(key);
+    }
 
     Station(@NotNull ProfileBase profile) {
         super(profile);
@@ -48,5 +64,16 @@ public class Station extends ProfileBase {
         }
 
         return Collections.unmodifiableMap(ret);
+    }
+
+    @Contract("_, !null -> !null; _, null -> _")
+    public @Nullable String getValue(@NotNull String key, @Nullable String def) {
+        assertValidKey(key);
+        return getString("station_" + key, def);
+    }
+
+    public void setValue(@NotNull String key, @Nullable String value) {
+        assertValidKey(key);
+        editor.putString("station_" + key, value);
     }
 }
