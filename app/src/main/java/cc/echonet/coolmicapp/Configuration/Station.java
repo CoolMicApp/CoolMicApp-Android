@@ -42,6 +42,8 @@ public class Station extends ProfileBase {
     }
 
     public static @NotNull String getKeyDisplayName(@NotNull String key) {
+        if (key.length() < 4)
+            return key.toUpperCase(Locale.ROOT);
         return Utils.toUpperFirst(key);
     }
 
