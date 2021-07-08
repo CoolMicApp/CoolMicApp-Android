@@ -31,30 +31,21 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
+import android.preference.*;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import androidx.core.app.NavUtils;
-
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import cc.echonet.coolmicapp.BackgroundService.Client.Client;
 import cc.echonet.coolmicapp.Configuration.Codec;
 import cc.echonet.coolmicapp.Configuration.Manager;
 import cc.echonet.coolmicapp.Configuration.Profile;
 import cc.echonet.coolmicapp.Configuration.Server;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -268,6 +259,14 @@ public class SettingsActivity extends PreferenceActivity {
             if (trackmetadata_edit != null) {
                 trackmetadata_edit.setOnPreferenceClickListener(preference -> {
                     new TrackMetadataDialog(getActivity(), (new Manager(getActivity())).getCurrentProfile()).show();
+                    return true;
+                });
+            }
+
+            Preference stationmetadata_edit = getPreferenceManager().findPreference("stationmetadata_edit");
+            if (stationmetadata_edit != null) {
+                stationmetadata_edit.setOnPreferenceClickListener(preference -> {
+                    new StationMetadataDialog(getActivity(), (new Manager(getActivity())).getCurrentProfile()).show();
                     return true;
                 });
             }

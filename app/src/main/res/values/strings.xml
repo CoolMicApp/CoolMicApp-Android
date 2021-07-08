@@ -76,18 +76,7 @@
 
     <!-- Station Metadata -->
     <string name="pref_header_station_metadata">Station Metadata</string>
-
-    <string name="pref_title_station_metadata_name">Name</string>
-    <string name="pref_title_station_metadata_genre">Genre</string>
-    <string name="pref_title_station_metadata_url">URL</string>
-    <string name="pref_title_station_metadata_description">Description</string>
-    <string name="pref_title_station_metadata_irc">IRC</string>
-
-    <string name="pref_default_station_metadata_name"></string>
-    <string name="pref_default_station_metadata_genre"></string>
-    <string name="pref_default_station_metadata_url"></string>
-    <string name="pref_default_station_metadata_description"></string>
-    <string name="pref_default_station_metadata_irc"></string>
+    <string name="pref_title_edit_stationmetadata">Edit Station Metadata</string>
 
     <!-- Connection -->
     <string name="pref_header_connection">Connection</string>
