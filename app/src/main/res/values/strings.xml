@@ -298,10 +298,10 @@
     <string name="next_segment">Play Audio Clip</string>
     <string name="next_segment_active">Playing Audio Clip</string>
 
-    <string name="trackmetadata_delete">Delete</string>
-    <string name="trackmetadata_add">Add</string>
-    <string name="trackmetadata_custom">Custom</string>
-    <string name="trackmetadata_key_name">Key name</string>
+    <string name="metadata_delete">Delete</string>
+    <string name="metadata_add">Add</string>
+    <string name="metadata_custom">Custom</string>
+    <string name="metadata_key_name">Key name</string>
 
     <string name="codecmissmatch_title">Codec Missmatch</string>
     <string name="codecmissmatch_text">Streaming codec and input file mismatch. Currently streaming in "%1$s" but file is in "%2$s". Do you want to continue?</string>

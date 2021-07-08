@@ -23,17 +23,13 @@
 package cc.echonet.coolmicapp.Configuration;
 
 import cc.echonet.coolmicapp.Utils;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Station extends ProfileBase {
     private static final @NotNull String[] KEY_LIST = new String[]{"name", "genre", "url", "description", "irc"};
+    public static final @NotNull @UnmodifiableView List<@NotNull String> STANDARD_KEYS = Collections.unmodifiableList(Arrays.asList(KEY_LIST));
 
     private static void assertValidKey(@NotNull String key) {
         for (final @NotNull String validKey : KEY_LIST) {

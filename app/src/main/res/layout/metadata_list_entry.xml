@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="@string/trackmetadata_delete"
+            android:text="@string/metadata_delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/metadata_key" />
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,13 +22,7 @@
 
 package cc.echonet.coolmicapp;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import cc.echonet.coolmicapp.Configuration.Profile;
@@ -37,86 +31,47 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 
-public class StationMetadataDialog {
-    private final static class Adapter extends ArrayAdapter<String> {
-        private final @NotNull Profile profile;
+public class StationMetadataDialog extends MetadataDialog<StationMetadataDialog.Adapter> {
+    final static class Adapter extends MetadataDialog.Adapter {
 
-        private static @NotNull List<@NotNull String> getKeys(@NotNull Profile profile) {
+        protected @NotNull List<@NotNull String> getKeys() {
             return new ArrayList<>(profile.getStation().getMetadata().keySet());
         }
 
-        public Adapter(@NonNull Context context, @NotNull Profile profile) {
-            super(context, R.layout.metadata_list_entry, R.id.metadata_key, getKeys(profile));
-            this.profile = profile;
-        }
-
-        @NonNull
         @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            final @NonNull View view = super.getView(position, convertView, parent);
-            final @NonNull String key = Objects.requireNonNull(super.getItem(position));
-            final @NonNull String value = profile.getStation().getValue(key, "");
-            final @NonNull String keyDisplayName = Station.getKeyDisplayName(key);
-
-            ((TextView)view.findViewById(R.id.metadata_key)).setText(keyDisplayName);
-            ((TextView)view.findViewById(R.id.metadata_value)).setText(value);
-
-            view.setOnClickListener(v -> PromptDialog.prompt(getContext(), keyDisplayName, value, result -> setMetadata(key, result)));
-
-            view.findViewById(R.id.metadata_delete_key).setOnClickListener(v -> setMetadata(key, null));
-
-            return view;
+        protected String getValue(@NotNull String key, @Nullable String def) {
+            return profile.getStation().getValue(key, def);
         }
 
-        public void reloadData() {
-            clear();
-            addAll(getKeys(profile));
-            notifyDataSetChanged();
+        @Override
+        protected String getKeyDisplayName(@NotNull String key) {
+            return Station.getKeyDisplayName(key);
         }
 
-        public void setMetadata(@NotNull String key, @Nullable String value) {
+        public Adapter(@NonNull @NotNull Context context, @NotNull Profile profile) {
+            super(context, profile);
+        }
+
+        @Override
+        protected void setMetadata(@NotNull String key, @Nullable String value) {
             profile.edit();
-            profile.getStation().setValue(key, value);
+            profile.getStation().setValue(key.toLowerCase(Locale.ROOT), value);
             profile.apply();
             reloadData();
         }
     }
 
-    private final @NotNull AlertDialog.Builder builder;
-    private @Nullable Runnable onDone = null;
+    protected boolean customKeysAllowed() {
+        return false;
+    }
 
-    private void done() {
-        if (onDone != null)
-            onDone.run();
+    protected @NotNull List<@NotNull String> getStandardKeys() {
+        return Station.STANDARD_KEYS;
     }
 
     public StationMetadataDialog(@NotNull Context context, @NotNull Profile profile) {
-        final @NotNull Adapter adapter = new Adapter(context, profile);
-        final @NotNull ListView listView;
-
-        this.builder = new AlertDialog.Builder(context);
-
-        listView = new ListView(context);
-
-        listView.setAdapter(adapter);
-
-        builder.setView(listView);
-
-        builder.setCancelable(true);
-
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> done());
-
-        builder.setOnCancelListener(dialog -> done());
-    }
-
-    public void show() {
-        final @NotNull AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    public void setOnDone(@Nullable Runnable onDone) {
-        this.onDone = onDone;
+        super(context, profile, new Adapter(context, profile));
     }
 }
