@@ -17,4 +17,4 @@ target_include_directories(coolmic-dsp PUBLIC ${CMAKE_CURRENT_LIST_DIR}/libcoolm
 find_library(log-lib log)
 find_library(opensles-lib OpenSLES)
 
-target_link_libraries(coolmic-dsp ${log-lib} ${opensles-lib} ogg vorbis shout opus igloo)
+target_link_libraries(coolmic-dsp ${log-lib} ${opensles-lib} ogg vorbis vorbisenc shout opus igloo)
