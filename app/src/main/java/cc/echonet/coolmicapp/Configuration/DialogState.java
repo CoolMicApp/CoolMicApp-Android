@@ -38,7 +38,7 @@ public class DialogState extends ProfileBase {
     }
 
     private String buildKey(String subkey) {
-        return "dialogstate-" + getDialogIdentifier().toString() + "-" + subkey;
+        return "dialogstate-" + getDialogIdentifier() + "-" + subkey;
     }
 
     private String buildVersionString() {

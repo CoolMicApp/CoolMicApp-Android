@@ -23,26 +23,19 @@
 package cc.echonet.coolmicapp.Icecast.Request;
 
 import android.util.Log;
-
+import cc.echonet.coolmicapp.Icecast.State;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import cc.echonet.coolmicapp.Icecast.State;
 
 public class Stats extends Request {
 
@@ -79,7 +72,9 @@ public class Stats extends Request {
 
             Log.d("CM-StreamStatsService", "post xpath");
 
+            //noinspection HardcodedFileSeparator
             final XPathExpression expr_listeners = xpath.compile("/icestats/source/listeners/text()");
+            //noinspection HardcodedFileSeparator
             final XPathExpression expr_listeners_peak = xpath.compile("/icestats/source/listener_peak/text()");
 
             Log.d("CM-StreamStatsService", "post xpath compile");

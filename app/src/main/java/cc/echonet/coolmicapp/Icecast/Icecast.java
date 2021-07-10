@@ -22,6 +22,7 @@
 
 package cc.echonet.coolmicapp.Icecast;
 
+import cc.echonet.coolmicapp.Icecast.Request.Stats;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +31,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
-
-import cc.echonet.coolmicapp.Icecast.Request.Stats;
 
 public class Icecast implements Closeable {
     private final @NotNull String protocol;
@@ -51,6 +50,7 @@ public class Icecast implements Closeable {
         this.password = password;
     }
 
+    @SuppressWarnings("HardcodedFileSeparator")
     URL getCommandURL(@NotNull Command command, @Nullable String mount) throws MalformedURLException {
         String url;
 

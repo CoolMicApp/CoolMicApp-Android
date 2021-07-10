@@ -27,10 +27,16 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import cc.echonet.coolmicapp.BuildConfig;
+import cc.echonet.coolmicapp.Configuration.Profile;
+import cc.echonet.coolmicapp.Configuration.Server;
+import cc.echonet.coolmicapp.Configuration.Track;
+import cc.echonet.coolmicapp.R;
+import cc.echonet.coolmicdspjava.CallbackHandler;
+import cc.echonet.coolmicdspjava.Wrapper;
+import cc.echonet.coolmicdspjava.WrapperConstants;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,15 +47,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-
-import cc.echonet.coolmicapp.BuildConfig;
-import cc.echonet.coolmicapp.Configuration.Profile;
-import cc.echonet.coolmicapp.Configuration.Server;
-import cc.echonet.coolmicapp.Configuration.Track;
-import cc.echonet.coolmicapp.R;
-import cc.echonet.coolmicdspjava.CallbackHandler;
-import cc.echonet.coolmicdspjava.Wrapper;
-import cc.echonet.coolmicdspjava.WrapperConstants;
 
 final class Driver implements Closeable {
     @SuppressWarnings("HardcodedFileSeparator")
@@ -71,7 +68,7 @@ final class Driver implements Closeable {
             case WRAPPER_UNINITIALIZED:
                 break;
             case WRAPPER_INITIALIZATION_ERROR:
-                    Log.d(TAG, "initWrapper: Wrapper's exception: " + Objects.requireNonNull(wrapper.getInitException()).toString());
+                    Log.d(TAG, "initWrapper: Wrapper's exception: " + Objects.requireNonNull(wrapper.getInitException()));
                     Toast.makeText(applicationContext, R.string.mainactivity_native_components_init_error, Toast.LENGTH_SHORT).show();
                 break;
             case WRAPPER_INTITIALIZED:

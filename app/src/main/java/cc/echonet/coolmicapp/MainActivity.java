@@ -173,19 +173,9 @@ public class MainActivity extends Activity implements EventListener {
 
         stopService(new Intent(this, Server.class));
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                stopService(new Intent(getApplicationContext(), Server.class));
-            }
-        }, 250);
+        new Handler().postDelayed(() -> stopService(new Intent(getApplicationContext(), Server.class)), 250);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                System.exit(0);
-            }
-        }, 500);
+        new Handler().postDelayed(() -> System.exit(0), 500);
 
     }
 
@@ -347,12 +337,10 @@ public class MainActivity extends Activity implements EventListener {
                     backgroundServiceClient.nextSegment(uri.toString());
                 });
                 builder.setCancelable(true);
-                builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                    Log.d("MainActivity", "handleNextSegment: User CANCELed codec nextSegment request as codecs mismatch. (via button)");
-                });
-                builder.setOnCancelListener(dialog -> {
-                    Log.d("MainActivity", "handleNextSegment: User CANCELed codec nextSegment request as codecs mismatch.");
-                });
+                builder.setNegativeButton(android.R.string.cancel, (dialog, which) ->
+                        Log.d("MainActivity", "handleNextSegment: User CANCELed codec nextSegment request as codecs mismatch. (via button)"));
+                builder.setOnCancelListener(dialog ->
+                        Log.d("MainActivity", "handleNextSegment: User CANCELed codec nextSegment request as codecs mismatch."));
                 builder.show();
             }
         } catch (IOException e) {

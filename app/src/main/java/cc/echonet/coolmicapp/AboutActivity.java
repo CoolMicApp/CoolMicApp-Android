@@ -68,7 +68,7 @@ public class AboutActivity extends Activity {
         ((TextView) findViewById(R.id.txtAPILevel)).setText(String.format(Locale.ROOT, "%d", Build.VERSION.SDK_INT));
         ((TextView) findViewById(R.id.txtSystemArch)).setText(System.getProperty("os.arch"));
 
-        ((TextView) findViewById(R.id.txtVersion)).setOnClickListener(v -> {
+        findViewById(R.id.txtVersion).setOnClickListener(v -> {
             extra++;
             if (extra == 6) {
                 Toast.makeText(AboutActivity.this, "yes", Toast.LENGTH_SHORT).show();
@@ -104,11 +104,10 @@ public class AboutActivity extends Activity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+        // Respond to the action bar's Up/Home button
+        if (item.getItemId() == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

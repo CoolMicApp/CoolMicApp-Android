@@ -39,19 +39,19 @@ public class VUMeterResult implements Serializable {
         this.global_power_color = global_power_color;
     }
 
-    public int rate;
-    public int channels;
+    public final int rate;
+    public final int channels;
 
-    public long frames;
+    public final long frames;
 
-    public int global_peak;
-    public double global_power;
+    public final int global_peak;
+    public final double global_power;
 
     public int[] channels_peak;
     public double[] channels_power;
 
-    public int global_peak_color;
-    public int global_power_color;
+    public final int global_peak_color;
+    public final int global_power_color;
 
     public int[] channels_peak_color;
     public int[] channels_power_color;

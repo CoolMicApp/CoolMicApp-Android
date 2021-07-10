@@ -22,14 +22,13 @@
 
 package cc.echonet.coolmicapp;
 
+import cc.echonet.coolmicapp.Configuration.Codec;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import cc.echonet.coolmicapp.Configuration.Codec;
 
 public final class FileFormatDetector {
     private static final byte[] MAGIC_OGG = new byte[]{'O', 'g', 'g', 'S', 0};
@@ -43,7 +42,7 @@ public final class FileFormatDetector {
     private static final byte MAGIC_MP3_SYNC_TWO_MASK = (byte)0xF6;
 
     @Contract(pure = true)
-    private static boolean isSubArray(final @NotNull byte[] raw, final int offset, final @NotNull byte[] magic) {
+    private static boolean isSubArray(final byte[] raw, final int offset, final byte[] magic) {
         try {
             for (int i = 0; i < magic.length; i++)
                 if (raw[offset + i] != magic[i])
@@ -55,7 +54,7 @@ public final class FileFormatDetector {
     }
 
     @Contract(pure = true)
-    private static boolean isPartOf(final byte val, final @NotNull byte[] magic) {
+    private static boolean isPartOf(final byte val, final byte[] magic) {
         for (final byte e : magic) {
             if (val == e)
                 return true;
@@ -65,27 +64,27 @@ public final class FileFormatDetector {
     }
 
     @Contract(pure = true)
-    private static boolean isOgg(final @NotNull byte[] raw) {
+    private static boolean isOgg(final byte[] raw) {
         return isSubArray(raw, 0, MAGIC_OGG);
     }
 
     @Contract(pure = true)
-    private static int oggOffsetToBody(final @NotNull byte[] raw) {
+    private static int oggOffsetToBody(final byte[] raw) {
         return 27 + (raw[26] & 0xFF);
     }
 
     @Contract(pure = true)
-    private static boolean isVorbis(final @NotNull byte[] raw, final int bodyOffset) {
+    private static boolean isVorbis(final byte[] raw, final int bodyOffset) {
         return isSubArray(raw, bodyOffset, MAGIC_VORBIS);
     }
 
     @Contract(pure = true)
-    private static boolean isOpus(final @NotNull byte[] raw, final int bodyOffset) {
+    private static boolean isOpus(final byte[] raw, final int bodyOffset) {
         return isSubArray(raw, bodyOffset, MAGIC_OPUS);
     }
 
     @Contract(pure = true)
-    private static boolean isAAC(final @NotNull byte[] raw) {
+    private static boolean isAAC(final byte[] raw) {
         try {
             if (raw[0] != MAGIC_AAC_SYNC_ONE)
                 return false;
@@ -100,7 +99,7 @@ public final class FileFormatDetector {
     }
 
     @Contract(pure = true)
-    private static boolean isMP3(final @NotNull byte[] raw) {
+    private static boolean isMP3(final byte[] raw) {
         try {
             if (raw[0] != MAGIC_MP3_SYNC_ONE)
                 return false;
@@ -115,7 +114,7 @@ public final class FileFormatDetector {
     }
 
     public static @Nullable String detect(@NotNull InputStream inputStream) {
-        final @NotNull byte[] buffer = new byte[64];
+        final byte[] buffer = new byte[64];
         final int have;
 
         try {

@@ -26,7 +26,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -172,11 +171,7 @@ public final class Utils {
         AlertDialog.Builder alertDialogCMTSTOS = new AlertDialog.Builder(context);
         alertDialogCMTSTOS.setTitle(R.string.coolmic_tos_title);
         alertDialogCMTSTOS.setMessage(R.string.coolmic_tos);
-        alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        alertDialogCMTSTOS.setNegativeButton(R.string.coolmic_tos_cancel, (dialog, which) -> dialog.cancel());
 
         return alertDialogCMTSTOS;
     }

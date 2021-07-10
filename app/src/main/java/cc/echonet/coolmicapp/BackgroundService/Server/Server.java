@@ -22,33 +22,13 @@
 
 package cc.echonet.coolmicapp.BackgroundService.Server;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.SystemClock;
+import android.os.*;
 import android.util.Log;
 import android.widget.Toast;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
 import cc.echonet.coolmicapp.BackgroundService.Constants;
 import cc.echonet.coolmicapp.BackgroundService.State;
 import cc.echonet.coolmicapp.CMTS;
@@ -64,6 +44,15 @@ import cc.echonet.coolmicdspjava.CallbackHandler;
 import cc.echonet.coolmicdspjava.VUMeterResult;
 import cc.echonet.coolmicdspjava.Wrapper;
 import cc.echonet.coolmicdspjava.WrapperConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class Server extends Service implements CallbackHandler {
     @SuppressWarnings("HardcodedFileSeparator")
@@ -387,7 +376,7 @@ public class Server extends Service implements CallbackHandler {
             messenger.send(message);
             return true;
         } catch (Exception e) {
-            Log.d(TAG, "sendMessage: failed to send message to " + messenger + ": " + e.toString());
+            Log.d(TAG, "sendMessage: failed to send message to " + messenger + ": " + e);
             return false;
         }
     }
@@ -531,7 +520,7 @@ public class Server extends Service implements CallbackHandler {
     @Override
     @SuppressWarnings("unused")
     public void callbackHandler(WrapperConstants.WrapperCallbackEvents what, int arg0, int arg1) {
-        Log.d(TAG, String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", String.valueOf(what), arg0, arg1));
+        Log.d(TAG, String.format("Handler VUMeter: %s Arg0: %d Arg1: %d ", what, arg0, arg1));
 
         switch (what) {
             case THREAD_POST_START:
@@ -630,7 +619,7 @@ public class Server extends Service implements CallbackHandler {
 
     @Override
     public void onDestroy() {
-        final @NotNull NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        final @NotNull NotificationManager nm = (NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE));
 
         Log.v(TAG, "Server.onDestroy()");
         stopStream(null);
