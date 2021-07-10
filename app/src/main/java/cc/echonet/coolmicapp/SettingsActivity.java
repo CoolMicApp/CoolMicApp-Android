@@ -202,7 +202,7 @@ public class SettingsActivity extends PreferenceActivity {
                 String mountpoint = getPreferenceManager().getSharedPreferences().getString("connection_mountpoint", getString(R.string.pref_default_connection_mountpoint));
 
                 //Opus Codec name is supposed to be static
-                if (stringValue.equals("audio/ogg; codec=opus")) {
+                if (stringValue.equals(Codec.TYPE_OPUS)) {
                     handleSampleRateEnabled(false);
                     mountpoint = mountpoint.replace("ogg", "opus");
                     editor.putString("audio_samplerate", getString(R.string.pref_default_audio_samplerate));
@@ -343,7 +343,7 @@ public class SettingsActivity extends PreferenceActivity {
             String codec = getPreferenceManager().getSharedPreferences().getString("audio_codec", getString(R.string.pref_default_audio_codec));
 
 
-            handleSampleRateEnabled(!codec.equals("audio/ogg; codec=opus"));
+            handleSampleRateEnabled(!codec.equals(Codec.TYPE_OPUS));
         }
 
         private void handleSampleRateEnabled(boolean enabled) {
