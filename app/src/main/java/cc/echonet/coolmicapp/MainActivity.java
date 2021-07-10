@@ -59,6 +59,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -125,52 +127,42 @@ public class MainActivity extends Activity implements EventListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_action_share:
-                performShare();
-                return true;
-            case R.id.menu_action_settings:
-                goSettings();
-                return true;
-            case R.id.menu_action_about:
-                goAbout();
-                return true;
-            case R.id.menu_action_help:
-                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.coolmic_help_url)));
-                startActivity(helpIntent);
-                return true;
-            case R.id.menu_action_quit:
-                exitApp();
-                return true;
-            /* developer mode below */
-            case R.id.menu_action_station_metadata: {
-                final @NotNull StationMetadataDialog dialog = new StationMetadataDialog(this, profile);
-                if (isRecording)
-                    dialog.setOnDone(backgroundServiceClient::reloadParameters);
-                dialog.show();
-                return true;
-            }
-            case R.id.menu_action_track_metadata: {
-                final @NotNull TrackMetadataDialog dialog = new TrackMetadataDialog(this, profile);
-                if (isRecording)
-                    dialog.setOnDone(backgroundServiceClient::reloadParameters);
-                dialog.show();
-                return true;
-            }
-            case R.id.menu_action_devel_permission_check:
-                Utils.requestPermissions(this, profile, true);
-                return true;
-            case R.id.menu_action_devel_reset_dialogs:
-                for (DialogIdentifier dialogIdentifier : DialogIdentifier.values()) {
-                    profile.getDialogState(dialogIdentifier).reset();
-                }
-                Toast.makeText(this, R.string.menu_action_devel_reset_dialogs_done, Toast.LENGTH_SHORT).show();
-                return true;
+        final @NotNull Map<Integer, Runnable> handlers = new HashMap<>();
+        final int itemID = item.getItemId();
 
-            default:
-                Toast.makeText(getApplicationContext(), R.string.menu_action_default, Toast.LENGTH_SHORT).show();
-                break;
+        // use mode:
+        handlers.put(R.id.menu_action_share, this::performShare);
+        handlers.put(R.id.menu_action_settings, this::goSettings);
+        handlers.put(R.id.menu_action_about, this::goAbout);
+        handlers.put(R.id.menu_action_help, () -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.coolmic_help_url)))));
+        handlers.put(R.id.menu_action_quit, this::exitApp);
+        // developer mode:
+        handlers.put(R.id.menu_action_station_metadata, () -> {
+            final @NotNull StationMetadataDialog dialog = new StationMetadataDialog(this, profile);
+            if (isRecording)
+                dialog.setOnDone(backgroundServiceClient::reloadParameters);
+            dialog.show();
+        });
+        handlers.put(R.id.menu_action_track_metadata, () -> {
+            final @NotNull TrackMetadataDialog dialog = new TrackMetadataDialog(this, profile);
+            if (isRecording)
+                dialog.setOnDone(backgroundServiceClient::reloadParameters);
+            dialog.show();
+        });
+        handlers.put(R.id.menu_action_devel_permission_check, () -> Utils.requestPermissions(this, profile, true));
+        handlers.put(R.id.menu_action_devel_reset_dialogs, () -> {
+            for (DialogIdentifier dialogIdentifier : DialogIdentifier.values()) {
+                profile.getDialogState(dialogIdentifier).reset();
+            }
+            Toast.makeText(this, R.string.menu_action_devel_reset_dialogs_done, Toast.LENGTH_SHORT).show();
+        });
+
+        if (handlers.containsKey(itemID)) {
+            Objects.requireNonNull(handlers.get(itemID)).run();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.menu_action_default, Toast.LENGTH_SHORT).show();
         }
+
         return true;
     }
 
