@@ -3,6 +3,7 @@ app/build/
 app/release
 app/src/main/libs/
 app/src/main/obj/
+lsp/
 local.properties
 
 
