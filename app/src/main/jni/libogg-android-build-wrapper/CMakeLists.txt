@@ -2,5 +2,5 @@
 # library.
 cmake_minimum_required(VERSION 3.10.2)
 
-set(BUILD_SHARED_LIBS on)
+option(BUILD_SHARED_LIBS "" ON)
 add_subdirectory(libogg)
