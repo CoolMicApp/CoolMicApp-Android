@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) Jordan Erickson                     - 2014-2020,
- *      Copyright (C) Löwenfelsen UG (haftungsbeschränkt) - 2015-2020
+ *      Copyright (C) Löwenfelsen UG (haftungsbeschränkt) - 2015-2021
  *       on behalf of Jordan Erickson.
  *
  * This file is part of Cool Mic.
@@ -22,6 +22,7 @@
 
 package cc.echonet.coolmicdspjava;
 
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,6 +31,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class wraps libcoolmic-dsp's simple API.
@@ -44,6 +47,10 @@ import java.util.Map;
  * </ul>
  */
 public final class Wrapper implements Closeable {
+    private static final @NotNull String[] auxiliaryLibraries = new String[]{"ogg", "vorbis", "shout", "coolmic-dsp"};
+    private static final @NotNull String[] mainLibraries = new String[]{"coolmic-dsp-java"};
+    private static final @NotNull Logger LOGGER = Logger.getLogger(Wrapper.class.getName());
+
     private static @NonNull WrapperConstants.WrapperInitializationStatus state;
     private static @Nullable Throwable initException;
 
@@ -57,12 +64,23 @@ public final class Wrapper implements Closeable {
     private long nativeObject = 0x0;
 
     static {
+        for (final @NotNull String library : auxiliaryLibraries) {
+            try {
+                System.loadLibrary(library);
+            } catch (Throwable ex) {
+                LOGGER.log(Level.SEVERE, "Can not load auxiliary library: " + library, ex);
+            }
+        }
+
         try {
-            System.loadLibrary("ogg");
-            System.loadLibrary("vorbis");
-            System.loadLibrary("shout");
-            System.loadLibrary("coolmic-dsp");
-            System.loadLibrary("coolmic-dsp-java");
+            for (final @NotNull String library : mainLibraries) {
+                try {
+                    System.loadLibrary(library);
+                } catch (Throwable ex) {
+                    LOGGER.log(Level.SEVERE, "Can not load main library: " + library, ex);
+                    throw ex;
+                }
+            }
 
             initException = null;
             state = WrapperConstants.WrapperInitializationStatus.WRAPPER_INTITIALIZED;
