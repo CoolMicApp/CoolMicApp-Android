@@ -26,6 +26,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
@@ -117,6 +118,20 @@ public final class Wrapper implements Closeable {
      */
     public synchronized @Nullable Throwable getInitException() {
         return initException;
+    }
+
+    /**
+     * Gets the static initialization state.
+     * This is only useful for debugging.
+     * @return The initialization state as {@link String}.
+     */
+    @ApiStatus.Experimental
+    public static @NotNull String getStaticInitializationState() {
+        if (initException == null) {
+            return state.toString();
+        } else {
+            return state + " " + initException;
+        }
     }
 
     private synchronized native int prepare(CallbackHandler handler, String hostname, int port, String username, String password, String mount, String codec, int rate, int channels, int buffersize, String softwareName, String softwareVersion, String softwareComment, String[] station);

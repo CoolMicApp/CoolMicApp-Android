@@ -37,6 +37,7 @@ import android.widget.Toast;
 import androidx.annotation.StringRes;
 import androidx.core.app.NavUtils;
 import cc.echonet.coolmicapp.Configuration.*;
+import cc.echonet.coolmicdspjava.Wrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -146,7 +147,8 @@ public class AboutActivity extends Activity {
                     profile.getVUMeter().getInterval(),
                     volume.getLeft(),
                     volume.getRight(),
-                    CMTS.isCMTSConnection(profile)
+                    CMTS.isCMTSConnection(profile),
+                    Wrapper.getStaticInitializationState()
             );
         }
     }
